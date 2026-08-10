@@ -246,6 +246,11 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
+/** Full-bleed desktop frame — keep corner radius readable against dark canvas. */
+.preview-browser[data-device-frame="desktop"] {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
 .preview-browser-dot {
   width: 0.5rem;
   height: 0.5rem;

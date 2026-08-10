@@ -172,17 +172,27 @@ function createGallery01(tokens: ThemeTokens): SectionComponent {
             tokens={tokens}
             align="center"
           />
-          <div className={`mt-10 grid gap-4 @min-[640px]:mt-14 ${galleryEvenGridClass(images.length)}`}>
-            {images.map((image, index) => (
-              <MediaPanel
-                key={image}
-                src={image}
-                alt={`Gallery image ${index + 1}`}
-                className="aspect-[4/5] w-full rounded-[1.5rem] object-cover"
-                fallbackClassName="aspect-[4/5] w-full rounded-[1.5rem] bg-[var(--theme-bg)]"
-              />
-            ))}
-          </div>
+          {images.length === 0 ? (
+            <p className={`mt-10 text-center text-sm @min-[640px]:mt-12 ${tokens.body}`}>
+              No gallery images available for this build.
+            </p>
+          ) : (
+            <ul
+              className={`mt-10 grid gap-3 @min-[640px]:mt-14 @min-[640px]:gap-4 ${galleryEvenGridClass(images.length)}`}
+              role="list"
+            >
+              {images.map((image, index) => (
+                <li key={image} className="min-w-0 overflow-hidden rounded-[1.5rem]">
+                  <MediaPanel
+                    src={image}
+                    alt={`Gallery image ${index + 1}`}
+                    className="aspect-[4/5] h-full w-full object-cover transition duration-300 hover:scale-[1.03]"
+                    fallbackClassName="aspect-[4/5] w-full bg-[var(--theme-bg)]"
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </section>
     );
@@ -205,22 +215,36 @@ function createGallery02(tokens: ThemeTokens): SectionComponent {
       "A more kinetic layout for bar energy, plated details, and scenes that show the personality of the space.",
     );
     const images = getGalleryMedia(assets);
+    const count = images.length;
 
     return (
       <section aria-label="Gallery" className={`${tokens.sectionPad} ${tokens.section}`}>
         <div className="mx-auto max-w-6xl">
           <SectionIntro eyebrow="Scenes" title={headline} body={body} tokens={tokens} />
-          <div className={`mt-10 grid gap-4 @min-[640px]:mt-14 ${galleryBentoGridClass(images.length)}`}>
-            {images.map((image, index) => (
-              <MediaPanel
-                key={image}
-                src={image}
-                alt={`Gallery image ${index + 1}`}
-                className={`${galleryBentoItemClass(images.length, index)} w-full rounded-[1.5rem] object-cover`}
-                fallbackClassName={`${galleryBentoItemClass(images.length, index)} w-full rounded-[1.5rem] bg-[var(--theme-bg-alt)]`}
-              />
-            ))}
-          </div>
+          {count === 0 ? (
+            <p className={`mt-10 text-center text-sm @min-[640px]:mt-12 ${tokens.body}`}>
+              No gallery images available for this build.
+            </p>
+          ) : (
+            <ul
+              className={`mt-10 grid gap-3 @min-[640px]:mt-14 @min-[640px]:gap-4 ${galleryBentoGridClass(count)}`}
+              role="list"
+            >
+              {images.map((image, index) => (
+                <li
+                  key={image}
+                  className={`min-w-0 overflow-hidden rounded-[1.5rem] ${galleryBentoItemClass(count, index)}`}
+                >
+                  <MediaPanel
+                    src={image}
+                    alt={`Gallery image ${index + 1}`}
+                    className="h-full w-full object-cover transition duration-300 hover:scale-[1.03]"
+                    fallbackClassName="h-full min-h-[8rem] w-full bg-[var(--theme-bg-alt)]"
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </section>
     );
@@ -249,12 +273,14 @@ function createLocation01(tokens: ThemeTokens): SectionComponent {
     return (
       <section aria-label="Location" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
         <div className="mx-auto grid max-w-6xl gap-8 @min-[768px]:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] @min-[768px]:items-center @min-[768px]:gap-14">
-          <MediaPanel
-            src={imagePath}
-            alt={headline}
-            className="aspect-[5/4] w-full rounded-[2rem] object-cover"
-            fallbackClassName="aspect-[5/4] w-full rounded-[2rem] bg-[var(--theme-bg)]"
-          />
+          <div className="min-w-0 overflow-hidden rounded-[2rem]">
+            <MediaPanel
+              src={imagePath}
+              alt={headline}
+              className="aspect-[5/4] h-full w-full object-cover"
+              fallbackClassName="aspect-[5/4] w-full bg-[var(--theme-bg)]"
+            />
+          </div>
           <div className="min-w-0">
             <SectionIntro eyebrow="Visit Us" title={headline} body={body} tokens={tokens} />
             <dl className="mt-8 space-y-5">
@@ -304,12 +330,14 @@ function createLocation02(tokens: ThemeTokens): SectionComponent {
     return (
       <section aria-label="Location" className={`${tokens.sectionPad} ${tokens.sectionDark}`}>
         <div className="mx-auto grid max-w-6xl gap-8 rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm @min-[768px]:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] @min-[768px]:items-center @min-[768px]:gap-12 @min-[768px]:p-8">
-          <MediaPanel
-            src={imagePath}
-            alt={headline}
-            className="aspect-[5/4] w-full rounded-[1.75rem] object-cover"
-            fallbackClassName="aspect-[5/4] w-full rounded-[1.75rem] bg-white/10"
-          />
+          <div className="min-w-0 overflow-hidden rounded-[1.75rem]">
+            <MediaPanel
+              src={imagePath}
+              alt={headline}
+              className="aspect-[5/4] h-full w-full object-cover"
+              fallbackClassName="aspect-[5/4] w-full bg-white/10"
+            />
+          </div>
           <div className="min-w-0">
             <SectionIntro
               eyebrow="Directions"
@@ -324,7 +352,7 @@ function createLocation02(tokens: ThemeTokens): SectionComponent {
                   key={fact.label}
                   className="rounded-[1.25rem] border border-white/10 bg-black/10 p-4"
                 >
-                  <p className={`text-[11px] uppercase tracking-[0.24em] ${tokens.accentText}`}>
+                  <p className={`text-[11px] uppercase tracking-[0.24em] ${tokens.accentTextOnDark}`}>
                     {fact.label}
                   </p>
                   <p className={`mt-3 text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>

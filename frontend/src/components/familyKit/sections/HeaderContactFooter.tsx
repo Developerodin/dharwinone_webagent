@@ -23,10 +23,10 @@ import {
 } from "./shared";
 
 const FAMILY_MOBILE_TRIGGER =
-  "inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--theme-line)] text-[var(--theme-fg)] transition duration-200 hover:bg-[color:color-mix(in_srgb,var(--theme-bg)_80%,white_20%)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]";
+  "border border-[var(--theme-line)] bg-[var(--theme-card)] text-[var(--theme-ink)] hover:bg-[color:color-mix(in_srgb,var(--theme-bg)_80%,white_20%)] focus-visible:outline-[var(--theme-accent)]";
 
 const FAMILY_MOBILE_PANEL =
-  "mt-1 rounded-2xl border border-[var(--theme-line)] bg-[color:color-mix(in_srgb,var(--theme-bg)_94%,white_6%)] p-2 shadow-[0_18px_40px_rgba(0,0,0,0.18)] backdrop-blur";
+  "mt-3 border-[var(--theme-line)]";
 
 /**
  * Creates family-scoped header, contact, and footer sections.
@@ -48,9 +48,12 @@ export function createHeaderContactFooter(
  * Builds the sticky family header component.
  */
 function createHeader01(tokens: ThemeTokens): SectionComponent {
+  /** Compact CTA sizing for the sticky header action row. */
+  const headerCtaClass = `${tokens.primaryButton} w-auto max-w-[10.5rem] shrink-0 truncate px-4 py-2 text-xs @min-[640px]/page:max-w-none @min-[640px]/page:px-6 @min-[640px]/page:text-sm`;
+
   /**
    * Sticky navigation header with scroll-linked section buttons.
-   * Mobile: hamburger opens a nav panel; desktop: horizontal nav.
+   * Mobile: single-row brand + hamburger; desktop: brand/CTA/nav.
    */
   function FamilyHeader01({ content }: SectionComponentProps) {
     const brandName = getBrandName(content);
@@ -64,30 +67,51 @@ function createHeader01(tokens: ThemeTokens): SectionComponent {
      * Scrolls to a section and closes the mobile menu.
      */
     function handleNavigate(target: string) {
-      scrollToSection(target);
       close();
+      scrollToSection(target);
+    }
+
+    /**
+     * Scrolls to the reservation section and closes the mobile menu.
+     */
+    function handleCta() {
+      handleNavigate("reservation");
     }
 
     return (
       <header
         ref={rootRef}
         aria-label="Site header"
-        className={`${tokens.section} sticky top-0 z-30 border-b border-[var(--theme-line)]/80 bg-[color:color-mix(in_srgb,var(--theme-bg)_92%,white_8%)]/95 backdrop-blur`}
+        className={`${tokens.section} sticky top-[var(--shell-header-h)] z-30 border-b border-[var(--theme-line)] bg-[color:color-mix(in_srgb,var(--theme-bg)_88%,transparent)]/95 shadow-[0_1px_0_rgba(17,17,17,0.04)] backdrop-blur-md`}
       >
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 @min-[640px]:px-6 @min-[640px]:py-5 @min-[768px]:gap-4 @min-[768px]:px-10">
-          <div className="flex flex-col gap-4 @min-[768px]:flex-row @min-[768px]:items-center @min-[768px]:justify-between">
-            <div className="min-w-0">
-              {eyebrow ? <p className={tokens.eyebrow}>{eyebrow}</p> : null}
-              <p className={`text-lg @min-[640px]:text-xl ${tokens.heading}`}>
+        <div className="mx-auto max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[640px]/page:py-4 @min-[768px]/page:px-10">
+          <div className="flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={() => handleNavigate("hero")}
+              className="min-w-0 flex-1 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-accent)]"
+              aria-label="Scroll to hero section"
+            >
+              {eyebrow ? (
+                <p className={`hidden @min-[768px]/page:block ${tokens.eyebrow}`}>
+                  {eyebrow}
+                </p>
+              ) : null}
+              <p
+                className={`truncate text-lg text-[var(--theme-ink)] @min-[640px]/page:text-xl ${tokens.heading} ${eyebrow ? "@min-[768px]/page:mt-1" : ""}`}
+              >
                 {brandName}
               </p>
-              <p className={`mt-1 text-sm ${tokens.body}`}>{tagline}</p>
-            </div>
-            <div className="flex items-center gap-3 self-stretch @min-[768px]:self-auto">
+              <p className={`mt-1 hidden text-sm @min-[768px]/page:block ${tokens.body}`}>
+                {tagline}
+              </p>
+            </button>
+
+            <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
-                onClick={createScrollHandler("reservation")}
-                className={`${tokens.primaryButton} flex-1 @min-[768px]:flex-none`}
+                onClick={handleCta}
+                className={`hidden @min-[768px]/page:inline-flex ${headerCtaClass}`}
                 aria-label={ctaLabel}
               >
                 {ctaLabel}
@@ -103,7 +127,7 @@ function createHeader01(tokens: ThemeTokens): SectionComponent {
 
           <nav
             aria-label="Primary navigation"
-            className="hidden flex-wrap items-center gap-2 @min-[768px]:flex @min-[768px]:justify-end"
+            className="mt-4 hidden flex-wrap items-center justify-end gap-2 @min-[768px]/page:flex"
           >
             {navItems.map((item) => (
               <button
@@ -125,6 +149,9 @@ function createHeader01(tokens: ThemeTokens): SectionComponent {
             onNavigate={handleNavigate}
             panelClassName={FAMILY_MOBILE_PANEL}
             linkClassName={tokens.navLink}
+            ctaLabel={ctaLabel}
+            onCta={handleCta}
+            ctaClassName={headerCtaClass}
           />
         </div>
       </header>
@@ -249,7 +276,6 @@ function createContact02(tokens: ThemeTokens): SectionComponent {
               body={body}
               tokens={tokens}
               align="center"
-              onDark
             />
             <div className="mt-8 grid gap-4 @min-[640px]:grid-cols-2">
               <label className="grid gap-2 text-sm text-[var(--theme-ink)]">
@@ -302,7 +328,7 @@ function createContact02(tokens: ThemeTokens): SectionComponent {
                 key={fact.label}
                 className="rounded-[1.25rem] border border-white/10 bg-white/5 p-5 text-center backdrop-blur-sm"
               >
-                <p className={`text-[11px] uppercase tracking-[0.24em] ${tokens.accentText}`}>
+                <p className={`text-[11px] uppercase tracking-[0.24em] ${tokens.accentTextOnDark}`}>
                   {fact.label}
                 </p>
                 <p className={`mt-3 text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>
@@ -337,7 +363,7 @@ function createFooter01(tokens: ThemeTokens): SectionComponent {
       <footer aria-label="Footer" className={`${tokens.sectionPad} ${tokens.sectionAlt} border-t border-[var(--theme-line)]`}>
         <div className="mx-auto grid max-w-6xl gap-10 @min-[640px]:grid-cols-2 @min-[1024px]:grid-cols-[minmax(0,1.1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)]">
           <div className="min-w-0">
-            <p className={`text-xl ${tokens.heading}`}>{brandName}</p>
+            <p className={`text-xl text-[var(--theme-ink)] ${tokens.heading}`}>{brandName}</p>
             <p className={`mt-3 max-w-md text-sm @min-[640px]:text-base ${tokens.body}`}>
               {tagline}
             </p>
@@ -400,7 +426,7 @@ function createFooter02(tokens: ThemeTokens): SectionComponent {
         <div className="mx-auto max-w-6xl rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm @min-[640px]:p-8">
           <div className="grid gap-8 @min-[768px]:grid-cols-[minmax(0,1fr)_auto_minmax(0,0.9fr)] @min-[768px]:items-start">
             <div>
-              <p className={`text-xl ${tokens.heading}`}>{brandName}</p>
+              <p className={`text-xl text-[var(--theme-on-dark)] ${tokens.heading}`}>{brandName}</p>
               <p className={`mt-3 max-w-md text-sm @min-[640px]:text-base ${tokens.mutedOnDark}`}>
                 {tagline}
               </p>
@@ -411,7 +437,7 @@ function createFooter02(tokens: ThemeTokens): SectionComponent {
                   key={`${item.target}-${item.label}`}
                   type="button"
                   onClick={createScrollHandler(item.target)}
-                  className={tokens.navLink}
+                  className={tokens.navLinkOnDark}
                   aria-label={`Scroll to ${item.label}`}
                 >
                   {item.label}
@@ -421,7 +447,7 @@ function createFooter02(tokens: ThemeTokens): SectionComponent {
             <div className="space-y-2">
               {facts.map((fact) => (
                 <p key={fact.label} className={`text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>
-                  <span className="text-white">{fact.label}:</span> {fact.value}
+                  <span className="text-[var(--theme-on-dark)]">{fact.label}:</span> {fact.value}
                 </p>
               ))}
             </div>

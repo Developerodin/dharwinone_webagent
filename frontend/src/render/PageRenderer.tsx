@@ -80,7 +80,7 @@ function SectionSlot({ section, animate, delayMs }: SectionSlotProps) {
   return (
     <div
       id={sectionDomId(section.type)}
-      className={cn(animate && "animate-section-enter")}
+      className={cn("scroll-mt-24", animate && "animate-section-enter")}
       style={animate ? { animationDelay: `${delayMs}ms` } : undefined}
     >
       <Component content={section.content} assets={section.assets} />

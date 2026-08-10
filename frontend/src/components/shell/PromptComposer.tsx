@@ -1,10 +1,5 @@
-import { useId, useRef, useState } from "react";
-import {
-  ChevronDown,
-  Mic,
-  Plus,
-  SendHorizontal,
-} from "lucide-react";
+import { useId, useState } from "react";
+import { Mic, SendHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type PromptComposerProps = {
@@ -22,7 +17,7 @@ type PromptComposerProps = {
 };
 
 /**
- * Lovable-style pill prompt with attach, Build dropdown, mic, and send.
+ * Lovable-style pill prompt with Build dropdown, mic, and send.
  */
 export function PromptComposer({
   onSubmit,
@@ -36,7 +31,6 @@ export function PromptComposer({
 }: PromptComposerProps) {
   const inputId = useId();
   const [internalValue, setInternalValue] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const isControlled = typeof controlledValue === "string";
   const value = isControlled ? controlledValue : internalValue;
 
@@ -106,66 +100,25 @@ export function PromptComposer({
         )}
       />
 
-      <div className="flex items-center justify-between gap-2 px-0.5">
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => fileInputRef.current?.click()}
-            className="inline-flex size-9 items-center justify-center rounded-full text-[var(--lovable-text-muted)] transition hover:bg-[var(--lovable-hover)] hover:text-[var(--lovable-text)] disabled:opacity-40"
-            aria-label="Attach a file"
-          >
-            <Plus className="size-4" aria-hidden="true" />
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*,.pdf,.txt,.md"
-            className="sr-only"
-            aria-hidden
-            tabIndex={-1}
-            onChange={(event) => {
-              event.target.value = "";
-            }}
-          />
-          {!isHome ? (
-            <button
-              type="button"
-              className="hidden items-center gap-1.5 rounded-full border border-[var(--lovable-border)] px-2.5 py-1 text-[11px] text-[var(--lovable-text-muted)] transition hover:bg-[var(--lovable-hover)] sm:inline-flex"
-              aria-label="Add reference"
-            >
-              Add reference
-            </button>
-          ) : null}
-        </div>
-
+      <div className="flex items-center justify-end gap-2 px-0.5">
         <div className="flex items-center gap-1.5">
-          <div className="flex overflow-hidden rounded-full border border-[var(--lovable-border-strong)] bg-[var(--lovable-bg)]">
-            <button
-              type="submit"
-              disabled={disabled || !value.trim()}
-              aria-busy={disabled}
-              className="inline-flex min-h-9 items-center gap-1.5 px-3.5 text-[13px] font-medium text-[var(--lovable-text)] transition hover:bg-[var(--lovable-hover)] disabled:cursor-not-allowed disabled:opacity-40"
-              aria-label={`${submitLabel} from prompt`}
-            >
-              {submitLabel}
-            </button>
-            <button
-              type="button"
-              disabled={disabled}
-              className="inline-flex size-9 items-center justify-center border-l border-[var(--lovable-border)] text-[var(--lovable-text-muted)] transition hover:bg-[var(--lovable-hover)] disabled:opacity-40"
-              aria-label={`${submitLabel} options`}
-            >
-              <ChevronDown className="size-3.5" aria-hidden="true" />
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={disabled || !value.trim()}
+            aria-busy={disabled}
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-[var(--lovable-border-strong)] bg-[var(--lovable-bg)] px-3.5 text-[13px] font-medium text-[var(--lovable-text)] transition hover:bg-[var(--lovable-hover)] disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label={`${submitLabel} from prompt`}
+          >
+            {submitLabel}
+          </button>
 
           <button
             type="button"
-            disabled={disabled}
-            className="inline-flex size-9 items-center justify-center rounded-full text-[var(--lovable-text-muted)] transition hover:bg-[var(--lovable-hover)] hover:text-[var(--lovable-text)] disabled:opacity-40"
-            aria-label="Voice input (coming soon)"
-            title="Voice input coming soon"
+            disabled
+            aria-disabled="true"
+            className="inline-flex size-9 cursor-not-allowed items-center justify-center rounded-full text-[var(--lovable-text-muted)] opacity-40"
+            aria-label="Voice input unavailable"
+            title="Voice input unavailable"
           >
             <Mic className="size-4" aria-hidden="true" />
           </button>

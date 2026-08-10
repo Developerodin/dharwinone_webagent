@@ -25,6 +25,30 @@ function findScrollParent(element: HTMLElement): HTMLElement | null {
 }
 
 /**
+ * Reads the app shell header height from CSS so full-page preview scroll clears it.
+ */
+function readShellHeaderOffsetPx(): number {
+  const raw = getComputedStyle(document.documentElement)
+    .getPropertyValue("--shell-header-h")
+    .trim();
+  if (!raw) return 0;
+  if (raw.endsWith("rem")) {
+    const rem = Number.parseFloat(raw);
+    const rootFont = Number.parseFloat(
+      getComputedStyle(document.documentElement).fontSize || "16",
+    );
+    return Number.isFinite(rem) ? rem * rootFont : 0;
+  }
+  const px = Number.parseFloat(raw);
+  return Number.isFinite(px) ? px : 0;
+}
+
+/**
+ * Sticky clearance for in-page section headers (~family sticky bar).
+ */
+const FAMILY_STICKY_OFFSET_PX = 88;
+
+/**
  * Smooth-scrolls to a section by type. Uses the preview scroll container when present.
  */
 export function scrollToSection(sectionType: SectionType | string): void {
@@ -35,14 +59,18 @@ export function scrollToSection(sectionType: SectionType | string): void {
 
   const scrollParent = findScrollParent(target);
   if (!scrollParent) {
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Window scroll (PreviewPage): clear shell + sticky family header.
+    const offset = readShellHeaderOffsetPx() + FAMILY_STICKY_OFFSET_PX;
+    const nextTop = target.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top: Math.max(0, nextTop), behavior: "smooth" });
     return;
   }
 
   const parentRect = scrollParent.getBoundingClientRect();
   const targetRect = target.getBoundingClientRect();
+  // Preview canvas scroll: shell sits outside the pane — only clear family sticky.
   const nextTop =
-    targetRect.top - parentRect.top + scrollParent.scrollTop - 12;
+    targetRect.top - parentRect.top + scrollParent.scrollTop - FAMILY_STICKY_OFFSET_PX;
 
   scrollParent.scrollTo({ top: Math.max(0, nextTop), behavior: "smooth" });
 }

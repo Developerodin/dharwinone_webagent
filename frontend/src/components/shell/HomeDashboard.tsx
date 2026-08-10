@@ -73,12 +73,11 @@ export function HomeDashboard({
   const [prompt, setPrompt] = useState("");
 
   /**
-   * Starts a build immediately from a quick-start chip prompt.
+   * Fills the composer with a quick-start template; user still clicks Build.
    */
-  function startFromChip(chip: QuickChip) {
+  function fillFromChip(chip: QuickChip) {
     if (disabled) return;
     setPrompt(chip.prompt);
-    onStartBuild(chip.prompt);
   }
 
   return (
@@ -150,13 +149,13 @@ export function HomeDashboard({
                 <button
                   type="button"
                   disabled={disabled}
-                  onClick={() => startFromChip(chip)}
+                  onClick={() => fillFromChip(chip)}
                   className={cn(
                     "inline-flex min-h-9 items-center gap-2 rounded-full border border-white/12 bg-black/30 px-3.5 py-2 text-[13px] text-white/90 backdrop-blur-md transition",
                     "hover:border-white/25 hover:bg-black/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
                     "disabled:cursor-not-allowed disabled:opacity-40",
                   )}
-                  aria-label={`Use ${chip.label} template`}
+                  aria-label={`Fill prompt with ${chip.label} template`}
                 >
                   <Icon className="size-3.5 opacity-80" aria-hidden="true" />
                   {chip.label}

@@ -36,13 +36,19 @@ export function SectionIntro({
 }: SectionIntroProps) {
   const alignClass = align === "center" ? "text-center" : "text-left";
   const ruleClass = align === "center" ? "mx-auto" : "";
+  const eyebrowClass = onDark ? tokens.eyebrowOnDark : tokens.eyebrow;
+  const ruleTone = onDark ? tokens.ruleOnDark : tokens.rule;
   const bodyClass = onDark ? tokens.mutedOnDark : tokens.body;
+  // Inherit section text color on dark bands; force ink only on light surfaces.
+  const titleClass = onDark
+    ? `${tokens.heading} ${tokens.headingSection}`
+    : `${tokens.heading} ${tokens.headingSection} text-[var(--theme-ink)]`;
 
   return (
     <div className={alignClass}>
-      <p className={tokens.eyebrow}>{eyebrow}</p>
-      <span aria-hidden="true" className={`mt-3 block ${ruleClass} ${tokens.rule}`} />
-      <h2 className={`mt-4 ${tokens.heading} ${tokens.headingSection}`}>{title}</h2>
+      <p className={eyebrowClass}>{eyebrow}</p>
+      <span aria-hidden="true" className={`mt-3 block ${ruleClass} ${ruleTone}`} />
+      <h2 className={`mt-4 ${titleClass}`}>{title}</h2>
       {body ? (
         <p
           className={`mt-4 text-sm @min-[640px]:mt-5 @min-[640px]:text-base @min-[768px]:text-lg ${bodyClass}`}
@@ -67,7 +73,13 @@ export function MediaPanel({
     return <div aria-hidden="true" className={fallbackClassName} />;
   }
 
-  return <SectionMedia src={src} alt={alt} className={className} />;
+  return (
+    <SectionMedia
+      src={src}
+      alt={alt}
+      className={`block max-w-full ${className}`}
+    />
+  );
 }
 
 /**

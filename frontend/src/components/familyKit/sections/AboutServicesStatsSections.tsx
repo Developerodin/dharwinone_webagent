@@ -50,12 +50,12 @@ function createAbout01(tokens: ThemeTokens): SectionComponent {
     return (
       <section aria-label="About" className={`${tokens.sectionPad} ${tokens.section}`}>
         <div className="mx-auto grid max-w-6xl gap-8 @min-[768px]:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] @min-[768px]:items-center @min-[768px]:gap-14">
-          <div className="min-w-0">
+          <div className="min-w-0 overflow-hidden rounded-[2rem]">
             <MediaPanel
               src={imagePath}
               alt={headline}
-              className="aspect-[4/5] w-full rounded-[2rem] object-cover"
-              fallbackClassName="aspect-[4/5] w-full rounded-[2rem] bg-[var(--theme-bg-alt)]"
+              className="aspect-[4/5] h-full w-full object-cover"
+              fallbackClassName="aspect-[4/5] w-full bg-[var(--theme-bg-alt)]"
             />
           </div>
           <div className="min-w-0">
@@ -101,12 +101,12 @@ function createAbout02(tokens: ThemeTokens): SectionComponent {
               align="center"
             />
           </div>
-          <div className="mt-10 @min-[640px]:mt-14">
+          <div className="mt-10 overflow-hidden rounded-[2rem] @min-[640px]:mt-14">
             <MediaPanel
               src={imagePath}
               alt={headline}
-              className="aspect-[16/10] w-full rounded-[2rem] object-cover @min-[768px]:aspect-[21/9]"
-              fallbackClassName="aspect-[16/10] w-full rounded-[2rem] bg-[var(--theme-bg)] @min-[768px]:aspect-[21/9]"
+              className="aspect-[16/10] h-full w-full object-cover @min-[768px]:aspect-[21/9]"
+              fallbackClassName="aspect-[16/10] w-full bg-[var(--theme-bg)] @min-[768px]:aspect-[21/9]"
             />
           </div>
         </div>
@@ -243,7 +243,7 @@ function createStats01(tokens: ThemeTokens): SectionComponent {
                 key={item.label}
                 className="rounded-[1.5rem] border border-[var(--theme-line)] bg-[var(--theme-card)] px-6 py-8 text-center"
               >
-                <p className={`text-3xl @min-[640px]:text-4xl ${tokens.heading} ${tokens.accentText}`}>
+                <p className={`text-3xl @min-[640px]:text-4xl text-[var(--theme-ink)] ${tokens.heading} ${tokens.accentText}`}>
                   {item.value}
                 </p>
                 <p className={`mt-3 text-sm @min-[640px]:text-base ${tokens.body}`}>
@@ -288,7 +288,7 @@ function createStats02(tokens: ThemeTokens): SectionComponent {
           >
             {stats.map((item) => (
               <li key={item.label} className="border-t border-white/10 pt-4 text-center">
-                <p className={`text-3xl ${tokens.heading} ${tokens.accentText}`}>{item.value}</p>
+                <p className={`text-3xl ${tokens.heading} ${tokens.accentTextOnDark}`}>{item.value}</p>
                 <p className={`mt-2 text-sm @min-[640px]:text-base ${tokens.mutedOnDark}`}>
                   {item.label}
                 </p>

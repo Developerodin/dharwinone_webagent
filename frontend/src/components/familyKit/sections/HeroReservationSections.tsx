@@ -55,14 +55,17 @@ function createHero01(tokens: ThemeTokens): SectionComponent {
         <MediaPanel
           src={imagePath}
           alt={headline}
-          className="absolute inset-0 h-full w-full object-cover"
-          fallbackClassName="absolute inset-0 bg-[linear-gradient(135deg,var(--theme-bg-dark),var(--theme-bg-alt))]"
+          className="absolute inset-0 z-0 h-full w-full object-cover"
+          fallbackClassName="absolute inset-0 z-0 bg-[linear-gradient(135deg,var(--theme-bg-dark),var(--theme-bg-alt))]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/72 via-black/42 to-black/18" />
-        <div className="relative mx-auto flex min-h-[68svh] max-w-6xl flex-col justify-center px-4 py-16 @min-[640px]:min-h-[76svh] @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:min-h-[88svh] @min-[768px]:px-10 @min-[768px]:py-24">
-          <p className={tokens.eyebrow}>Restaurant Experience</p>
-          <span aria-hidden="true" className={`mt-4 block ${tokens.rule}`} />
-          <h2 className={`mt-5 max-w-4xl text-white ${tokens.heading} ${tokens.headingHero}`}>
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 z-[1] bg-gradient-to-t from-black/78 via-black/48 to-black/22"
+        />
+        <div className="relative z-[2] mx-auto flex min-h-[68svh] max-w-6xl flex-col justify-center px-4 py-16 @min-[640px]:min-h-[76svh] @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:min-h-[88svh] @min-[768px]:px-10 @min-[768px]:py-24">
+          <p className={tokens.eyebrowOnDark}>Restaurant Experience</p>
+          <span aria-hidden="true" className={`mt-4 block ${tokens.ruleOnDark}`} />
+          <h2 className={`mt-5 max-w-4xl text-[var(--theme-on-dark)] ${tokens.heading} ${tokens.headingHero}`}>
             {headline}
           </h2>
           <p className={`mt-5 max-w-2xl text-base leading-relaxed @min-[640px]:text-lg @min-[768px]:text-xl ${tokens.mutedOnDark}`}>
@@ -71,7 +74,7 @@ function createHero01(tokens: ThemeTokens): SectionComponent {
           <div className="mt-8 flex justify-start">
             <button
               type="button"
-              className={tokens.primaryButton}
+              className={tokens.primaryButtonOnDark}
               onClick={() => scrollToSection("menu")}
             >
               {ctaLabel}
@@ -106,7 +109,7 @@ function createHero02(tokens: ThemeTokens): SectionComponent {
         <div className="mx-auto grid max-w-6xl gap-8 @min-[768px]:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] @min-[768px]:items-center @min-[768px]:gap-14">
           <div className="min-w-0">
             <p className={tokens.eyebrow}>Curated Evenings</p>
-            <h2 className={`mt-4 max-w-3xl ${tokens.heading} ${tokens.headingHero}`}>
+            <h2 className={`mt-4 max-w-3xl text-[var(--theme-ink)] ${tokens.heading} ${tokens.headingHero}`}>
               {headline}
             </h2>
             <p className={`mt-5 max-w-2xl text-base @min-[640px]:text-lg ${tokens.body}`}>
@@ -134,12 +137,14 @@ function createHero02(tokens: ThemeTokens): SectionComponent {
               aria-hidden="true"
               className="absolute inset-0 rounded-[2rem] border border-[var(--theme-line-strong)]"
             />
-            <MediaPanel
-              src={imagePath}
-              alt={headline}
-              className="relative aspect-[4/5] w-full rounded-[2rem] object-cover shadow-[0_30px_60px_rgba(0,0,0,0.12)]"
-              fallbackClassName="relative aspect-[4/5] w-full rounded-[2rem] bg-[var(--theme-bg-alt)]"
-            />
+            <div className="relative min-h-0 overflow-hidden rounded-[2rem]">
+              <MediaPanel
+                src={imagePath}
+                alt={headline}
+                className="relative aspect-[4/5] w-full object-cover shadow-[0_30px_60px_rgba(0,0,0,0.12)]"
+                fallbackClassName="relative aspect-[4/5] w-full bg-[var(--theme-bg-alt)]"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -210,8 +215,8 @@ function createReservation02(tokens: ThemeTokens): SectionComponent {
       <section aria-label="Reservation" className={`${tokens.sectionPad} ${tokens.sectionDark}`}>
         <div className="mx-auto grid max-w-6xl gap-8 rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm @min-[768px]:grid-cols-[minmax(0,1fr)_auto] @min-[768px]:items-center @min-[768px]:gap-10 @min-[768px]:p-8">
           <div className="min-w-0">
-            <p className={tokens.eyebrow}>Table Service</p>
-            <h2 className={`mt-4 ${tokens.heading} ${tokens.headingSection} text-white`}>
+            <p className={tokens.eyebrowOnDark}>Table Service</p>
+            <h2 className={`mt-4 text-[var(--theme-on-dark)] ${tokens.heading} ${tokens.headingSection}`}>
               {headline}
             </h2>
             <p className={`mt-4 max-w-2xl text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>
@@ -221,7 +226,7 @@ function createReservation02(tokens: ThemeTokens): SectionComponent {
           <div className="flex justify-start @min-[768px]:justify-end">
             <button
               type="button"
-              className={tokens.primaryButton}
+              className={tokens.primaryButtonOnDark}
               onClick={() => scrollToSection("contact")}
             >
               {ctaLabel}

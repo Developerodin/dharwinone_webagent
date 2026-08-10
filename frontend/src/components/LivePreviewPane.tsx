@@ -13,8 +13,11 @@ import type { PageFamily } from "@/lib/pageFamily";
 import type { ChatPhase } from "@/types/chat";
 import type { Page } from "@/types/page";
 
-/** Desktop artboard width used for scaled live preview. */
-const PREVIEW_WIDTH = 1200;
+/** Fixed artboard widths for framed tablet/mobile device chrome. */
+const DEVICE_FRAME_WIDTH = {
+  mobile: 375,
+  tablet: 768,
+} as const;
 
 type DeviceMode = "desktop" | "tablet" | "mobile";
 
@@ -30,12 +33,10 @@ type LivePreviewPaneProps = {
 };
 
 /**
- * Returns artboard width for the selected device preview mode.
+ * Returns fixed artboard width for framed device modes (tablet/mobile).
  */
-function widthForDevice(mode: DeviceMode): number {
-  if (mode === "mobile") return 375;
-  if (mode === "tablet") return 768;
-  return PREVIEW_WIDTH;
+function framedWidthForDevice(mode: Exclude<DeviceMode, "desktop">): number {
+  return DEVICE_FRAME_WIDTH[mode];
 }
 
 /**
@@ -73,8 +74,12 @@ export function LivePreviewPane({
   const artboardRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [artboardHeight, setArtboardHeight] = useState(0);
-  const artboardWidth = widthForDevice(deviceMode);
   const framed = isDeviceFrameMode(deviceMode);
+  /** Fixed device CSS width — tablet/mobile frames only; desktop uses 100% flow. */
+  const artboardWidth =
+    deviceMode === "mobile" || deviceMode === "tablet"
+      ? framedWidthForDevice(deviceMode)
+      : 0;
   /** Centered device chrome only when a live page artboard is visible. */
   const showDeviceFrame = framed && Boolean(page) && !showCodePlaceholder;
   const frameWidth = Math.max(1, Math.round(artboardWidth * scale));
@@ -89,11 +94,17 @@ export function LivePreviewPane({
     if (!canvas) return;
 
     /**
-     * Recalculates scale from canvas width and artboard content height.
+     * Desktop: natural full-bleed (no scale) — canvas scrolls the page.
+     * Framed: fixed device width, scale down to fit canvas.
      */
     const measure = () => {
+      if (!framed) {
+        setScale(1);
+        setArtboardHeight(0);
+        return;
+      }
       const available = contentWidthOf(canvas);
-      if (available > 0) {
+      if (available > 0 && artboardWidth > 0) {
         setScale(Math.min(1, available / artboardWidth));
       }
       if (artboard) {
@@ -105,10 +116,10 @@ export function LivePreviewPane({
 
     const resizeObserver = new ResizeObserver(measure);
     resizeObserver.observe(canvas);
-    if (artboard) resizeObserver.observe(artboard);
+    if (framed && artboard) resizeObserver.observe(artboard);
 
     return () => resizeObserver.disconnect();
-  }, [page, artboardWidth, deviceMode]);
+  }, [page, deviceMode, framed, artboardWidth]);
 
   const hostLabel = businessName
     ? `${slugifyHost(businessName)}.prowplus.preview`
@@ -153,7 +164,7 @@ export function LivePreviewPane({
         className={
           showDeviceFrame
             ? "relative flex min-h-0 min-w-0 flex-1 justify-center overflow-hidden p-3 sm:p-4 md:p-5"
-            : "relative min-h-0 min-w-0 flex-1 overflow-auto p-3 sm:p-4 md:p-5"
+            : "relative min-h-0 min-w-0 flex-1 overflow-auto p-3 sm:p-4 md:p-5 [scrollbar-gutter:stable]"
         }
       >
         {showCodePlaceholder ? (
@@ -163,7 +174,7 @@ export function LivePreviewPane({
             className={
               framed
                 ? "preview-browser flex h-full max-h-full shrink-0 flex-col overflow-hidden rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.45)] animate-shell-in"
-                : "preview-browser mx-auto w-full max-w-full overflow-hidden rounded-xl shadow-[0_16px_48px_rgba(0,0,0,0.45)] animate-shell-in"
+                : "preview-browser w-full max-w-full overflow-hidden rounded-xl shadow-[0_16px_48px_rgba(0,0,0,0.45)] animate-shell-in"
             }
             style={framed ? { width: frameWidth } : undefined}
             data-device-frame={framed ? deviceMode : "desktop"}
@@ -173,32 +184,35 @@ export function LivePreviewPane({
                 : "Desktop preview"
             }
           >
-            <div
-              className={
-                framed
-                  ? // overflow-x-hidden: vertical scrollbar must not create a bottom bar
-                    // (content is exactly frameWidth; classic gutter overflow).
-                    "chat-scrollbar relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain bg-white"
-                  : "relative w-full overflow-hidden bg-white"
-              }
-              style={framed ? undefined : { height: scaledHeight }}
-            >
-              <div
-                className="relative w-full overflow-hidden"
-                style={{ height: scaledHeight }}
-              >
+            {framed ? (
+              <div className="chat-scrollbar relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain bg-white">
+                {/*
+                  overflow-x-hidden: vertical scrollbar must not create a bottom bar
+                  (content is exactly frameWidth; classic gutter overflow).
+                */}
                 <div
-                  ref={artboardRef}
-                  className="@container/preview origin-top-left"
-                  style={{
-                    width: artboardWidth,
-                    transform: `scale(${scale})`,
-                  }}
+                  className="relative w-full overflow-hidden"
+                  style={{ height: scaledHeight }}
                 >
+                  <div
+                    ref={artboardRef}
+                    className="@container/preview origin-top-left"
+                    style={{
+                      width: artboardWidth,
+                      transform: `scale(${scale})`,
+                    }}
+                  >
+                    <PageRenderer page={page} />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="relative w-full bg-white">
+                <div ref={artboardRef} className="@container/preview w-full">
                   <PageRenderer page={page} />
                 </div>
               </div>
-            </div>
+            )}
           </div>
         ) : isBuilding ? (
           <BuildingPreview

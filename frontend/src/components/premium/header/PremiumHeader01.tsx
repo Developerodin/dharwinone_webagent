@@ -10,11 +10,11 @@ import { useMobileNav } from "@/components/shared/useMobileNav";
 import { scrollToSection } from "@/lib/scrollToSection";
 
 /** Compact CTA sizing for the sticky header action row. */
-const headerCtaClass = `${pm.primaryButton} w-auto max-w-[10.5rem] shrink-0 truncate px-4 py-2 text-xs @min-[640px]:max-w-none @min-[640px]:px-6 @min-[640px]:text-sm`;
+const headerCtaClass = `${pm.primaryButton} w-auto max-w-[10.5rem] shrink-0 truncate px-4 py-2 text-xs @min-[640px]/page:max-w-none @min-[640px]/page:px-6 @min-[640px]/page:text-sm`;
 
 /**
  * Premium sticky header with brand lockup, section nav, and reservation CTA.
- * Mobile: single-row brand + CTA + hamburger; desktop: full brand/CTA/nav.
+ * Mobile: single-row brand + hamburger; desktop: full brand/CTA/nav.
  */
 export function PremiumHeader01({ content }: SectionComponentProps) {
   const brandName = getString(content, "brandName", "Maison Copper");
@@ -49,7 +49,7 @@ export function PremiumHeader01({ content }: SectionComponentProps) {
       className="sticky top-[var(--shell-header-h)] z-30 border-b border-white/10 bg-[#120f0d]/85 backdrop-blur-xl"
       role="banner"
     >
-      <div className="mx-auto max-w-7xl px-4 py-3 @min-[640px]:px-6 @min-[768px]:px-10">
+      <div className="mx-auto max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10">
         <div className="flex items-center justify-between gap-3">
           <button
             type="button"
@@ -58,22 +58,22 @@ export function PremiumHeader01({ content }: SectionComponentProps) {
             aria-label="Scroll to hero section"
           >
             {eyebrow ? (
-              <span className={`hidden @min-[768px]:inline ${pm.eyebrow}`}>
+              <span className={`hidden @min-[768px]/page:inline ${pm.eyebrow}`}>
                 {eyebrow}
               </span>
             ) : null}
             <div
-              className={`${eyebrow ? "@min-[768px]:mt-2" : ""} flex items-center gap-2 @min-[640px]:gap-3`}
+              className={`${eyebrow ? "@min-[768px]/page:mt-2" : ""} flex items-center gap-2 @min-[640px]/page:gap-3`}
             >
               <span
-                className="hidden h-px w-8 shrink-0 bg-[#c68e6b]/55 @min-[480px]:block @min-[640px]:w-10"
+                className="hidden h-px w-8 shrink-0 bg-[#c68e6b]/55 @min-[480px]/page:block @min-[640px]/page:w-10"
                 aria-hidden="true"
               />
-              <span className="truncate font-[family-name:var(--font-display)] text-xl tracking-[0.06em] text-[#f6efe8] @min-[640px]:text-2xl @min-[768px]:text-[2rem]">
+              <span className="truncate font-[family-name:var(--font-display)] text-xl tracking-[0.06em] text-[#f6efe8] @min-[640px]/page:text-2xl @min-[768px]/page:text-[2rem]">
                 {brandName}
               </span>
             </div>
-            <p className="mt-1.5 hidden max-w-xl text-sm text-[#bfae9f] @min-[768px]:block">
+            <p className="mt-1.5 hidden max-w-xl text-sm text-[#bfae9f] @min-[768px]/page:block">
               {tagline}
             </p>
           </button>
@@ -82,7 +82,7 @@ export function PremiumHeader01({ content }: SectionComponentProps) {
             <button
               type="button"
               onClick={handleCta}
-              className={`hidden @min-[480px]:inline-flex ${headerCtaClass}`}
+              className={`hidden @min-[768px]/page:inline-flex ${headerCtaClass}`}
             >
               {ctaLabel}
             </button>
@@ -97,7 +97,7 @@ export function PremiumHeader01({ content }: SectionComponentProps) {
 
         <nav
           aria-label="Primary"
-          className="mt-4 hidden flex-wrap items-center gap-2 @min-[768px]:flex"
+          className="mt-4 hidden flex-wrap items-center gap-2 @min-[768px]/page:flex"
         >
           {navItems.map((item) => (
             <button

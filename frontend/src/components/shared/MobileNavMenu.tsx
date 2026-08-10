@@ -11,7 +11,8 @@ export type MobileNavToggleProps = {
 };
 
 /**
- * Hamburger / close button for mobile navigation (hidden at `@min-[768px]`).
+ * Hamburger / close button for mobile navigation.
+ * Hidden by default; shown only below the `/page` desktop breakpoint.
  */
 export function MobileNavToggle({
   open,
@@ -22,7 +23,7 @@ export function MobileNavToggle({
   return (
     <button
       type="button"
-      className={`inline-flex size-11 shrink-0 items-center justify-center rounded-full transition duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${className} @min-[768px]:hidden`}
+      className={`hidden size-11 shrink-0 items-center justify-center rounded-full transition duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 @max-[767px]/page:inline-flex ${className}`}
       aria-label={open ? "Close navigation menu" : "Open navigation menu"}
       aria-expanded={open}
       aria-controls={menuId}
@@ -51,7 +52,8 @@ export type MobileNavPanelProps = {
 };
 
 /**
- * Expandable mobile nav panel with section links (hidden at `@min-[768px]`).
+ * Expandable mobile nav panel with section links.
+ * Only participates in layout below the `/page` desktop breakpoint.
  */
 export function MobileNavPanel({
   open,
@@ -67,11 +69,11 @@ export function MobileNavPanel({
   return (
     <div
       id={menuId}
-      className={`grid overflow-hidden transition-[grid-template-rows] duration-200 ease-out @min-[768px]:hidden ${
-        open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+      className={`hidden overflow-hidden transition-[grid-template-rows] duration-200 ease-out @max-[767px]/page:grid ${
+        open ? "grid-rows-[1fr]" : "pointer-events-none grid-rows-[0fr]"
       }`}
-      hidden={!open}
       aria-hidden={!open}
+      inert={!open}
     >
       <div className="min-h-0">
         <nav
@@ -83,6 +85,7 @@ export function MobileNavPanel({
               <li key={`${item.target}-${item.label}`}>
                 <button
                   type="button"
+                  tabIndex={open ? 0 : -1}
                   className={`${linkClassName} w-full justify-start rounded-xl px-3 py-3`}
                   onClick={() => onNavigate(item.target)}
                   aria-label={`Scroll to ${item.label}`}
@@ -96,6 +99,7 @@ export function MobileNavPanel({
             <div className="mt-3 pb-1">
               <button
                 type="button"
+                tabIndex={open ? 0 : -1}
                 className={`${ctaClassName} w-full max-w-none`}
                 onClick={onCta}
                 aria-label={ctaLabel}

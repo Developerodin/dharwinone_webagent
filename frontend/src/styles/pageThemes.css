@@ -19,6 +19,7 @@
   --theme-line: rgba(201, 169, 98, 0.22);
   --theme-line-strong: #c9a962;
   --theme-accent: #c9a962;
+  --theme-accent-on-dark: #e8d5a3;
   --theme-accent-contrast: #11100f;
   --theme-font-display: var(--eg-font-display);
   --theme-font-body: var(--eg-font-body);
@@ -38,6 +39,7 @@
   --theme-line: rgba(255, 255, 255, 0.12);
   --theme-line-strong: #c68e6b;
   --theme-accent: #c68e6b;
+  --theme-accent-on-dark: #e0b08f;
   --theme-accent-contrast: #140f0d;
   --theme-font-display: "Playfair Display", "Instrument Serif", Georgia, serif;
   --theme-font-body: "DM Sans", system-ui, sans-serif;
@@ -53,10 +55,12 @@
   --theme-ink: #111111;
   --theme-on-dark: #f7f7f3;
   --theme-muted: #5e5e57;
-  --theme-muted-on-dark: rgba(247, 247, 243, 0.78);
+  --theme-muted-on-dark: rgba(247, 247, 243, 0.82);
   --theme-line: #d8d8d2;
   --theme-line-strong: #111111;
+  /* Near-black accent on light surfaces; light accent on dark bands/overlays. */
   --theme-accent: #111111;
+  --theme-accent-on-dark: #e4e4de;
   --theme-accent-contrast: #fdfdf9;
   --theme-font-display: "Geist Variable", "DM Sans", system-ui, sans-serif;
   --theme-font-body: "Geist Variable", "DM Sans", system-ui, sans-serif;
@@ -76,6 +80,7 @@
   --theme-line: #ddc8b1;
   --theme-line-strong: #9f6840;
   --theme-accent: #9f6840;
+  --theme-accent-on-dark: #e8c4a0;
   --theme-accent-contrast: #fff7ef;
   --theme-font-display: "Instrument Serif", Georgia, serif;
   --theme-font-body: "DM Sans", system-ui, sans-serif;
@@ -95,6 +100,7 @@
   --theme-line: #ffd1c3;
   --theme-line-strong: #18a7a5;
   --theme-accent: #ff684c;
+  --theme-accent-on-dark: #ff9b86;
   --theme-accent-contrast: #fff7f1;
   --theme-font-display: "Geist Variable", "DM Sans", system-ui, sans-serif;
   --theme-font-body: "Geist Variable", "DM Sans", system-ui, sans-serif;

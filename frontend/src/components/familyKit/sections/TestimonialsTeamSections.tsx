@@ -57,7 +57,7 @@ function createTestimonials01(tokens: ThemeTokens): SectionComponent {
           />
           {featured ? (
             <figure className={`${tokens.formCard} mx-auto mt-10 max-w-4xl p-6 text-center @min-[640px]:mt-14 @min-[640px]:p-8`}>
-              <blockquote className={`text-xl leading-relaxed @min-[640px]:text-2xl @min-[768px]:text-3xl ${tokens.heading}`}>
+              <blockquote className={`text-xl leading-relaxed text-[var(--theme-ink)] @min-[640px]:text-2xl @min-[768px]:text-3xl ${tokens.heading}`}>
                 “{featured.quote}”
               </blockquote>
               <figcaption className="mt-6">
@@ -119,8 +119,8 @@ function createTestimonials02(tokens: ThemeTokens): SectionComponent {
                 <p className={`text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>
                   “{item.quote}”
                 </p>
-                <p className="mt-5 text-base font-medium text-white">{item.name}</p>
-                <p className={`mt-1 text-xs uppercase tracking-[0.18em] ${tokens.accentText}`}>
+                <p className="mt-5 text-base font-medium text-[var(--theme-on-dark)]">{item.name}</p>
+                <p className={`mt-1 text-xs uppercase tracking-[0.18em] ${tokens.accentTextOnDark}`}>
                   {item.role}
                 </p>
               </li>
@@ -162,12 +162,14 @@ function createTeam01(tokens: ThemeTokens): SectionComponent {
           <ul className="mt-10 grid gap-6 @min-[640px]:mt-14 @min-[640px]:grid-cols-2 @min-[1024px]:grid-cols-3" role="list">
             {members.map((member, index) => (
               <li key={member.name} className="min-w-0">
-                <MediaPanel
-                  src={getIndexedAsset(assets, `team-${index}`, index)}
-                  alt={member.name}
-                  className="aspect-[3/4] w-full rounded-[1.75rem] object-cover"
-                  fallbackClassName="aspect-[3/4] w-full rounded-[1.75rem] bg-[var(--theme-bg)]"
-                />
+                <div className="overflow-hidden rounded-[1.75rem]">
+                  <MediaPanel
+                    src={getIndexedAsset(assets, `team-${index}`, index)}
+                    alt={member.name}
+                    className="aspect-[3/4] h-full w-full object-cover"
+                    fallbackClassName="aspect-[3/4] w-full bg-[var(--theme-bg)]"
+                  />
+                </div>
                 <h3 className="mt-5 text-lg font-medium text-[var(--theme-ink)] @min-[640px]:text-xl">
                   {member.name}
                 </h3>
@@ -206,15 +208,17 @@ function createTeam02(tokens: ThemeTokens): SectionComponent {
           <SectionIntro eyebrow="Meet the Team" title={headline} tokens={tokens} />
           {leadMember ? (
             <div className="mt-10 grid gap-8 @min-[768px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] @min-[768px]:items-center">
-              <MediaPanel
-                src={getIndexedAsset(assets, "team-0", 0)}
-                alt={leadMember.name}
-                className="aspect-[4/5] w-full rounded-[2rem] object-cover"
-                fallbackClassName="aspect-[4/5] w-full rounded-[2rem] bg-[var(--theme-bg-alt)]"
-              />
+              <div className="overflow-hidden rounded-[2rem]">
+                <MediaPanel
+                  src={getIndexedAsset(assets, "team-0", 0)}
+                  alt={leadMember.name}
+                  className="aspect-[4/5] h-full w-full object-cover"
+                  fallbackClassName="aspect-[4/5] w-full bg-[var(--theme-bg-alt)]"
+                />
+              </div>
               <div className={`${tokens.formCard} p-6 @min-[640px]:p-8`}>
                 <p className={tokens.eyebrow}>Featured</p>
-                <h3 className={`mt-4 text-2xl @min-[640px]:text-3xl ${tokens.heading}`}>
+                <h3 className={`mt-4 text-2xl text-[var(--theme-ink)] @min-[640px]:text-3xl ${tokens.heading}`}>
                   {leadMember.name}
                 </h3>
                 <p className={`mt-2 text-sm uppercase tracking-[0.18em] ${tokens.accentText}`}>
@@ -245,7 +249,7 @@ function createTeam02(tokens: ThemeTokens): SectionComponent {
                   <MediaPanel
                     src={getIndexedAsset(assets, `team-${index + 1}`, index + 1)}
                     alt={member.name}
-                    className="mt-4 aspect-[4/3] w-full rounded-[1.25rem] object-cover"
+                    className="mt-4 aspect-[4/3] h-auto w-full rounded-[1.25rem] object-cover"
                     fallbackClassName="mt-4 aspect-[4/3] w-full rounded-[1.25rem] bg-[var(--theme-bg)]"
                   />
                 </li>

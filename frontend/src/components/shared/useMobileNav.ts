@@ -9,6 +9,9 @@ import {
   type RefObject,
 } from "react";
 
+/** Desktop breakpoint matching `@min-[768px]/page` header layouts. */
+const DESKTOP_MIN_WIDTH = 768;
+
 export type UseMobileNavResult = {
   open: boolean;
   menuId: string;
@@ -20,7 +23,16 @@ export type UseMobileNavResult = {
 };
 
 /**
- * Manages mobile nav open state with Escape and outside-click dismissal.
+ * Finds the nearest named `/page` container element for width observation.
+ */
+function findPageContainer(from: HTMLElement | null): Element | null {
+  if (!from) return null;
+  return from.closest('[class*="@container/page"]') ?? from.parentElement;
+}
+
+/**
+ * Manages mobile nav open state with Escape, outside-click, scroll, and
+ * desktop-breakpoint dismissal.
  */
 export function useMobileNav(): UseMobileNavResult {
   const [open, setOpen] = useState(false);
@@ -81,6 +93,29 @@ export function useMobileNav(): UseMobileNavResult {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [open]);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    const container = findPageContainer(root);
+    if (!container || typeof ResizeObserver === "undefined") return;
+
+    /**
+     * Closes the mobile menu once the page container reaches desktop width.
+     */
+    function handleResize(entries: ResizeObserverEntry[]) {
+      const entry = entries[0];
+      if (!entry) return;
+      const width =
+        entry.contentBoxSize?.[0]?.inlineSize ?? entry.contentRect.width;
+      if (width >= DESKTOP_MIN_WIDTH) {
+        setOpen(false);
+      }
+    }
+
+    const observer = new ResizeObserver(handleResize);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
 
   return { open, menuId, rootRef, toggle, close };
 }
