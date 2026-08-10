@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+.vite/
+*.tsbuildinfo
+
+# Environment / secrets — never commit
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Logs & OS junk
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.cursor/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test / coverage
+coverage/
+.nyc_output/
+
+# Runtime uploads (user-generated)
+backend/data/images/uploads/
+
+# Local source image dumps (not needed to run the app)
+/Restaurant/
+/backend/data/dumpiamgedata/
+
+# Misc
+*.local
+.cache/
+tmp/
+temp/

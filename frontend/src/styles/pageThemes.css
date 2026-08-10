@@ -1,0 +1,103 @@
+/** Shared page family theme scopes for rendered restaurant pages. */
+.elegant-theme {
+  --eg-bg: #1a1a1a;
+  --eg-bg-alt: #0f0f0f;
+  --eg-gold: #c9a962;
+  --eg-gold-light: #e8d5a3;
+  --eg-cream: #f5f0e8;
+  --eg-muted: #a89f8f;
+  --eg-font-display: "Playfair Display", "Instrument Serif", Georgia, serif;
+  --eg-font-body: "DM Sans", system-ui, sans-serif;
+  --theme-bg: #181513;
+  --theme-bg-alt: #11100f;
+  --theme-bg-dark: #090908;
+  --theme-card: rgba(255, 255, 255, 0.03);
+  --theme-ink: #f5f0e8;
+  --theme-on-dark: #f5f0e8;
+  --theme-muted: #a89f8f;
+  --theme-muted-on-dark: rgba(245, 240, 232, 0.76);
+  --theme-line: rgba(201, 169, 98, 0.22);
+  --theme-line-strong: #c9a962;
+  --theme-accent: #c9a962;
+  --theme-accent-contrast: #11100f;
+  --theme-font-display: var(--eg-font-display);
+  --theme-font-body: var(--eg-font-body);
+  background-color: var(--eg-bg);
+  color: var(--eg-cream);
+}
+
+.premium-theme {
+  --theme-bg: #110d0b;
+  --theme-bg-alt: #17120f;
+  --theme-bg-dark: #0a0807;
+  --theme-card: #1c1613;
+  --theme-ink: #f6efe8;
+  --theme-on-dark: #f6efe8;
+  --theme-muted: #cbb8a9;
+  --theme-muted-on-dark: rgba(246, 239, 232, 0.78);
+  --theme-line: rgba(255, 255, 255, 0.12);
+  --theme-line-strong: #c68e6b;
+  --theme-accent: #c68e6b;
+  --theme-accent-contrast: #140f0d;
+  --theme-font-display: "Playfair Display", "Instrument Serif", Georgia, serif;
+  --theme-font-body: "DM Sans", system-ui, sans-serif;
+  background-color: var(--theme-bg);
+  color: var(--theme-ink);
+}
+
+.minimal-theme {
+  --theme-bg: #f8f8f5;
+  --theme-bg-alt: #ffffff;
+  --theme-bg-dark: #101010;
+  --theme-card: #ffffff;
+  --theme-ink: #111111;
+  --theme-on-dark: #f7f7f3;
+  --theme-muted: #5e5e57;
+  --theme-muted-on-dark: rgba(247, 247, 243, 0.78);
+  --theme-line: #d8d8d2;
+  --theme-line-strong: #111111;
+  --theme-accent: #111111;
+  --theme-accent-contrast: #fdfdf9;
+  --theme-font-display: "Geist Variable", "DM Sans", system-ui, sans-serif;
+  --theme-font-body: "Geist Variable", "DM Sans", system-ui, sans-serif;
+  background-color: var(--theme-bg);
+  color: var(--theme-ink);
+}
+
+.rustic-theme {
+  --theme-bg: #f6efe3;
+  --theme-bg-alt: #fbf6ee;
+  --theme-bg-dark: #2d2119;
+  --theme-card: #fff8ef;
+  --theme-ink: #3a2a21;
+  --theme-on-dark: #f8efe1;
+  --theme-muted: #745b47;
+  --theme-muted-on-dark: rgba(248, 239, 225, 0.76);
+  --theme-line: #ddc8b1;
+  --theme-line-strong: #9f6840;
+  --theme-accent: #9f6840;
+  --theme-accent-contrast: #fff7ef;
+  --theme-font-display: "Instrument Serif", Georgia, serif;
+  --theme-font-body: "DM Sans", system-ui, sans-serif;
+  background-color: var(--theme-bg);
+  color: var(--theme-ink);
+}
+
+.vibrant-theme {
+  --theme-bg: #fff3eb;
+  --theme-bg-alt: #fffaf6;
+  --theme-bg-dark: #0c2330;
+  --theme-card: #ffffff;
+  --theme-ink: #102330;
+  --theme-on-dark: #f7fbff;
+  --theme-muted: #466170;
+  --theme-muted-on-dark: rgba(247, 251, 255, 0.8);
+  --theme-line: #ffd1c3;
+  --theme-line-strong: #18a7a5;
+  --theme-accent: #ff684c;
+  --theme-accent-contrast: #fff7f1;
+  --theme-font-display: "Geist Variable", "DM Sans", system-ui, sans-serif;
+  --theme-font-body: "Geist Variable", "DM Sans", system-ui, sans-serif;
+  background-color: var(--theme-bg);
+  color: var(--theme-ink);
+}

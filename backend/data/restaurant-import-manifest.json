@@ -1,0 +1,996 @@
+{
+  "imported": [
+    {
+      "source": "American/American Casual 1.jpg",
+      "path": "/images/restaurant/about/about-09.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "about"
+      ]
+    },
+    {
+      "source": "American/American Casual 2.jpg",
+      "path": "/images/restaurant/about/about-10.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "about"
+      ]
+    },
+    {
+      "source": "American/Barbecue 1.jpg",
+      "path": "/images/restaurant/hero/hero-09.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "barbecue",
+        "hero"
+      ]
+    },
+    {
+      "source": "American/Barbecue 2.jpg",
+      "path": "/images/restaurant/gallery/gallery-09.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "barbecue",
+        "gallery"
+      ]
+    },
+    {
+      "source": "American/Diner 1.jpg",
+      "path": "/images/restaurant/about/about-11.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "diner",
+        "about"
+      ]
+    },
+    {
+      "source": "American/Diner 2.jpg",
+      "path": "/images/restaurant/about/about-12.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "diner",
+        "about"
+      ]
+    },
+    {
+      "source": "American/Steakhouse 1.jpg",
+      "path": "/images/restaurant/about/about-13.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "steakhouse",
+        "about"
+      ]
+    },
+    {
+      "source": "American/Steakhouse 2.jpg",
+      "path": "/images/restaurant/hero/hero-10.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "steakhouse",
+        "hero"
+      ]
+    },
+    {
+      "source": "American/Tex Mex 1.jpg",
+      "path": "/images/restaurant/gallery/gallery-10.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "tex-mex",
+        "gallery"
+      ]
+    },
+    {
+      "source": "American/Tex mex 2.jpg",
+      "path": "/images/restaurant/about/about-14.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "tex-mex",
+        "about"
+      ]
+    },
+    {
+      "source": "Asian/Asian Fusion 2.jpg",
+      "path": "/images/restaurant/hero/hero-11.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "asian-fusion",
+        "hero"
+      ]
+    },
+    {
+      "source": "Asian/Asian Fusion.jpg",
+      "path": "/images/restaurant/gallery/gallery-11.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "asian-fusion",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Asian/Chinese 2.jpg",
+      "path": "/images/restaurant/hero/hero-12.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "chinese",
+        "hero"
+      ]
+    },
+    {
+      "source": "Asian/chinese.jpg",
+      "path": "/images/restaurant/about/about-15.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "chinese",
+        "about"
+      ]
+    },
+    {
+      "source": "Asian/Japanese 1.jpg",
+      "path": "/images/restaurant/gallery/gallery-12.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "japanese",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Asian/japanese 2.jpeg",
+      "path": "/images/restaurant/about/about-16.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "japanese",
+        "about"
+      ]
+    },
+    {
+      "source": "Asian/korean 2.jpg",
+      "path": "/images/restaurant/hero/hero-13.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "korean",
+        "hero"
+      ]
+    },
+    {
+      "source": "Asian/korean.jpg",
+      "path": "/images/restaurant/gallery/gallery-13.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "korean",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Asian/Pan Asian 2.jpg",
+      "path": "/images/restaurant/menu/menu-12.webp",
+      "section": "menu",
+      "orientation": "square",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "pan-asian",
+        "menu"
+      ]
+    },
+    {
+      "source": "Asian/Pan Asian.jpg",
+      "path": "/images/restaurant/about/about-17.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "pan-asian",
+        "about"
+      ]
+    },
+    {
+      "source": "Asian/South Asian 2.jpg",
+      "path": "/images/restaurant/hero/hero-14.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "south-asian",
+        "hero"
+      ]
+    },
+    {
+      "source": "Asian/South Asian.jpg",
+      "path": "/images/restaurant/gallery/gallery-14.webp",
+      "section": "gallery",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "south-asian",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Asian/thai 2.jpg",
+      "path": "/images/restaurant/about/about-18.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "thai",
+        "about"
+      ]
+    },
+    {
+      "source": "Asian/thai.jpg",
+      "path": "/images/restaurant/hero/hero-15.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "thai",
+        "hero"
+      ]
+    },
+    {
+      "source": "Asian/vietnamese 2.jpg",
+      "path": "/images/restaurant/gallery/gallery-15.webp",
+      "section": "gallery",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "vietnamese",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Asian/vietnamese.jpg",
+      "path": "/images/restaurant/hero/hero-16.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "vietnamese",
+        "hero"
+      ]
+    },
+    {
+      "source": "Continental/Continental 1.jpg",
+      "path": "/images/restaurant/gallery/gallery-16.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "continental",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Continental/Continental 2.jpeg",
+      "path": "/images/restaurant/hero/hero-17.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "continental",
+        "hero"
+      ]
+    },
+    {
+      "source": "European/French 1.jpg",
+      "path": "/images/restaurant/gallery/gallery-17.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "french",
+        "gallery"
+      ]
+    },
+    {
+      "source": "European/French 2.jpg",
+      "path": "/images/restaurant/about/about-19.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "french",
+        "about"
+      ]
+    },
+    {
+      "source": "European/Greece 2.jpeg",
+      "path": "/images/restaurant/hero/hero-18.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "greek",
+        "hero"
+      ]
+    },
+    {
+      "source": "European/Greek 1.jpeg",
+      "path": "/images/restaurant/menu/menu-13.webp",
+      "section": "menu",
+      "orientation": "square",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "greek",
+        "menu"
+      ]
+    },
+    {
+      "source": "European/Italian 1.jpg",
+      "path": "/images/restaurant/about/about-20.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "italian",
+        "about"
+      ]
+    },
+    {
+      "source": "European/Italian.jpg",
+      "path": "/images/restaurant/gallery/gallery-18.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "italian",
+        "gallery"
+      ]
+    },
+    {
+      "source": "European/Mediterranean 1.jpeg",
+      "path": "/images/restaurant/hero/hero-19.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "mediterranean",
+        "hero"
+      ]
+    },
+    {
+      "source": "European/Mediterranean 2.jpeg",
+      "path": "/images/restaurant/gallery/gallery-19.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "mediterranean",
+        "gallery"
+      ]
+    },
+    {
+      "source": "European/Modern European 1.jpeg",
+      "path": "/images/restaurant/menu/menu-14.webp",
+      "section": "menu",
+      "orientation": "square",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "menu"
+      ]
+    },
+    {
+      "source": "European/Modern European 2.jpeg",
+      "path": "/images/restaurant/hero/hero-20.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "hero"
+      ]
+    },
+    {
+      "source": "European/Spanish 1.jpeg",
+      "path": "/images/restaurant/menu/menu-15.webp",
+      "section": "menu",
+      "orientation": "square",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "spanish",
+        "menu"
+      ]
+    },
+    {
+      "source": "European/Spanish 2.jpeg",
+      "path": "/images/restaurant/gallery/gallery-20.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "spanish",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Fusion/Fusion 1.jpeg",
+      "path": "/images/restaurant/hero/hero-21.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "fusion",
+        "hero"
+      ]
+    },
+    {
+      "source": "Fusion/Fusion 2.jpeg",
+      "path": "/images/restaurant/gallery/gallery-21.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "fusion",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Health-focused /Health-Focused 1.jpg",
+      "path": "/images/restaurant/about/about-21.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "health-focused",
+        "healthy",
+        "about"
+      ]
+    },
+    {
+      "source": "Health-focused /Health-Focused 2.jpg",
+      "path": "/images/restaurant/about/about-22.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "health-focused",
+        "healthy",
+        "about"
+      ]
+    },
+    {
+      "source": "Indian/Indian Fusion/Indian Fusion 1.jpg",
+      "path": "/images/restaurant/menu/menu-16.webp",
+      "section": "menu",
+      "orientation": "square",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "menu"
+      ]
+    },
+    {
+      "source": "Indian/Indian Fusion/Indian Fusion 2.jpg",
+      "path": "/images/restaurant/hero/hero-22.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "hero"
+      ]
+    },
+    {
+      "source": "Indian/Modern Indian/Modern Indian 1.jpg",
+      "path": "/images/restaurant/gallery/gallery-22.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Indian/Modern Indian/Modern Indian 2.jpg",
+      "path": "/images/restaurant/hero/hero-23.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "hero"
+      ]
+    },
+    {
+      "source": "Indian/Mughalai/Mughlai 1.jpg",
+      "path": "/images/restaurant/about/about-23.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "mughlai",
+        "about"
+      ]
+    },
+    {
+      "source": "Indian/Mughalai/Mughlai 2.jpg",
+      "path": "/images/restaurant/menu/menu-17.webp",
+      "section": "menu",
+      "orientation": "square",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "mughlai",
+        "menu"
+      ]
+    },
+    {
+      "source": "Indian/North Indian/North Indian 2.jpg",
+      "path": "/images/restaurant/about/about-24.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "about"
+      ]
+    },
+    {
+      "source": "Indian/North Indian/North Indian.jpeg",
+      "path": "/images/restaurant/menu/menu-18.webp",
+      "section": "menu",
+      "orientation": "square",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "menu"
+      ]
+    },
+    {
+      "source": "Indian/Regional/Regional 1.jpg",
+      "path": "/images/restaurant/about/about-25.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "about"
+      ]
+    },
+    {
+      "source": "Indian/Regional/Regional 2.jpg",
+      "path": "/images/restaurant/about/about-26.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "about"
+      ]
+    },
+    {
+      "source": "Indian/South Indian/South Indian 1.jpg",
+      "path": "/images/restaurant/gallery/gallery-23.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Indian/South Indian/South Indian 2.jpg",
+      "path": "/images/restaurant/hero/hero-24.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "hero"
+      ]
+    },
+    {
+      "source": "Indian/untitled folder/Coastal Indian 1.jpeg",
+      "path": "/images/restaurant/gallery/gallery-24.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "coastal-indian",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Indian/untitled folder/Coastal Indian 2.jpg",
+      "path": "/images/restaurant/about/about-27.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "coastal-indian",
+        "about"
+      ]
+    },
+    {
+      "source": "Middle Eastern/Arabian 1.jpeg",
+      "path": "/images/restaurant/menu/menu-19.webp",
+      "section": "menu",
+      "orientation": "square",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "arabian",
+        "menu"
+      ]
+    },
+    {
+      "source": "Middle Eastern/Arabian 2.jpeg",
+      "path": "/images/restaurant/hero/hero-25.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "arabian",
+        "hero"
+      ]
+    },
+    {
+      "source": "Middle Eastern/Lebanese 1.jpeg",
+      "path": "/images/restaurant/gallery/gallery-25.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "lebanese",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Middle Eastern/Lebanese 2.jpeg",
+      "path": "/images/restaurant/hero/hero-26.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "lebanese",
+        "hero"
+      ]
+    },
+    {
+      "source": "Middle Eastern/Levantine 1.jpeg",
+      "path": "/images/restaurant/about/about-28.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "levantine",
+        "about"
+      ]
+    },
+    {
+      "source": "Middle Eastern/Levantine 2.jpeg",
+      "path": "/images/restaurant/gallery/gallery-26.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "levantine",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Middle Eastern/Persian 1.jpeg",
+      "path": "/images/restaurant/hero/hero-27.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "persian",
+        "hero"
+      ]
+    },
+    {
+      "source": "Middle Eastern/Persian 2.jpeg",
+      "path": "/images/restaurant/menu/menu-20.webp",
+      "section": "menu",
+      "orientation": "square",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "persian",
+        "menu"
+      ]
+    },
+    {
+      "source": "Middle Eastern/Turkish 1.jpeg",
+      "path": "/images/restaurant/gallery/gallery-27.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "turkish",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Middle Eastern/Turkish 2.jpeg",
+      "path": "/images/restaurant/hero/hero-28.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "turkish",
+        "hero"
+      ]
+    },
+    {
+      "source": "multi-cuisine/multi-cuisine food 1.jpg",
+      "path": "/images/restaurant/about/about-29.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "multi-cuisine",
+        "about"
+      ]
+    },
+    {
+      "source": "multi-cuisine/multi-cuisine food 2.jpg",
+      "path": "/images/restaurant/gallery/gallery-28.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "multi-cuisine",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Seafood/Seafood 1.jpg",
+      "path": "/images/restaurant/hero/hero-29.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "seafood",
+        "hero"
+      ]
+    },
+    {
+      "source": "Seafood/Seafood 2.jpg",
+      "path": "/images/restaurant/gallery/gallery-29.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "seafood",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Speciality Cuisine/Speciality Cuisine 1.jpg",
+      "path": "/images/restaurant/hero/hero-30.webp",
+      "section": "hero",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "specialty",
+        "hero"
+      ]
+    },
+    {
+      "source": "Speciality Cuisine/Speciality Cuisine 2.jpg",
+      "path": "/images/restaurant/about/about-30.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "specialty",
+        "about"
+      ]
+    },
+    {
+      "source": "Vegan/Vegan 1.jpg",
+      "path": "/images/restaurant/about/about-31.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "vegan",
+        "about"
+      ]
+    },
+    {
+      "source": "Vegan/Vegan 2.jpg",
+      "path": "/images/restaurant/about/about-32.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "vegan",
+        "about"
+      ]
+    },
+    {
+      "source": "Vegetarian/Vegetarian 1.jpg",
+      "path": "/images/restaurant/gallery/gallery-30.webp",
+      "section": "gallery",
+      "orientation": "landscape",
+      "tags": [
+        "food",
+        "restaurant",
+        "vegetarian",
+        "gallery"
+      ]
+    },
+    {
+      "source": "Vegetarian/Vegetarian 2.jpg",
+      "path": "/images/restaurant/about/about-33.webp",
+      "section": "about",
+      "orientation": "portrait",
+      "tags": [
+        "food",
+        "restaurant",
+        "vegetarian",
+        "about"
+      ]
+    }
+  ],
+  "new_counts": {
+    "hero": 22,
+    "about": 25,
+    "menu": 9,
+    "gallery": 22
+  }
+}

@@ -1,0 +1,3232 @@
+{
+  "images": [
+    {
+      "id": "premium-hero-01",
+      "path": "/images/restaurant/hero/hero-01.webp",
+      "tags": [
+        "restaurant",
+        "interior",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-01",
+      "path": "/images/restaurant/hero/hero-01.webp",
+      "tags": [
+        "restaurant",
+        "interior",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-02",
+      "path": "/images/restaurant/hero/hero-02.webp",
+      "tags": [
+        "restaurant",
+        "interior",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-02",
+      "path": "/images/restaurant/hero/hero-02.webp",
+      "tags": [
+        "restaurant",
+        "interior",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-03",
+      "path": "/images/restaurant/hero/hero-03.webp",
+      "tags": [
+        "restaurant",
+        "interior",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-03",
+      "path": "/images/restaurant/hero/hero-03.webp",
+      "tags": [
+        "restaurant",
+        "interior",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-04",
+      "path": "/images/restaurant/hero/hero-04.webp",
+      "tags": [
+        "restaurant",
+        "interior",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-04",
+      "path": "/images/restaurant/hero/hero-04.webp",
+      "tags": [
+        "restaurant",
+        "interior",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-01",
+      "path": "/images/restaurant/about/about-01.webp",
+      "tags": [
+        "chef",
+        "story",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-01",
+      "path": "/images/restaurant/about/about-01.webp",
+      "tags": [
+        "chef",
+        "story",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-02",
+      "path": "/images/restaurant/about/about-02.webp",
+      "tags": [
+        "chef",
+        "story",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-02",
+      "path": "/images/restaurant/about/about-02.webp",
+      "tags": [
+        "chef",
+        "story",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-03",
+      "path": "/images/restaurant/about/about-03.webp",
+      "tags": [
+        "chef",
+        "story",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-03",
+      "path": "/images/restaurant/about/about-03.webp",
+      "tags": [
+        "chef",
+        "story",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-01",
+      "path": "/images/restaurant/menu/menu-01.webp",
+      "tags": [
+        "food",
+        "plated",
+        "menu",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-01",
+      "path": "/images/restaurant/menu/menu-01.webp",
+      "tags": [
+        "food",
+        "plated",
+        "menu",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-02",
+      "path": "/images/restaurant/menu/menu-02.webp",
+      "tags": [
+        "food",
+        "plated",
+        "menu",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-02",
+      "path": "/images/restaurant/menu/menu-02.webp",
+      "tags": [
+        "food",
+        "plated",
+        "menu",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-03",
+      "path": "/images/restaurant/menu/menu-03.webp",
+      "tags": [
+        "food",
+        "plated",
+        "menu",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-03",
+      "path": "/images/restaurant/menu/menu-03.webp",
+      "tags": [
+        "food",
+        "plated",
+        "menu",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-04",
+      "path": "/images/restaurant/menu/menu-04.webp",
+      "tags": [
+        "food",
+        "plated",
+        "menu",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-04",
+      "path": "/images/restaurant/menu/menu-04.webp",
+      "tags": [
+        "food",
+        "plated",
+        "menu",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-01",
+      "path": "/images/restaurant/gallery/gallery-01.webp",
+      "tags": [
+        "food",
+        "dining",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-01",
+      "path": "/images/restaurant/gallery/gallery-01.webp",
+      "tags": [
+        "food",
+        "dining",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-02",
+      "path": "/images/restaurant/gallery/gallery-02.webp",
+      "tags": [
+        "food",
+        "dining",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-02",
+      "path": "/images/restaurant/gallery/gallery-02.webp",
+      "tags": [
+        "food",
+        "dining",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-03",
+      "path": "/images/restaurant/gallery/gallery-03.webp",
+      "tags": [
+        "food",
+        "dining",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-03",
+      "path": "/images/restaurant/gallery/gallery-03.webp",
+      "tags": [
+        "food",
+        "dining",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-04",
+      "path": "/images/restaurant/gallery/gallery-04.webp",
+      "tags": [
+        "food",
+        "dining",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-04",
+      "path": "/images/restaurant/gallery/gallery-04.webp",
+      "tags": [
+        "food",
+        "dining",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-05",
+      "path": "/images/restaurant/gallery/gallery-05.webp",
+      "tags": [
+        "food",
+        "dining",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-05",
+      "path": "/images/restaurant/gallery/gallery-05.webp",
+      "tags": [
+        "food",
+        "dining",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-06",
+      "path": "/images/restaurant/gallery/gallery-06.webp",
+      "tags": [
+        "food",
+        "dining",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-06",
+      "path": "/images/restaurant/gallery/gallery-06.webp",
+      "tags": [
+        "food",
+        "dining",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-05",
+      "path": "/images/restaurant/hero/hero-05.webp",
+      "tags": [
+        "restaurant",
+        "interior",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-05",
+      "path": "/images/restaurant/hero/hero-05.webp",
+      "tags": [
+        "restaurant",
+        "interior",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-06",
+      "path": "/images/restaurant/hero/hero-06.webp",
+      "tags": [
+        "restaurant",
+        "outdoor",
+        "hero",
+        "french",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-06",
+      "path": "/images/restaurant/hero/hero-06.webp",
+      "tags": [
+        "restaurant",
+        "outdoor",
+        "hero",
+        "french",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-07",
+      "path": "/images/restaurant/hero/hero-07.webp",
+      "tags": [
+        "restaurant",
+        "interior",
+        "hero",
+        "dining",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-07",
+      "path": "/images/restaurant/hero/hero-07.webp",
+      "tags": [
+        "restaurant",
+        "interior",
+        "hero",
+        "dining",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-08",
+      "path": "/images/restaurant/hero/hero-08.webp",
+      "tags": [
+        "restaurant",
+        "interior",
+        "hero",
+        "dining",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-08",
+      "path": "/images/restaurant/hero/hero-08.webp",
+      "tags": [
+        "restaurant",
+        "interior",
+        "hero",
+        "dining",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-04",
+      "path": "/images/restaurant/about/about-04.webp",
+      "tags": [
+        "restaurant",
+        "indoor",
+        "about",
+        "story",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-04",
+      "path": "/images/restaurant/about/about-04.webp",
+      "tags": [
+        "restaurant",
+        "indoor",
+        "about",
+        "story",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-05",
+      "path": "/images/restaurant/about/about-05.webp",
+      "tags": [
+        "restaurant",
+        "indoor",
+        "about",
+        "story",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-05",
+      "path": "/images/restaurant/about/about-05.webp",
+      "tags": [
+        "restaurant",
+        "indoor",
+        "about",
+        "story",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-06",
+      "path": "/images/restaurant/about/about-06.webp",
+      "tags": [
+        "restaurant",
+        "indoor",
+        "about",
+        "story",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-06",
+      "path": "/images/restaurant/about/about-06.webp",
+      "tags": [
+        "restaurant",
+        "indoor",
+        "about",
+        "story",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-07",
+      "path": "/images/restaurant/about/about-07.webp",
+      "tags": [
+        "restaurant",
+        "outdoor",
+        "about",
+        "patio",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-07",
+      "path": "/images/restaurant/about/about-07.webp",
+      "tags": [
+        "restaurant",
+        "outdoor",
+        "about",
+        "patio",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-08",
+      "path": "/images/restaurant/about/about-08.webp",
+      "tags": [
+        "restaurant",
+        "outdoor",
+        "about",
+        "patio",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-08",
+      "path": "/images/restaurant/about/about-08.webp",
+      "tags": [
+        "restaurant",
+        "outdoor",
+        "about",
+        "patio",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-05",
+      "path": "/images/restaurant/menu/menu-05.webp",
+      "tags": [
+        "food",
+        "burger",
+        "menu",
+        "american",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-05",
+      "path": "/images/restaurant/menu/menu-05.webp",
+      "tags": [
+        "food",
+        "burger",
+        "menu",
+        "american",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-06",
+      "path": "/images/restaurant/menu/menu-06.webp",
+      "tags": [
+        "food",
+        "noodles",
+        "menu",
+        "chinese",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-06",
+      "path": "/images/restaurant/menu/menu-06.webp",
+      "tags": [
+        "food",
+        "noodles",
+        "menu",
+        "chinese",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-07",
+      "path": "/images/restaurant/menu/menu-07.webp",
+      "tags": [
+        "food",
+        "biryani",
+        "menu",
+        "indian",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-07",
+      "path": "/images/restaurant/menu/menu-07.webp",
+      "tags": [
+        "food",
+        "biryani",
+        "menu",
+        "indian",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-08",
+      "path": "/images/restaurant/menu/menu-08.webp",
+      "tags": [
+        "food",
+        "samosa",
+        "menu",
+        "indian",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-08",
+      "path": "/images/restaurant/menu/menu-08.webp",
+      "tags": [
+        "food",
+        "samosa",
+        "menu",
+        "indian",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-09",
+      "path": "/images/restaurant/menu/menu-09.webp",
+      "tags": [
+        "food",
+        "pizza",
+        "menu",
+        "italian",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-09",
+      "path": "/images/restaurant/menu/menu-09.webp",
+      "tags": [
+        "food",
+        "pizza",
+        "menu",
+        "italian",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-10",
+      "path": "/images/restaurant/menu/menu-10.webp",
+      "tags": [
+        "food",
+        "pizza",
+        "menu",
+        "italian",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-10",
+      "path": "/images/restaurant/menu/menu-10.webp",
+      "tags": [
+        "food",
+        "pizza",
+        "menu",
+        "italian",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-11",
+      "path": "/images/restaurant/menu/menu-11.webp",
+      "tags": [
+        "food",
+        "dosa",
+        "menu",
+        "south-indian",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-11",
+      "path": "/images/restaurant/menu/menu-11.webp",
+      "tags": [
+        "food",
+        "dosa",
+        "menu",
+        "south-indian",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-07",
+      "path": "/images/restaurant/gallery/gallery-07.webp",
+      "tags": [
+        "restaurant",
+        "outdoor",
+        "gallery",
+        "dining",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-07",
+      "path": "/images/restaurant/gallery/gallery-07.webp",
+      "tags": [
+        "restaurant",
+        "outdoor",
+        "gallery",
+        "dining",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-08",
+      "path": "/images/restaurant/gallery/gallery-08.webp",
+      "tags": [
+        "restaurant",
+        "outdoor",
+        "gallery",
+        "dining",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-08",
+      "path": "/images/restaurant/gallery/gallery-08.webp",
+      "tags": [
+        "restaurant",
+        "outdoor",
+        "gallery",
+        "dining",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-09",
+      "path": "/images/restaurant/about/about-09.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-09",
+      "path": "/images/restaurant/about/about-09.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-10",
+      "path": "/images/restaurant/about/about-10.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-10",
+      "path": "/images/restaurant/about/about-10.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-09",
+      "path": "/images/restaurant/hero/hero-09.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "barbecue",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-09",
+      "path": "/images/restaurant/hero/hero-09.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "barbecue",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-09",
+      "path": "/images/restaurant/gallery/gallery-09.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "barbecue",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-09",
+      "path": "/images/restaurant/gallery/gallery-09.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "barbecue",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-11",
+      "path": "/images/restaurant/about/about-11.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "diner",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-11",
+      "path": "/images/restaurant/about/about-11.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "diner",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-12",
+      "path": "/images/restaurant/about/about-12.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "diner",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-12",
+      "path": "/images/restaurant/about/about-12.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "diner",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-13",
+      "path": "/images/restaurant/about/about-13.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "steakhouse",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-13",
+      "path": "/images/restaurant/about/about-13.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "steakhouse",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-10",
+      "path": "/images/restaurant/hero/hero-10.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "steakhouse",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-10",
+      "path": "/images/restaurant/hero/hero-10.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "steakhouse",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-10",
+      "path": "/images/restaurant/gallery/gallery-10.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "tex-mex",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-10",
+      "path": "/images/restaurant/gallery/gallery-10.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "tex-mex",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-14",
+      "path": "/images/restaurant/about/about-14.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "tex-mex",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-14",
+      "path": "/images/restaurant/about/about-14.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "american",
+        "tex-mex",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-11",
+      "path": "/images/restaurant/hero/hero-11.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "asian-fusion",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-11",
+      "path": "/images/restaurant/hero/hero-11.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "asian-fusion",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-11",
+      "path": "/images/restaurant/gallery/gallery-11.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "asian-fusion",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-11",
+      "path": "/images/restaurant/gallery/gallery-11.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "asian-fusion",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-12",
+      "path": "/images/restaurant/hero/hero-12.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "chinese",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-12",
+      "path": "/images/restaurant/hero/hero-12.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "chinese",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-15",
+      "path": "/images/restaurant/about/about-15.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "chinese",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-15",
+      "path": "/images/restaurant/about/about-15.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "chinese",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-12",
+      "path": "/images/restaurant/gallery/gallery-12.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "japanese",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-12",
+      "path": "/images/restaurant/gallery/gallery-12.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "japanese",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-16",
+      "path": "/images/restaurant/about/about-16.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "japanese",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-16",
+      "path": "/images/restaurant/about/about-16.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "japanese",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-13",
+      "path": "/images/restaurant/hero/hero-13.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "korean",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-13",
+      "path": "/images/restaurant/hero/hero-13.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "korean",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-13",
+      "path": "/images/restaurant/gallery/gallery-13.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "korean",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-13",
+      "path": "/images/restaurant/gallery/gallery-13.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "korean",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-12",
+      "path": "/images/restaurant/menu/menu-12.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "pan-asian",
+        "menu",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-12",
+      "path": "/images/restaurant/menu/menu-12.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "pan-asian",
+        "menu",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-17",
+      "path": "/images/restaurant/about/about-17.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "pan-asian",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-17",
+      "path": "/images/restaurant/about/about-17.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "pan-asian",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-14",
+      "path": "/images/restaurant/hero/hero-14.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "south-asian",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-14",
+      "path": "/images/restaurant/hero/hero-14.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "south-asian",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-14",
+      "path": "/images/restaurant/gallery/gallery-14.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "south-asian",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-14",
+      "path": "/images/restaurant/gallery/gallery-14.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "south-asian",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-18",
+      "path": "/images/restaurant/about/about-18.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "thai",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-18",
+      "path": "/images/restaurant/about/about-18.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "thai",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-15",
+      "path": "/images/restaurant/hero/hero-15.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "thai",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-15",
+      "path": "/images/restaurant/hero/hero-15.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "thai",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-15",
+      "path": "/images/restaurant/gallery/gallery-15.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "vietnamese",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-15",
+      "path": "/images/restaurant/gallery/gallery-15.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "vietnamese",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-16",
+      "path": "/images/restaurant/hero/hero-16.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "vietnamese",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-16",
+      "path": "/images/restaurant/hero/hero-16.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "asian",
+        "vietnamese",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-16",
+      "path": "/images/restaurant/gallery/gallery-16.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "continental",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-16",
+      "path": "/images/restaurant/gallery/gallery-16.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "continental",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-17",
+      "path": "/images/restaurant/hero/hero-17.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "continental",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-17",
+      "path": "/images/restaurant/hero/hero-17.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "continental",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-17",
+      "path": "/images/restaurant/gallery/gallery-17.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "french",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-17",
+      "path": "/images/restaurant/gallery/gallery-17.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "french",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-19",
+      "path": "/images/restaurant/about/about-19.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "french",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-19",
+      "path": "/images/restaurant/about/about-19.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "french",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-18",
+      "path": "/images/restaurant/hero/hero-18.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "greek",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-18",
+      "path": "/images/restaurant/hero/hero-18.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "greek",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-13",
+      "path": "/images/restaurant/menu/menu-13.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "greek",
+        "menu",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-13",
+      "path": "/images/restaurant/menu/menu-13.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "greek",
+        "menu",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-20",
+      "path": "/images/restaurant/about/about-20.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "italian",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-20",
+      "path": "/images/restaurant/about/about-20.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "italian",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-18",
+      "path": "/images/restaurant/gallery/gallery-18.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "italian",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-18",
+      "path": "/images/restaurant/gallery/gallery-18.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "italian",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-19",
+      "path": "/images/restaurant/hero/hero-19.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "mediterranean",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-19",
+      "path": "/images/restaurant/hero/hero-19.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "mediterranean",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-19",
+      "path": "/images/restaurant/gallery/gallery-19.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "mediterranean",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-19",
+      "path": "/images/restaurant/gallery/gallery-19.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "mediterranean",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-14",
+      "path": "/images/restaurant/menu/menu-14.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "menu",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-14",
+      "path": "/images/restaurant/menu/menu-14.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "menu",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-20",
+      "path": "/images/restaurant/hero/hero-20.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-20",
+      "path": "/images/restaurant/hero/hero-20.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-15",
+      "path": "/images/restaurant/menu/menu-15.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "spanish",
+        "menu",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-15",
+      "path": "/images/restaurant/menu/menu-15.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "spanish",
+        "menu",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-20",
+      "path": "/images/restaurant/gallery/gallery-20.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "spanish",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-20",
+      "path": "/images/restaurant/gallery/gallery-20.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "european",
+        "spanish",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-21",
+      "path": "/images/restaurant/hero/hero-21.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "fusion",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-21",
+      "path": "/images/restaurant/hero/hero-21.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "fusion",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-21",
+      "path": "/images/restaurant/gallery/gallery-21.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "fusion",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-21",
+      "path": "/images/restaurant/gallery/gallery-21.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "fusion",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-21",
+      "path": "/images/restaurant/about/about-21.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "health-focused",
+        "healthy",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-21",
+      "path": "/images/restaurant/about/about-21.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "health-focused",
+        "healthy",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-22",
+      "path": "/images/restaurant/about/about-22.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "health-focused",
+        "healthy",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-22",
+      "path": "/images/restaurant/about/about-22.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "health-focused",
+        "healthy",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-16",
+      "path": "/images/restaurant/menu/menu-16.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "menu",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-16",
+      "path": "/images/restaurant/menu/menu-16.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "menu",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-22",
+      "path": "/images/restaurant/hero/hero-22.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-22",
+      "path": "/images/restaurant/hero/hero-22.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-22",
+      "path": "/images/restaurant/gallery/gallery-22.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-22",
+      "path": "/images/restaurant/gallery/gallery-22.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-23",
+      "path": "/images/restaurant/hero/hero-23.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-23",
+      "path": "/images/restaurant/hero/hero-23.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-23",
+      "path": "/images/restaurant/about/about-23.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "mughlai",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-23",
+      "path": "/images/restaurant/about/about-23.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "mughlai",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-17",
+      "path": "/images/restaurant/menu/menu-17.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "mughlai",
+        "menu",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-17",
+      "path": "/images/restaurant/menu/menu-17.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "mughlai",
+        "menu",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-24",
+      "path": "/images/restaurant/about/about-24.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-24",
+      "path": "/images/restaurant/about/about-24.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-18",
+      "path": "/images/restaurant/menu/menu-18.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "menu",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-18",
+      "path": "/images/restaurant/menu/menu-18.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "menu",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-25",
+      "path": "/images/restaurant/about/about-25.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-25",
+      "path": "/images/restaurant/about/about-25.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-26",
+      "path": "/images/restaurant/about/about-26.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-26",
+      "path": "/images/restaurant/about/about-26.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-23",
+      "path": "/images/restaurant/gallery/gallery-23.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-23",
+      "path": "/images/restaurant/gallery/gallery-23.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-24",
+      "path": "/images/restaurant/hero/hero-24.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-24",
+      "path": "/images/restaurant/hero/hero-24.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-24",
+      "path": "/images/restaurant/gallery/gallery-24.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "coastal-indian",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-24",
+      "path": "/images/restaurant/gallery/gallery-24.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "coastal-indian",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-27",
+      "path": "/images/restaurant/about/about-27.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "coastal-indian",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-27",
+      "path": "/images/restaurant/about/about-27.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "indian",
+        "coastal-indian",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-19",
+      "path": "/images/restaurant/menu/menu-19.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "arabian",
+        "menu",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-19",
+      "path": "/images/restaurant/menu/menu-19.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "arabian",
+        "menu",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-25",
+      "path": "/images/restaurant/hero/hero-25.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "arabian",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-25",
+      "path": "/images/restaurant/hero/hero-25.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "arabian",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-25",
+      "path": "/images/restaurant/gallery/gallery-25.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "lebanese",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-25",
+      "path": "/images/restaurant/gallery/gallery-25.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "lebanese",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-26",
+      "path": "/images/restaurant/hero/hero-26.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "lebanese",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-26",
+      "path": "/images/restaurant/hero/hero-26.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "lebanese",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-28",
+      "path": "/images/restaurant/about/about-28.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "levantine",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-28",
+      "path": "/images/restaurant/about/about-28.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "levantine",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-26",
+      "path": "/images/restaurant/gallery/gallery-26.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "levantine",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-26",
+      "path": "/images/restaurant/gallery/gallery-26.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "levantine",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-27",
+      "path": "/images/restaurant/hero/hero-27.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "persian",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-27",
+      "path": "/images/restaurant/hero/hero-27.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "persian",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-menu-20",
+      "path": "/images/restaurant/menu/menu-20.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "persian",
+        "menu",
+        "premium"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-menu-20",
+      "path": "/images/restaurant/menu/menu-20.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "persian",
+        "menu",
+        "elegant"
+      ],
+      "orientation": "square",
+      "section_type": "menu",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-27",
+      "path": "/images/restaurant/gallery/gallery-27.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "turkish",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-27",
+      "path": "/images/restaurant/gallery/gallery-27.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "turkish",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-28",
+      "path": "/images/restaurant/hero/hero-28.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "turkish",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-28",
+      "path": "/images/restaurant/hero/hero-28.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "middle-eastern",
+        "turkish",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-29",
+      "path": "/images/restaurant/about/about-29.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "multi-cuisine",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-29",
+      "path": "/images/restaurant/about/about-29.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "multi-cuisine",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-28",
+      "path": "/images/restaurant/gallery/gallery-28.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "multi-cuisine",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-28",
+      "path": "/images/restaurant/gallery/gallery-28.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "multi-cuisine",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-29",
+      "path": "/images/restaurant/hero/hero-29.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "seafood",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-29",
+      "path": "/images/restaurant/hero/hero-29.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "seafood",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-29",
+      "path": "/images/restaurant/gallery/gallery-29.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "seafood",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-29",
+      "path": "/images/restaurant/gallery/gallery-29.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "seafood",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-hero-30",
+      "path": "/images/restaurant/hero/hero-30.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "specialty",
+        "hero",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-hero-30",
+      "path": "/images/restaurant/hero/hero-30.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "specialty",
+        "hero",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "hero",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-30",
+      "path": "/images/restaurant/about/about-30.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "specialty",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-30",
+      "path": "/images/restaurant/about/about-30.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "specialty",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-31",
+      "path": "/images/restaurant/about/about-31.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "vegan",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-31",
+      "path": "/images/restaurant/about/about-31.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "vegan",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-32",
+      "path": "/images/restaurant/about/about-32.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "vegan",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-32",
+      "path": "/images/restaurant/about/about-32.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "vegan",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-gallery-30",
+      "path": "/images/restaurant/gallery/gallery-30.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "vegetarian",
+        "gallery",
+        "premium"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-gallery-30",
+      "path": "/images/restaurant/gallery/gallery-30.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "vegetarian",
+        "gallery",
+        "elegant"
+      ],
+      "orientation": "landscape",
+      "section_type": "gallery",
+      "family": "elegant"
+    },
+    {
+      "id": "premium-about-33",
+      "path": "/images/restaurant/about/about-33.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "vegetarian",
+        "about",
+        "premium"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "premium"
+    },
+    {
+      "id": "elegant-about-33",
+      "path": "/images/restaurant/about/about-33.webp",
+      "tags": [
+        "food",
+        "restaurant",
+        "vegetarian",
+        "about",
+        "elegant"
+      ],
+      "orientation": "portrait",
+      "section_type": "about",
+      "family": "elegant"
+    }
+  ]
+}
