@@ -26,7 +26,7 @@ export function PremiumFooter01({ content }: SectionComponentProps) {
   const navItems = getNavItems(content);
 
   return (
-    <footer className="border-t border-white/10 bg-[#0c0908]" aria-label="Footer">
+    <footer className="border-t border-white/10 bg-[var(--theme-bg-dark)]" aria-label="Footer">
       <div className="mx-auto max-w-7xl px-4 py-12 @min-[640px]:px-6 @min-[768px]:px-10 @min-[768px]:py-16">
         <div className="grid gap-10 @min-[768px]:grid-cols-[1.2fr_0.8fr_0.9fr]">
           <div>
@@ -50,7 +50,7 @@ export function PremiumFooter01({ content }: SectionComponentProps) {
                   key={`${item.target}-${item.label}`}
                   type="button"
                   onClick={() => scrollToSection(item.target)}
-                  className="w-fit text-left text-sm text-[#cbb8a9] transition hover:text-[#f6efe8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c68e6b]"
+                  className="w-fit text-left text-sm text-[var(--theme-muted)] transition hover:text-[var(--theme-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]"
                 >
                   {item.label}
                 </button>
@@ -61,7 +61,7 @@ export function PremiumFooter01({ content }: SectionComponentProps) {
           <div className="space-y-5">
             <div>
               <p className={pm.inputLabel}>Address</p>
-              <p className="mt-3 text-sm leading-6 text-[#f6efe8]">{address}</p>
+              <p className="mt-3 text-sm leading-6 text-[var(--theme-ink)]">{address}</p>
             </div>
             <div>
               <p className={pm.inputLabel}>Phone</p>
@@ -77,7 +77,7 @@ export function PremiumFooter01({ content }: SectionComponentProps) {
             </div>
             <div>
               <p className={pm.inputLabel}>Hours</p>
-              <div className="mt-3 space-y-1 text-sm text-[#f6efe8]">
+              <div className="mt-3 space-y-1 text-sm text-[var(--theme-ink)]">
                 {hours.map((entry) => (
                   <p key={entry}>{entry}</p>
                 ))}
@@ -86,12 +86,12 @@ export function PremiumFooter01({ content }: SectionComponentProps) {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-5 text-xs uppercase tracking-[0.18em] text-[#8e7b6b] @min-[640px]:flex-row @min-[640px]:items-center @min-[640px]:justify-between">
+        <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-5 text-xs uppercase tracking-[0.18em] text-[var(--theme-muted)] @min-[640px]:flex-row @min-[640px]:items-center @min-[640px]:justify-between">
           <p>Crafted for memorable nights.</p>
           <button
             type="button"
             onClick={() => scrollToSection("hero")}
-            className="w-fit text-left transition hover:text-[#c68e6b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c68e6b]"
+            className="w-fit text-left transition hover:text-[var(--theme-accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]"
           >
             Back to top
           </button>

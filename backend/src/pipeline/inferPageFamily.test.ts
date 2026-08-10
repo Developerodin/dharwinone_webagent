@@ -132,6 +132,19 @@ describe("inferPageFamily", () => {
     expect(family).toBe("elegant");
   });
 
+  it("keeps tea house on elegant even when chat has casual cafe words", () => {
+    const family = inferPageFamily(
+      {
+        ...FIXTURE_BRIEF,
+        category: "Tea house",
+        businessName: "Jaipur Tea House",
+        menuItems: [],
+      },
+      "Casual neighborhood cafe with bakery brunch",
+    );
+    expect(family).toBe("elegant");
+  });
+
   it("biases bare tea name toward elegant when no casual cafe cues", () => {
     const family = inferPageFamily(
       {

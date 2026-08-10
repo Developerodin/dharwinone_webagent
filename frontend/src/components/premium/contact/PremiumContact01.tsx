@@ -46,7 +46,7 @@ export function PremiumContact01({ content }: SectionComponentProps) {
                 <MapPin aria-hidden="true" className="size-4" />
                 Address
               </dt>
-              <dd className="mt-3 text-sm leading-6 text-[#f2e9e0]">{address}</dd>
+              <dd className="mt-3 text-sm leading-6 text-[var(--theme-ink)]">{address}</dd>
             </div>
             <div className="rounded-[1.5rem] border border-white/10 bg-black/15 p-5">
               <dt className={`flex items-center gap-2 ${pm.inputLabel}`}>
@@ -54,7 +54,7 @@ export function PremiumContact01({ content }: SectionComponentProps) {
                 Phone
               </dt>
               <dd className="mt-3">
-                <a href={toTelHref(phone)} className="text-sm text-[#f2e9e0] transition hover:text-[#c68e6b]">
+                <a href={toTelHref(phone)} className="text-sm text-[var(--theme-ink)] transition hover:text-[var(--theme-accent)]">
                   {phone}
                 </a>
               </dd>
@@ -65,7 +65,7 @@ export function PremiumContact01({ content }: SectionComponentProps) {
                 Email
               </dt>
               <dd className="mt-3">
-                <a href={toMailHref(email)} className="break-all text-sm text-[#f2e9e0] transition hover:text-[#c68e6b]">
+                <a href={toMailHref(email)} className="break-all text-sm text-[var(--theme-ink)] transition hover:text-[var(--theme-accent)]">
                   {email}
                 </a>
               </dd>
@@ -75,7 +75,7 @@ export function PremiumContact01({ content }: SectionComponentProps) {
                 <Clock3 aria-hidden="true" className="size-4" />
                 Hours
               </dt>
-              <dd className="mt-3 space-y-2 text-sm text-[#f2e9e0]">
+              <dd className="mt-3 space-y-2 text-sm text-[var(--theme-ink)]">
                 {hours.map((entry) => (
                   <p key={entry}>{entry}</p>
                 ))}
@@ -253,7 +253,7 @@ export function PremiumContact01({ content }: SectionComponentProps) {
 
             <div aria-live="polite">
               {form.isSubmitted ? (
-                <p className="rounded-2xl border border-[#c68e6b]/40 bg-[#211916] px-4 py-3 text-sm text-[#f6efe8]">
+                <p className="rounded-2xl border border-[var(--theme-accent)]/40 bg-[var(--theme-card)] px-4 py-3 text-sm text-[var(--theme-ink)]">
                   Request prepared. For immediate confirmation, call the reservation desk.
                 </p>
               ) : null}

@@ -35,7 +35,7 @@ export function PremiumContact02({ content, assets }: SectionComponentProps) {
   const form = useContactForm();
 
   return (
-    <section aria-label="Contact and reservation" className="relative overflow-hidden bg-[#120f0d]">
+    <section aria-label="Contact and reservation" className="relative overflow-hidden bg-[var(--theme-bg-dark)]">
       {imagePath ? (
         <SectionMedia
           src={imagePath}
@@ -45,7 +45,7 @@ export function PremiumContact02({ content, assets }: SectionComponentProps) {
       ) : null}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(198,142,107,0.16),transparent_34%),linear-gradient(135deg,rgba(10,8,7,0.96),rgba(18,15,13,0.88),rgba(10,8,7,0.96))]"
+        className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,color-mix(in_srgb,var(--theme-accent)_16%,transparent),transparent_34%),linear-gradient(135deg,color-mix(in_srgb,var(--theme-bg-dark)_96%,transparent),color-mix(in_srgb,var(--theme-bg-alt)_88%,transparent),color-mix(in_srgb,var(--theme-bg-dark)_96%,transparent))]"
       />
 
       <div className="relative mx-auto max-w-7xl px-4 py-14 @min-[640px]:px-6 @min-[640px]:py-18 @min-[768px]:px-10 @min-[768px]:py-24">
@@ -57,28 +57,28 @@ export function PremiumContact02({ content, assets }: SectionComponentProps) {
 
             <div className="mt-8 space-y-4">
               <div className="flex gap-3">
-                <MapPin aria-hidden="true" className="mt-1 size-4 shrink-0 text-[#c68e6b]" />
+                <MapPin aria-hidden="true" className="mt-1 size-4 shrink-0 text-[var(--theme-accent)]" />
                 <div>
                   <p className={pm.inputLabel}>Address</p>
-                  <p className="mt-2 text-sm leading-6 text-[#f4ede7]">{address}</p>
+                  <p className="mt-2 text-sm leading-6 text-[var(--theme-ink)]">{address}</p>
                 </div>
               </div>
               <div className="flex gap-3">
-                <Phone aria-hidden="true" className="mt-1 size-4 shrink-0 text-[#c68e6b]" />
+                <Phone aria-hidden="true" className="mt-1 size-4 shrink-0 text-[var(--theme-accent)]" />
                 <div>
                   <p className={pm.inputLabel}>Phone</p>
-                  <a href={toTelHref(phone)} className="mt-2 block text-sm text-[#f4ede7] transition hover:text-[#c68e6b]">
+                  <a href={toTelHref(phone)} className="mt-2 block text-sm text-[var(--theme-ink)] transition hover:text-[var(--theme-accent)]">
                     {phone}
                   </a>
                 </div>
               </div>
               <div className="flex gap-3">
-                <Mail aria-hidden="true" className="mt-1 size-4 shrink-0 text-[#c68e6b]" />
+                <Mail aria-hidden="true" className="mt-1 size-4 shrink-0 text-[var(--theme-accent)]" />
                 <div>
                   <p className={pm.inputLabel}>Email</p>
                   <a
                     href={toMailHref(email)}
-                    className="mt-2 block break-all text-sm text-[#f4ede7] transition hover:text-[#c68e6b]"
+                    className="mt-2 block break-all text-sm text-[var(--theme-ink)] transition hover:text-[var(--theme-accent)]"
                   >
                     {email}
                   </a>
@@ -88,7 +88,7 @@ export function PremiumContact02({ content, assets }: SectionComponentProps) {
           </div>
 
           <div className="rounded-[2rem] bg-white p-6 shadow-[0_30px_80px_rgba(0,0,0,0.35)] @min-[640px]:p-8 @min-[768px]:p-10">
-            <p className="text-[10px] font-medium uppercase tracking-[0.24em] text-[#c68e6b] @min-[640px]:text-xs">
+            <p className="text-[10px] font-medium uppercase tracking-[0.24em] text-[var(--theme-accent)] @min-[640px]:text-xs">
               Reservation
             </p>
             <h3 className="mt-4 font-[family-name:var(--font-display)] text-[1.9rem] leading-tight text-[#1c1713] @min-[640px]:text-[2.35rem]">
@@ -266,28 +266,28 @@ export function PremiumContact02({ content, assets }: SectionComponentProps) {
         </div>
 
         <div className="mt-8 grid gap-px overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/10 @min-[640px]:mt-10 @min-[768px]:grid-cols-3">
-          <div className="bg-[#17120f]/88 px-5 py-5">
+          <div className="bg-[var(--theme-card)]/88 px-5 py-5">
             <p className={`flex items-center gap-2 ${pm.inputLabel}`}>
               <MapPin aria-hidden="true" className="size-4" />
               Address
             </p>
-            <p className="mt-3 text-sm text-[#f4ede7]">{address}</p>
+            <p className="mt-3 text-sm text-[var(--theme-ink)]">{address}</p>
           </div>
-          <div className="bg-[#17120f]/88 px-5 py-5">
+          <div className="bg-[var(--theme-card)]/88 px-5 py-5">
             <p className={`flex items-center gap-2 ${pm.inputLabel}`}>
               <Phone aria-hidden="true" className="size-4" />
               Phone
             </p>
-            <a href={toTelHref(phone)} className="mt-3 block text-sm text-[#f4ede7] transition hover:text-[#c68e6b]">
+            <a href={toTelHref(phone)} className="mt-3 block text-sm text-[var(--theme-ink)] transition hover:text-[var(--theme-accent)]">
               {phone}
             </a>
           </div>
-          <div className="bg-[#17120f]/88 px-5 py-5">
+          <div className="bg-[var(--theme-card)]/88 px-5 py-5">
             <p className={`flex items-center gap-2 ${pm.inputLabel}`}>
               <Clock3 aria-hidden="true" className="size-4" />
               Hours
             </p>
-            <div className="mt-3 space-y-1 text-sm text-[#f4ede7]">
+            <div className="mt-3 space-y-1 text-sm text-[var(--theme-ink)]">
               {hours.map((entry) => (
                 <p key={entry}>{entry}</p>
               ))}

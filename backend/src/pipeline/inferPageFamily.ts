@@ -127,39 +127,42 @@ const CUISINE_AFFINITY: Array<{ re: RegExp; family: PageFamily; weight: number }
     { re: /\bchinese\b|\bindian\b|\bthai\b|\bwok\b/, family: "premium", weight: 1 },
   ];
 
-/** Strong “tea house” phrase → elegant +3. */
+/** Strong “tea house” phrase → elegant +8 (hard prefer). */
 const TEA_HOUSE_RE = /\btea[\s-]?house\b/;
 
 /**
- * Other tea cues (room / lounge / chai / afternoon tea / bare tea) → elegant +2.
+ * Softer tea cues (room / lounge / chai / afternoon tea / bare tea) → elegant +2.
  * Applied only when TEA_HOUSE_RE did not already fire (avoids double-count).
  */
 const TEA_CUE_RE =
   /\btea[\s-]?(?:room|lounge)\b|\bafternoon[\s-]?tea\b|\bchai\b|\btea\b/;
 
-/** Casual cafe/service words that should keep tea from auto-winning elegant. */
+/** Casual cafe/service words that should keep soft tea cues from auto-winning elegant. */
 const STRONG_CASUAL_CAFE_RE =
   /\bcaf[eé]\b|\bbrunch\b|\bbakery\b|\bcasual\b|\bdiner\b|\bfood[\s-]?truck\b|\bcounter[\s-]?service\b/;
 
 /**
  * Applies tea → elegant affinity on the menu-free corpus.
- * Bumps elegant further when tea matched and no strong casual cafe words.
+ * Explicit tea-house phrases hard-prefer elegant (beats cafe stacks).
+ * Softer tea cues only get the no-casual bump when cafe words are absent.
  */
 function applyTeaAffinity(
   affinityCorpus: string,
   scores: Record<PageFamily, number>,
 ): void {
-  let teaMatched = false;
+  // Tea-house phrase wins elegant even if chat also says "cafe".
   if (TEA_HOUSE_RE.test(affinityCorpus)) {
-    scores.elegant += 3;
-    teaMatched = true;
-  } else if (TEA_CUE_RE.test(affinityCorpus)) {
-    scores.elegant += 2;
-    teaMatched = true;
+    scores.elegant += 8;
+    return;
   }
 
-  // Tea without casual cafe cues should win elegant without relying on hash.
-  if (teaMatched && !STRONG_CASUAL_CAFE_RE.test(affinityCorpus)) {
+  if (!TEA_CUE_RE.test(affinityCorpus)) {
+    return;
+  }
+
+  scores.elegant += 2;
+  // Bare tea / chai / lounge without casual cafe cues should not need hash.
+  if (!STRONG_CASUAL_CAFE_RE.test(affinityCorpus)) {
     scores.elegant += 2;
   }
 }

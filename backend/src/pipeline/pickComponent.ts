@@ -105,6 +105,18 @@ function buildCorpus(brief?: Brief, chatText = ""): string {
 }
 
 /**
+ * Tea / lounge cues only — category, name, chat (excludes menu + address).
+ * Avoids “masala tea” menu items flipping header/hero variants.
+ */
+function buildTeaCueCorpus(brief?: Brief, chatText = ""): string {
+  return `${brief?.category ?? ""} ${brief?.businessName ?? ""} ${chatText}`.toLowerCase();
+}
+
+/** Tea-house / lounge / afternoon-tea / chai signals (no bare menu “tea”). */
+const TEA_REFINED_RE =
+  /\b(tea[\s-]?house|tea[\s-]?room|afternoon[\s-]?tea|chai|lounge|refined[\s-]?caf[eé])\b/;
+
+/**
  * Scores header variants from brief vibe signals.
  * Street/quick → 03; tea/lounge/refined cafe soft-boost 01/02 (not 03);
  * cafe|brunch alone no longer force header-03.
@@ -112,6 +124,7 @@ function buildCorpus(brief?: Brief, chatText = ""): string {
 function scoreHeaderVariant(
   suffix: string,
   corpus: string,
+  teaCueCorpus: string,
   businessName: string,
 ): number {
   let score = 0;
@@ -127,10 +140,7 @@ function scoreHeaderVariant(
     /\b(street\s*food|quick\s*service|counter\s*service|food\s*truck|taco|poke\s*bowl|takeout|grab[\s-]?and[\s-]?go)\b/.test(
       corpus,
     );
-  const teaRefined =
-    /\b(tea[\s-]?house|tea[\s-]?room|afternoon[\s-]?tea|chai|lounge|refined[\s-]?caf[eé])\b|\btea\b/.test(
-      corpus,
-    );
+  const teaRefined = TEA_REFINED_RE.test(teaCueCorpus);
 
   if (suffix === "01" && fineDining) score += 6;
   if (suffix === "02" && storyForward) score += 6;
@@ -161,11 +171,12 @@ function scoreVariant(
 ): number {
   const suffix = getVariantSuffix(componentId);
   const corpus = buildCorpus(brief, chatText);
+  const teaCueCorpus = buildTeaCueCorpus(brief, chatText);
   const businessName = brief?.businessName ?? "restaurant";
   let score = 0;
 
   if (sectionType === "header") {
-    return scoreHeaderVariant(suffix, corpus, businessName);
+    return scoreHeaderVariant(suffix, corpus, teaCueCorpus, businessName);
   }
 
   const photoHeavy =
@@ -183,9 +194,8 @@ function scoreVariant(
       corpus,
     );
   const elegantOrTea =
-    /\b(elegant|fine\s*dining|upscale|tea[\s-]?house|tea[\s-]?room|afternoon[\s-]?tea|chai|lounge)\b|\btea\b/.test(
-      corpus,
-    );
+    /\b(elegant|fine\s*dining|upscale)\b/.test(corpus) ||
+    TEA_REFINED_RE.test(teaCueCorpus);
 
   if (suffix === "02") {
     if (sectionType === "hero" && photoHeavy && !elegantOrTea) score += 5;

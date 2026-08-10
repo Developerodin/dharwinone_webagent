@@ -24,9 +24,9 @@ export function PremiumFooter02({ content }: SectionComponentProps) {
   const navItems = getNavItems(content);
 
   return (
-    <footer className="bg-[#120f0d]" aria-label="Footer">
+    <footer className="bg-[var(--theme-bg-dark)]" aria-label="Footer">
       <div className="mx-auto max-w-7xl px-4 py-12 @min-[640px]:px-6 @min-[768px]:px-10 @min-[768px]:py-16">
-        <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,rgba(198,142,107,0.12),rgba(255,255,255,0.03),rgba(198,142,107,0.08))] p-6 @min-[640px]:p-8 @min-[768px]:p-10">
+        <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,color-mix(in_srgb,var(--theme-accent)_12%,transparent),rgba(255,255,255,0.03),color-mix(in_srgb,var(--theme-accent)_8%,transparent))] p-6 @min-[640px]:p-8 @min-[768px]:p-10">
           <div className="grid gap-8 @min-[1024px]:grid-cols-[1.1fr_0.9fr]">
             <div>
               <p className={pm.eyebrow}>Final Course</p>
@@ -51,21 +51,21 @@ export function PremiumFooter02({ content }: SectionComponentProps) {
             </div>
 
             <div className="grid gap-px overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/10 @min-[640px]:grid-cols-2">
-              <div className="bg-[#17120f] px-5 py-5">
+              <div className="bg-[var(--theme-card)] px-5 py-5">
                 <p className={pm.inputLabel}>Phone</p>
-                <a href={toTelHref(phone)} className="mt-3 block text-sm text-[#f6efe8] transition hover:text-[#c68e6b]">
+                <a href={toTelHref(phone)} className="mt-3 block text-sm text-[var(--theme-ink)] transition hover:text-[var(--theme-accent)]">
                   {phone}
                 </a>
               </div>
-              <div className="bg-[#17120f] px-5 py-5">
+              <div className="bg-[var(--theme-card)] px-5 py-5">
                 <p className={pm.inputLabel}>Email</p>
-                <a href={toMailHref(email)} className="mt-3 block break-all text-sm text-[#f6efe8] transition hover:text-[#c68e6b]">
+                <a href={toMailHref(email)} className="mt-3 block break-all text-sm text-[var(--theme-ink)] transition hover:text-[var(--theme-accent)]">
                   {email}
                 </a>
               </div>
-              <div className="bg-[#17120f] px-5 py-5 @min-[640px]:col-span-2">
+              <div className="bg-[var(--theme-card)] px-5 py-5 @min-[640px]:col-span-2">
                 <p className={pm.inputLabel}>Hours</p>
-                <div className="mt-3 flex flex-col gap-1 text-sm text-[#f6efe8] @min-[640px]:flex-row @min-[640px]:gap-4">
+                <div className="mt-3 flex flex-col gap-1 text-sm text-[var(--theme-ink)] @min-[640px]:flex-row @min-[640px]:gap-4">
                   {hours.map((entry) => (
                     <p key={entry}>{entry}</p>
                   ))}
