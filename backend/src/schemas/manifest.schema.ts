@@ -67,6 +67,8 @@ export const reservationContentSchema = z.object({
 export const headerContentSchema = z.object({
   brandName: z.string().min(1),
   tagline: z.string().min(1),
+  ctaLabel: z.string().min(1),
+  eyebrow: z.string().min(1),
 });
 
 /** Contact / reservation form section */
@@ -117,7 +119,7 @@ type SectionManifestSpec = {
 const SECTION_SPECS: SectionManifestSpec[] = [
   {
     sectionType: "header",
-    copyFields: ["brandName", "tagline"],
+    copyFields: ["brandName", "tagline", "ctaLabel", "eyebrow"],
     contentSchema: headerContentSchema,
     requiresImage: false,
     variants: ["01"],

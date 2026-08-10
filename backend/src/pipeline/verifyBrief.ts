@@ -5,9 +5,14 @@ const PHONE_PATTERN =
 
 /**
  * Normalizes text for loose source matching.
+ * Strips currency symbols and thousands separators so ₹1,295 matches 1295.
  */
 function normalizeForMatch(value: string): string {
-  return value.toLowerCase().replace(/\s+/g, " ").trim();
+  return value
+    .toLowerCase()
+    .replace(/[₹$€£,]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 /**
@@ -37,11 +42,18 @@ function addressInSource(address: string, chatText: string): boolean {
  * Builds price strings that may appear in the source for a menu item price.
  */
 function priceVariants(price: number): string[] {
+  const intPart = Math.trunc(price);
+  const withCommas = intPart.toLocaleString("en-US");
   const variants = [
     String(price),
+    String(intPart),
     price.toFixed(2),
     `$${price}`,
     `$${price.toFixed(2)}`,
+    `₹${price}`,
+    `₹${intPart}`,
+    `₹${withCommas}`,
+    withCommas,
   ];
   if (Number.isInteger(price)) {
     variants.push(`${price}.00`);

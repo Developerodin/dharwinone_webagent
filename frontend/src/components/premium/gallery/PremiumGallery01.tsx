@@ -39,7 +39,7 @@ export function PremiumGallery01({ content, assets }: SectionComponentProps) {
               <li key={asset.key} className="min-w-0 overflow-hidden">
                 <SectionMedia
                   src={asset.imagePath}
-                  className="aspect-[3/4] w-full object-cover transition duration-300 hover:scale-[1.03]"
+                  className="aspect-[4/3] w-full object-cover transition duration-300 hover:scale-[1.03]"
                 />
               </li>
             ))}

@@ -81,9 +81,10 @@ function buildAssets(
   family: PageFamily,
   componentId: string,
   category?: string | null,
+  seed?: string | null,
 ): PageSection["assets"] {
   if (sectionType === "gallery") {
-    const paths = pickGalleryImages(2, family, category);
+    const paths = pickGalleryImages(4, family, category, seed);
     if (paths.length === 0 && imagePath) {
       return [{ key: "gallery-0", imagePath }];
     }
@@ -94,7 +95,7 @@ function buildAssets(
   }
 
   if (sectionType === "hero" && componentId.endsWith("-03")) {
-    const paths = pickSectionImages("hero", 3, family, category);
+    const paths = pickSectionImages("hero", 3, family, category, seed);
     if (paths.length === 0 && imagePath) {
       return [{ key: "slide-0", imagePath }];
     }
@@ -105,7 +106,7 @@ function buildAssets(
   }
 
   if (sectionType === "team") {
-    const paths = pickSectionImages("team", 3, family, category);
+    const paths = pickSectionImages("team", 3, family, category, seed);
     if (paths.length === 0 && imagePath) {
       return [{ key: "team-0", imagePath }];
     }
@@ -167,12 +168,27 @@ function enrichSectionContent(
   }
 
   if (sectionType === "header") {
+    const tagline =
+      typeof content.tagline === "string" && content.tagline.trim().length >= 6
+        ? content.tagline
+        : defaultHeaderTagline(brief);
+    const ctaLabel =
+      typeof content.ctaLabel === "string" && content.ctaLabel.trim()
+        ? content.ctaLabel
+        : "Reserve a Table";
+    const eyebrow =
+      typeof content.eyebrow === "string" && content.eyebrow.trim()
+        ? content.eyebrow
+        : brief.category;
     return {
       ...content,
       brandName:
         typeof content.brandName === "string" && content.brandName
           ? content.brandName
           : brief.businessName,
+      tagline,
+      ctaLabel,
+      eyebrow,
       navItems: defaultNavItems(),
     };
   }
@@ -209,6 +225,15 @@ function defaultNavItems(): Array<{ label: string; target: SectionType }> {
     { label: "Reservations", target: "reservation" },
     { label: "Contact", target: "contact" },
   ];
+}
+
+/**
+ * Builds a brief-derived header tagline when copy is missing or too generic.
+ */
+function defaultHeaderTagline(brief: Brief): string {
+  const place = brief.address?.split(",").map((part) => part.trim()).filter(Boolean).at(-1);
+  if (place) return `${brief.category} in ${place}`;
+  return `${brief.category} worth seeking out`;
 }
 
 /**
@@ -267,11 +292,13 @@ function planSectionComponents(
       chatText,
     });
     const manifest = getManifest(componentId);
+    const imageSeed = `${brief.businessName}:${brief.category}`;
     const imagePath = pickImage({
       sectionType,
       orientation: orientationForSection(sectionType),
       family,
       category: brief.category,
+      seed: imageSeed,
     });
 
     if (manifest.requiresImage && !imagePath && sectionType !== "gallery") {
@@ -280,7 +307,12 @@ function planSectionComponents(
     }
 
     if (sectionType === "gallery") {
-      const galleryPaths = pickGalleryImages(2, family, brief.category);
+      const galleryPaths = pickGalleryImages(
+        4,
+        family,
+        brief.category,
+        imageSeed,
+      );
       if (galleryPaths.length === 0) {
         droppedSections.push(sectionType);
         continue;
@@ -382,6 +414,7 @@ export async function runPipeline(input: PipelineInput): Promise<PipelineResult>
       family,
       componentId,
       brief.category,
+      `${brief.businessName}:${brief.category}`,
     );
   }
 

@@ -50,7 +50,7 @@ export function ElegantGallery02({ content, assets }: SectionComponentProps) {
                 <div className="overflow-hidden">
                   <SectionMedia
                     src={asset.imagePath}
-                    className="aspect-[3/4] h-full w-full object-cover transition duration-300 hover:scale-[1.03]"
+                    className="aspect-[4/3] h-full w-full object-cover transition duration-300 hover:scale-[1.03]"
                   />
                 </div>
               </li>

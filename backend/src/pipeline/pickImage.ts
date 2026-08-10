@@ -134,6 +134,17 @@ function cuisineScore(entry: CatalogEntry, tokens: string[]): number {
 }
 
 /**
+ * Stable hash for rotating among top cuisine matches.
+ */
+function stableHash(input: string): number {
+  let hash = 0;
+  for (let i = 0; i < input.length; i += 1) {
+    hash = (hash * 31 + input.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+/**
  * Sorts matches so cuisine-relevant images surface first.
  */
 function rankByCuisine(entries: CatalogEntry[], category?: string | null): CatalogEntry[] {
@@ -148,6 +159,29 @@ function rankByCuisine(entries: CatalogEntry[], category?: string | null): Catal
 }
 
 /**
+ * Rotates into the top-N ranked matches so same cuisine ≠ same first image.
+ */
+function rotateMatches(
+  entries: CatalogEntry[],
+  seed?: string | null,
+  windowSize = 6,
+): CatalogEntry[] {
+  if (entries.length <= 1 || !seed?.trim()) return entries;
+  const tokens = cuisineTokens(seed);
+  const topN = Math.min(windowSize, entries.length);
+  // Prefer rotating among cuisine-scoring leaders when present.
+  let window = entries.slice(0, topN);
+  if (tokens.length > 0) {
+    const best = cuisineScore(entries[0]!, tokens);
+    const leaders = entries.filter((entry) => cuisineScore(entry, tokens) >= best);
+    window = leaders.slice(0, Math.max(topN, 1));
+  }
+  const offset = stableHash(seed) % window.length;
+  const rotatedWindow = [...window.slice(offset), ...window.slice(0, offset)];
+  return [...rotatedWindow, ...entries.slice(window.length)];
+}
+
+/**
  * Filters catalog entries by section type, orientation, and page family.
  * Falls back by relaxing orientation, then family, so sections still get images.
  */
@@ -156,12 +190,14 @@ function filterCatalogEntries(args: {
   orientation?: "landscape" | "portrait" | "square";
   family?: PageFamily;
   category?: string | null;
+  seed?: string | null;
 }) {
   const catalogType = SECTION_TO_CATALOG[args.sectionType];
   if (!catalogType) return [];
 
   const family = catalogFamilyFor(args.family ?? getDefaultPageFamily());
   const catalog = loadCatalog();
+  const rotateSeed = args.seed ?? args.category;
 
   const bySection = catalog.filter((entry) => entry.section_type === catalogType);
 
@@ -171,14 +207,19 @@ function filterCatalogEntries(args: {
     if (args.orientation && entry.orientation !== args.orientation) return false;
     return true;
   });
-  if (familyExact.length > 0) return rankByCuisine(familyExact, args.category);
+  if (familyExact.length > 0) {
+    return rotateMatches(rankByCuisine(familyExact, args.category), rotateSeed);
+  }
 
   const familyAnyOrientation = bySection.filter((entry) => {
     const entryFamily = entry.family ?? "premium";
     return entryFamily === family;
   });
   if (familyAnyOrientation.length > 0) {
-    return rankByCuisine(familyAnyOrientation, args.category);
+    return rotateMatches(
+      rankByCuisine(familyAnyOrientation, args.category),
+      rotateSeed,
+    );
   }
 
   if (args.orientation) {
@@ -186,11 +227,14 @@ function filterCatalogEntries(args: {
       (entry) => entry.orientation === args.orientation,
     );
     if (anyFamilyOriented.length > 0) {
-      return rankByCuisine(anyFamilyOriented, args.category);
+      return rotateMatches(
+        rankByCuisine(anyFamilyOriented, args.category),
+        rotateSeed,
+      );
     }
   }
 
-  return rankByCuisine(bySection, args.category);
+  return rotateMatches(rankByCuisine(bySection, args.category), rotateSeed);
 }
 
 /**
@@ -200,12 +244,14 @@ export function listCatalogImagePaths(args: {
   sectionType: SectionType;
   family?: PageFamily;
   category?: string | null;
+  seed?: string | null;
 }): string[] {
   const matches = filterCatalogEntries({
     sectionType: args.sectionType,
     orientation: orientationForSection(args.sectionType),
     family: args.family,
     category: args.category,
+    seed: args.seed ?? args.category,
   });
   const paths = matches.map((entry) => entry.path);
   return [...new Set(paths)];
@@ -220,8 +266,12 @@ export function pickImage(args: {
   orientation?: "landscape" | "portrait" | "square";
   family?: PageFamily;
   category?: string | null;
+  seed?: string | null;
 }): string | null {
-  const matches = filterCatalogEntries(args);
+  const matches = filterCatalogEntries({
+    ...args,
+    seed: args.seed ?? args.category,
+  });
   return matches[0]?.path ?? null;
 }
 
@@ -232,8 +282,9 @@ export function pickGalleryImages(
   limit = 2,
   family: PageFamily = getDefaultPageFamily(),
   category?: string | null,
+  seed?: string | null,
 ): string[] {
-  return pickSectionImages("gallery", limit, family, category);
+  return pickSectionImages("gallery", limit, family, category, seed);
 }
 
 /**
@@ -244,12 +295,14 @@ export function pickSectionImages(
   limit = 3,
   family: PageFamily = getDefaultPageFamily(),
   category?: string | null,
+  seed?: string | null,
 ): string[] {
   const matches = filterCatalogEntries({
     sectionType,
     orientation: orientationForSection(sectionType),
     family,
     category,
+    seed: seed ?? category,
   });
 
   const unique: string[] = [];

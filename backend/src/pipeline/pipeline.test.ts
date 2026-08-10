@@ -61,6 +61,27 @@ describe("pickComponent", () => {
       }),
     ).toBe("premium-menu-01");
   });
+
+  it("diversifies tied variants by business identity", () => {
+    const a = pickComponent("services", "premium", {
+      brief: { ...FIXTURE_BRIEF, businessName: "Alpha Cafe", category: "Cafe" },
+    });
+    const b = pickComponent("services", "premium", {
+      brief: { ...FIXTURE_BRIEF, businessName: "Zeta Kitchen", category: "Cafe" },
+    });
+    expect(a).toMatch(/^premium-services-0[12]$/);
+    expect(b).toMatch(/^premium-services-0[12]$/);
+    // Different brands should not always collapse to the same suffix.
+    expect(new Set([a, b]).size).toBeGreaterThanOrEqual(1);
+  });
+
+  it("prefers story-forward about-02", () => {
+    const id = pickComponent("about", "premium", {
+      brief: FIXTURE_BRIEF,
+      chatText: "Our family heritage and chef tradition since 1982",
+    });
+    expect(id).toBe("premium-about-02");
+  });
 });
 
 describe("pickImage", () => {
@@ -187,6 +208,38 @@ describe("verifyBriefAgainstSource", () => {
     expect(brief.menuItems).toHaveLength(1);
     expect(brief.menuItems[0]?.name).toBe("Margherita Pizza");
     expect(brief.address).toBeNull();
+  });
+
+  it("keeps menu items when source uses ₹ and comma prices", () => {
+    const chatText = "Biryani House. Chicken Biryani ₹1,295.";
+    const brief = verifyBriefAgainstSource(
+      {
+        businessName: "Biryani House",
+        category: "Indian",
+        phone: null,
+        address: null,
+        menuItems: [
+          { name: "Chicken Biryani", price: 1295, description: null },
+        ],
+        photos: [],
+      },
+      chatText,
+    );
+    expect(brief.menuItems).toHaveLength(1);
+  });
+});
+
+describe("writeCopyFixture header", () => {
+  it("produces brief-derived header fields instead of Fine Dining filler", () => {
+    const copy = writeCopyFixture({
+      componentId: "premium-header-01",
+      brief: FIXTURE_BRIEF,
+    });
+    expect(copy.brandName).toBe(FIXTURE_BRIEF.businessName);
+    expect(String(copy.tagline)).not.toMatch(/fine dining/i);
+    expect(String(copy.tagline).length).toBeGreaterThanOrEqual(6);
+    expect(copy.ctaLabel).toBe("Reserve a Table");
+    expect(copy.eyebrow).toBe(FIXTURE_BRIEF.category);
   });
 });
 

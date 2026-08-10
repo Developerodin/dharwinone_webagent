@@ -66,7 +66,7 @@ export function getVariantSuffix(componentId: string): string {
 /**
  * Stable hash for deterministic variant picks across rebuilds.
  */
-function stableHash(input: string): number {
+export function stableHash(input: string): number {
   let hash = 0;
   for (let i = 0; i < input.length; i += 1) {
     hash = (hash * 31 + input.charCodeAt(i)) >>> 0;
@@ -75,7 +75,18 @@ function stableHash(input: string): number {
 }
 
 /**
- * Scores variants using brief signals; higher prefers later suffix when tied.
+ * Builds scoring corpus from brief + chat including menu and location.
+ */
+function buildCorpus(brief?: Brief, chatText = ""): string {
+  const menuBits =
+    brief?.menuItems
+      ?.map((item) => `${item.name} ${item.description ?? ""}`)
+      .join(" ") ?? "";
+  return `${brief?.category ?? ""} ${brief?.businessName ?? ""} ${brief?.address ?? ""} ${menuBits} ${chatText}`.toLowerCase();
+}
+
+/**
+ * Scores variants using brief signals (no free +1 for *-01).
  */
 function scoreVariant(
   componentId: string,
@@ -84,25 +95,34 @@ function scoreVariant(
   chatText = "",
 ): number {
   const suffix = getVariantSuffix(componentId);
-  const corpus =
-    `${brief?.category ?? ""} ${brief?.businessName ?? ""} ${chatText}`.toLowerCase();
+  const corpus = buildCorpus(brief, chatText);
   let score = 0;
 
   const photoHeavy =
     /\b(photo|gallery|visual|instagram|image|pictures?)\b/.test(corpus);
   const formForward =
-    /\b(reserv|book|contact|form|inquiry|enquiry)\b/.test(corpus);
+    /\b(reserv|book|contact|form|inquiry|enquiry|table)\b/.test(corpus);
   const storyForward =
-    /\b(story|heritage|family|tradition|history|chef)\b/.test(corpus);
-  const menuFocus = /\b(menu|dishes|food|cuisine)\b/.test(corpus);
+    /\b(story|heritage|family|tradition|history|chef|since)\b/.test(corpus);
+  const menuFocus =
+    /\b(menu|dishes|food|cuisine)\b/.test(corpus) ||
+    (brief?.menuItems?.length ?? 0) > 0;
+  const teamForward = /\b(team|chef|staff|founder)\b/.test(corpus);
+  const socialProof = /\b(review|testimonial|award|rated|stars?)\b/.test(corpus);
 
   if (suffix === "02") {
     if (sectionType === "hero" && photoHeavy) score += 3;
     if (sectionType === "gallery" && photoHeavy) score += 3;
     if (sectionType === "contact" && formForward) score += 3;
-    if (sectionType === "about" && storyForward) score += 2;
-    if (sectionType === "menu" && menuFocus) score += 1;
-    if (sectionType === "reservation" && formForward) score += 2;
+    if (sectionType === "about" && storyForward) score += 3;
+    if (sectionType === "menu" && menuFocus) score += 2;
+    if (sectionType === "reservation" && formForward) score += 3;
+    if (sectionType === "team" && teamForward) score += 2;
+    if (sectionType === "testimonials" && socialProof) score += 2;
+    if (sectionType === "services") score += 1;
+    if (sectionType === "stats" && socialProof) score += 2;
+    if (sectionType === "footer" && formForward) score += 1;
+    if (sectionType === "location_map" && Boolean(brief?.address)) score += 2;
   }
 
   if (suffix === "03" && sectionType === "hero" && photoHeavy) {
@@ -110,7 +130,8 @@ function scoreVariant(
   }
 
   if (suffix === "01") {
-    score += 1;
+    if (sectionType === "hero" && !photoHeavy) score += 1;
+    if (sectionType === "about" && !storyForward) score += 1;
   }
 
   return score;
@@ -125,6 +146,7 @@ export type PickComponentOptions = {
 /**
  * Stage 3 — section type + family → component id.
  * Prefers brief-aware scoring; theme remap preserves *-NN suffix.
+ * Ties broken by stableHash(section:businessName:category) so businesses diverge.
  */
 export function pickComponent(
   sectionType: SectionType,
@@ -139,23 +161,16 @@ export function pickComponent(
     return matched ?? variants[0]!;
   }
 
-  let best = variants[0]!;
-  let bestScore = Number.NEGATIVE_INFINITY;
+  const scored = variants.map((id) => ({
+    id,
+    score: scoreVariant(id, sectionType, options?.brief, options?.chatText),
+  }));
 
-  for (const id of variants) {
-    const scored = scoreVariant(
-      id,
-      sectionType,
-      options?.brief,
-      options?.chatText,
-    );
-    const tieBreak =
-      scored + (stableHash(`${id}:${options?.brief?.businessName ?? ""}`) % 3) * 0.01;
-    if (tieBreak > bestScore) {
-      bestScore = tieBreak;
-      best = id;
-    }
-  }
+  const bestScore = Math.max(...scored.map((item) => item.score));
+  const top = scored.filter((item) => item.score === bestScore);
+  if (top.length === 1) return top[0]!.id;
 
-  return best;
+  const seed = `${sectionType}:${options?.brief?.businessName ?? ""}:${options?.brief?.category ?? ""}`;
+  const idx = stableHash(seed) % top.length;
+  return top[idx]!.id;
 }

@@ -94,7 +94,7 @@ function writeMenuItems(
 }
 
 /** Default gallery size for builds and theme switches. */
-const DEFAULT_GALLERY_COUNT = 2;
+const DEFAULT_GALLERY_COUNT = 4;
 
 /**
  * Builds a de-duplicated gallery asset list of the requested length.

@@ -82,4 +82,40 @@ describe("inferPageFamily", () => {
     );
     expect(family).toBe("premium");
   });
+
+  it("returns minimal for japanese omakase", () => {
+    const family = inferPageFamily(
+      {
+        ...FIXTURE_BRIEF,
+        category: "Japanese restaurant",
+        businessName: "Kumo",
+      },
+      "Quiet omakase counter with zen hospitality",
+    );
+    expect(family).toBe("minimal");
+  });
+
+  it("returns rustic for smokehouse bbq", () => {
+    const family = inferPageFamily(
+      {
+        ...FIXTURE_BRIEF,
+        category: "Barbecue restaurant",
+        businessName: "Oak & Ember",
+      },
+      "Farm-to-table smokehouse BBQ with craft sides",
+    );
+    expect(family).toBe("rustic");
+  });
+
+  it("returns vibrant for colorful street food", () => {
+    const family = inferPageFamily(
+      {
+        ...FIXTURE_BRIEF,
+        category: "Street food",
+        businessName: "Neon Taco",
+      },
+      "Colorful latin street food with neon vibes",
+    );
+    expect(family).toBe("vibrant");
+  });
 });

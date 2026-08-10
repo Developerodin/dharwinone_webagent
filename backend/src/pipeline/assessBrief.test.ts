@@ -4,8 +4,10 @@ import { assessBrief, buildFallbackQuestions } from "./assessBrief.js";
 import {
   briefNeedsClarification,
   detectBriefGaps,
+  enrichVagueCategory,
   evaluateBriefReadiness,
   isGenericBusinessName,
+  isVagueCategory,
 } from "./briefGaps.js";
 import { mergeClarificationAnswers } from "./mergeClarifications.js";
 
@@ -37,6 +39,21 @@ describe("isGenericBusinessName", () => {
   it("treats placeholder names as generic", () => {
     expect(isGenericBusinessName("Restaurant")).toBe(true);
     expect(isGenericBusinessName("Nonna Rosa Trattoria")).toBe(false);
+  });
+});
+
+describe("enrichVagueCategory", () => {
+  it("keeps specific categories", () => {
+    expect(enrichVagueCategory("Italian restaurant", "hello")).toBe(
+      "Italian restaurant",
+    );
+  });
+
+  it("rescues vague cafe when chat mentions cuisine", () => {
+    expect(isVagueCategory("cafe")).toBe(true);
+    expect(enrichVagueCategory("cafe", "We serve Italian pasta and espresso")).toBe(
+      "Italian cafe",
+    );
   });
 });
 

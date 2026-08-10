@@ -32,12 +32,22 @@ export async function writeCopy(args: {
       ? `\nIMPORTANT: Your previous copy included invented facts: ${args.flaggedSpans.join(", ")}. Remove or rephrase them. Do NOT include any prices, phone numbers, or hours unless they appear in the brief below.`
       : "";
 
+  const headerRules =
+    args.sectionType === "header"
+      ? `
+Header-specific rules:
+- tagline: 6–12 words; must mention cuisine and/or location from the brief.
+- Never use generic filler like "Fine Dining", "Authentic Experience", or "Restaurant · …".
+- ctaLabel: a short booking verb phrase (e.g. "Reserve a Table").
+- eyebrow: a short cuisine/vibe label from the brief (not "Premium Collection").`
+      : "";
+
   const systemPrompt = `You write marketing copy for a restaurant website section.
 Rules:
 - Fill ONLY these fields: ${manifest.copyFields.join(", ")}.
 - Use facts from the brief; do NOT invent prices, phone numbers, addresses, or hours.
 - Write in a warm, premium tone specific to this business.
-- Keep headlines concise.${retryNote}`;
+- Keep headlines concise.${headerRules}${retryNote}`;
 
   const userPrompt = `Business brief:
 ${JSON.stringify(args.brief, null, 2)}
@@ -179,13 +189,26 @@ export function writeCopyFixture(args: {
             body: "Reserve your spot and enjoy a seamless dining experience.",
             ctaLabel: "Reserve Now",
           };
-    case "header":
+    case "header": {
+      const place = brief.address
+        ?.split(",")
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .at(-1);
+      const tagline = isElegant
+        ? place
+          ? `Refined ${brief.category} in ${place}`
+          : `Refined ${brief.category} for memorable evenings`
+        : place
+          ? `${brief.category} in ${place}`
+          : `${brief.category} worth seeking out`;
       return {
         brandName: brief.businessName,
-        tagline: isElegant
-          ? "Fine Dining"
-          : `Restaurant · ${brief.category}`,
+        tagline,
+        ctaLabel: "Reserve a Table",
+        eyebrow: brief.category,
       };
+    }
     case "contact":
       return isElegant
         ? {

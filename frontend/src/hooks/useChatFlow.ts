@@ -42,6 +42,8 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
   const [useFixture, setUseFixture] = useState(initialFixture);
   const [enrichedChatText, setEnrichedChatText] = useState("");
   const [clarificationRound, setClarificationRound] = useState(0);
+  /** Last clarification questions — used to send structured answers on reply. */
+  const [pendingQuestions, setPendingQuestions] = useState<string[]>([]);
   const [brief, setBrief] = useState<Brief | null>(null);
   const [pageFamily, setPageFamily] = useState<PageFamily | null>(null);
   const [page, setPage] = useState<Page | null>(null);
@@ -81,12 +83,20 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
    * Calls the intake API and handles clarification or ready states.
    */
   const runIntake = useCallback(
-    async (chatText: string, round: number) => {
+    async (
+      chatText: string,
+      round: number,
+      answers?: Record<string, string>,
+    ) => {
       const query = useFixture ? "?fixture=1" : "";
       const response = await fetch(`/api/intake${query}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chatText, clarificationRound: round }),
+        body: JSON.stringify({
+          chatText,
+          clarificationRound: round,
+          ...(answers && Object.keys(answers).length > 0 ? { answers } : {}),
+        }),
       });
 
       const data = (await response.json()) as IntakeResponse & {
@@ -106,6 +116,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
       });
 
       if (data.status === "unsupported") {
+        setPendingQuestions([]);
         appendMessage({
           role: "assistant",
           content: data.message,
@@ -124,6 +135,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
 
       if (data.status === "needs_clarification") {
         const canSkip = data.canSkip === true;
+        setPendingQuestions(data.questions);
         appendMessage({
           role: "assistant",
           content: formatClarificationMessage(
@@ -146,6 +158,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
         return;
       }
 
+      setPendingQuestions([]);
       setBrief(data.brief);
       appendMessage({
         role: "assistant",
@@ -298,8 +311,14 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
         updateStageMessage({ name: "Brief Extractor", status: "running" });
 
         if (phase === "clarifying" && enrichedChatText) {
-          const combined = `${enrichedChatText}\n\n${trimmed}`;
-          await runIntake(combined, clarificationRound);
+          const answers =
+            pendingQuestions.length > 0
+              ? Object.fromEntries(
+                  pendingQuestions.map((question) => [question, trimmed]),
+                )
+              : undefined;
+          // Keep original dump; mergeClarificationAnswers appends answers server-side.
+          await runIntake(enrichedChatText, clarificationRound, answers);
         } else if (phase === "confirm" && enrichedChatText) {
           const combined = `${enrichedChatText}\n\nUpdate: ${trimmed}`;
           await runIntake(combined, 0);
@@ -334,6 +353,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
       enrichedChatText,
       isBusy,
       page,
+      pendingQuestions,
       phase,
       runEdit,
       runIntake,
@@ -391,6 +411,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
     setError(null);
     setEnrichedChatText(empty.enrichedChatText);
     setClarificationRound(0);
+    setPendingQuestions([]);
     setBrief(empty.brief);
     setPageFamily(empty.pageFamily);
     setPage(empty.page);
@@ -413,6 +434,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
     setEnrichedChatText(session.enrichedChatText);
     setError(null);
     setClarificationRound(0);
+    setPendingQuestions([]);
     setIsBusy(false);
     return true;
   }, []);

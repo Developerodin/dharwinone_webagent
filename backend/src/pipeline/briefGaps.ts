@@ -32,6 +32,38 @@ const VAGUE_CATEGORIES = new Set([
   "website",
 ]);
 
+/** Cuisine cues used to rescue vague verticals like "cafe" / "restaurant". */
+const CUISINE_PATTERNS: Array<{ re: RegExp; label: string }> = [
+  { re: /\bsouth\s*indian\b/i, label: "South Indian" },
+  { re: /\bnorth\s*indian\b/i, label: "North Indian" },
+  { re: /\bmiddle\s*eastern\b/i, label: "Middle Eastern" },
+  { re: /\btex[\s-]?mex\b/i, label: "Tex-Mex" },
+  { re: /\bitalian\b/i, label: "Italian" },
+  { re: /\bchinese\b/i, label: "Chinese" },
+  { re: /\bjapanese\b/i, label: "Japanese" },
+  { re: /\bkorean\b/i, label: "Korean" },
+  { re: /\bthai\b/i, label: "Thai" },
+  { re: /\bvietnamese\b/i, label: "Vietnamese" },
+  { re: /\bindian\b/i, label: "Indian" },
+  { re: /\bmexican\b/i, label: "Mexican" },
+  { re: /\bfrench\b/i, label: "French" },
+  { re: /\bgreek\b/i, label: "Greek" },
+  { re: /\bspanish\b/i, label: "Spanish" },
+  { re: /\bmediterranean\b/i, label: "Mediterranean" },
+  { re: /\blebanese\b/i, label: "Lebanese" },
+  { re: /\bturkish\b/i, label: "Turkish" },
+  { re: /\bpersian\b/i, label: "Persian" },
+  { re: /\bamerican\b/i, label: "American" },
+  { re: /\bseafood\b/i, label: "Seafood" },
+  { re: /\bvegan\b/i, label: "Vegan" },
+  { re: /\bvegetarian\b/i, label: "Vegetarian" },
+  { re: /\bfusion\b/i, label: "Fusion" },
+  { re: /\bpizza\b/i, label: "Pizza" },
+  { re: /\bsushi\b/i, label: "Sushi" },
+  { re: /\bbbq\b|\bbarbecue\b/i, label: "Barbecue" },
+  { re: /\bstreet\s*food\b/i, label: "Street food" },
+];
+
 /**
  * Returns true when the business name looks like a placeholder.
  */
@@ -46,6 +78,33 @@ export function isGenericBusinessName(name: string): boolean {
 export function isVagueCategory(category: string): boolean {
   const normalized = category.toLowerCase().trim();
   return normalized.length < 2 || VAGUE_CATEGORIES.has(normalized);
+}
+
+/**
+ * Finds a cuisine label mentioned in chat or category text.
+ */
+export function findCuisineLabel(text: string): string | null {
+  for (const { re, label } of CUISINE_PATTERNS) {
+    if (re.test(text)) return label;
+  }
+  return null;
+}
+
+/**
+ * When category is vague but chat mentions a cuisine, synthesize a usable category.
+ */
+export function enrichVagueCategory(
+  category: string,
+  chatText: string,
+): string {
+  if (!isVagueCategory(category)) return category.trim();
+  const cuisine = findCuisineLabel(`${chatText}\n${category}`);
+  if (!cuisine) return category.trim();
+  const vertical = category.trim().toLowerCase();
+  if (!vertical || vertical === "food" || vertical === "dining" || vertical === "website" || vertical === "business") {
+    return `${cuisine} restaurant`;
+  }
+  return `${cuisine} ${vertical}`;
 }
 
 /**

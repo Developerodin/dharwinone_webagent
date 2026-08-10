@@ -4,7 +4,10 @@ import { FIXTURE_BRIEF } from "../data/fixtureBrief.js";
 import { getOpenAIClient, getOpenAIModel } from "../lib/openai.js";
 import type { Brief } from "../schemas/brief.schema.js";
 import {
+  enrichVagueCategory,
   evaluateBriefReadiness,
+  isGenericBusinessName,
+  splitGaps,
   type BriefGap,
 } from "./briefGaps.js";
 import { checkScope } from "./checkScope.js";
@@ -17,6 +20,8 @@ import { verifyBriefAgainstSource } from "./verifyBrief.js";
 import type { PageFamily } from "../config/pageFamily.js";
 
 const MAX_QUESTIONS = 3;
+/** After this many clarification rounds, stop re-asking optional gaps. */
+const MAX_CLARIFICATION_ROUNDS = 2;
 
 const questionsSchema = z.object({
   questions: z.array(z.string().min(1)).max(MAX_QUESTIONS),
@@ -119,6 +124,79 @@ Return plain questions only — no numbering prefix.`,
 }
 
 /**
+ * True when extracted business name is usable (not missing/generic).
+ */
+function hasUsableBusinessName(brief: Brief): boolean {
+  return Boolean(
+    brief.businessName?.trim() && !isGenericBusinessName(brief.businessName),
+  );
+}
+
+/**
+ * Applies cuisine rescue + name-signal override + round caps to readiness.
+ */
+function refineReadiness(args: {
+  brief: Brief;
+  chatText: string;
+  clarificationRound: number;
+  skipConfirmed: boolean;
+}): { brief: Brief; readiness: ReturnType<typeof evaluateBriefReadiness> } {
+  const brief: Brief = {
+    ...args.brief,
+    category: enrichVagueCategory(args.brief.category, args.chatText),
+  };
+
+  let readiness = evaluateBriefReadiness(brief, {
+    skipConfirmed: args.skipConfirmed,
+  });
+
+  const nameOk = hasUsableBusinessName(brief);
+  const nameSignal = hasExplicitNameSignal(args.chatText);
+
+  // Only force a name ask when we still lack a usable extracted name.
+  if (!nameOk && !nameSignal) {
+    if (readiness.status === "ready") {
+      readiness = {
+        status: "needs_clarification",
+        gaps: ["businessName"],
+        canSkip: false,
+      };
+    } else if (!readiness.gaps.includes("businessName")) {
+      readiness = {
+        ...readiness,
+        gaps: ["businessName", ...readiness.gaps],
+        canSkip: false,
+      };
+    }
+  }
+
+  // Hard stop: after enough rounds, auto-skip optional gaps.
+  if (
+    readiness.status === "needs_clarification" &&
+    args.clarificationRound >= MAX_CLARIFICATION_ROUNDS
+  ) {
+    const { critical, optional } = splitGaps(readiness.gaps);
+    if (critical.length === 0 && optional.length > 0) {
+      return { brief, readiness: { status: "ready" } };
+    }
+    // Critical still missing after max rounds — ask one combined required Q once more,
+    // but if we already asked beyond max+1, proceed best-effort with what we have.
+    if (critical.length > 0 && args.clarificationRound >= MAX_CLARIFICATION_ROUNDS + 1) {
+      if (nameOk && brief.category?.trim()) {
+        return { brief, readiness: { status: "ready" } };
+      }
+      readiness = {
+        status: "needs_clarification",
+        gaps: critical,
+        canSkip: false,
+      };
+    }
+  }
+
+  return { brief, readiness };
+}
+
+/**
  * Assesses chat intake: extract brief, detect gaps, return questions or ready status.
  */
 export async function assessBrief(
@@ -153,11 +231,11 @@ export async function assessBrief(
     : input.chatText;
 
   const rawBrief = await extractBrief(enrichedChatText);
-  const partialBrief = verifyBriefAgainstSource(rawBrief, enrichedChatText);
+  const verifiedBrief = verifyBriefAgainstSource(rawBrief, enrichedChatText);
 
   const categoryScope = checkScope({
     chatText: enrichedChatText,
-    category: partialBrief.category,
+    category: verifiedBrief.category,
   });
   if (!categoryScope.ok) {
     return {
@@ -169,29 +247,12 @@ export async function assessBrief(
   }
 
   const skipConfirmed = detectSkipIntent(enrichedChatText);
-  let readiness = evaluateBriefReadiness(partialBrief, { skipConfirmed });
-
-  // Force asking for the brand name when the user never clearly stated one
-  if (
-    !hasExplicitNameSignal(enrichedChatText) &&
-    readiness.status === "ready"
-  ) {
-    readiness = {
-      status: "needs_clarification",
-      gaps: ["businessName"],
-      canSkip: false,
-    };
-  } else if (
-    !hasExplicitNameSignal(enrichedChatText) &&
-    readiness.status === "needs_clarification" &&
-    !readiness.gaps.includes("businessName")
-  ) {
-    readiness = {
-      ...readiness,
-      gaps: ["businessName", ...readiness.gaps],
-      canSkip: false,
-    };
-  }
+  const { brief: partialBrief, readiness } = refineReadiness({
+    brief: verifiedBrief,
+    chatText: enrichedChatText,
+    clarificationRound,
+    skipConfirmed,
+  });
 
   if (readiness.status === "ready") {
     return {

@@ -1,6 +1,11 @@
 import { getNavItems } from "@/components/shared/contentExtras";
+import {
+  MobileNavPanel,
+  MobileNavToggle,
+} from "@/components/shared/MobileNavMenu";
 import type { ThemeTokens } from "@/components/shared/themeTokens";
-import { createScrollHandler } from "@/lib/scrollToSection";
+import { useMobileNav } from "@/components/shared/useMobileNav";
+import { createScrollHandler, scrollToSection } from "@/lib/scrollToSection";
 import { getString } from "@/components/premium/contentHelpers";
 import type {
   SectionComponent,
@@ -16,6 +21,12 @@ import {
   getTagline,
   getHoursText,
 } from "./shared";
+
+const FAMILY_MOBILE_TRIGGER =
+  "inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--theme-line)] text-[var(--theme-fg)] transition duration-200 hover:bg-[color:color-mix(in_srgb,var(--theme-bg)_80%,white_20%)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]";
+
+const FAMILY_MOBILE_PANEL =
+  "mt-1 rounded-2xl border border-[var(--theme-line)] bg-[color:color-mix(in_srgb,var(--theme-bg)_94%,white_6%)] p-2 shadow-[0_18px_40px_rgba(0,0,0,0.18)] backdrop-blur";
 
 /**
  * Creates family-scoped header, contact, and footer sections.
@@ -39,42 +50,82 @@ export function createHeaderContactFooter(
 function createHeader01(tokens: ThemeTokens): SectionComponent {
   /**
    * Sticky navigation header with scroll-linked section buttons.
+   * Mobile: hamburger opens a nav panel; desktop: horizontal nav.
    */
   function FamilyHeader01({ content }: SectionComponentProps) {
     const brandName = getBrandName(content);
     const tagline = getTagline(content);
+    const ctaLabel = getString(content, "ctaLabel", "Reserve a Table");
+    const eyebrow = getString(content, "eyebrow", "");
     const navItems = getNavItems(content);
+    const { open, menuId, rootRef, toggle, close } = useMobileNav();
+
+    /**
+     * Scrolls to a section and closes the mobile menu.
+     */
+    function handleNavigate(target: string) {
+      scrollToSection(target);
+      close();
+    }
 
     return (
       <header
+        ref={rootRef}
         aria-label="Site header"
         className={`${tokens.section} sticky top-0 z-30 border-b border-[var(--theme-line)]/80 bg-[color:color-mix(in_srgb,var(--theme-bg)_92%,white_8%)]/95 backdrop-blur`}
       >
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 @min-[640px]:px-6 @min-[640px]:py-5 @min-[768px]:flex-row @min-[768px]:items-center @min-[768px]:justify-between @min-[768px]:px-10">
-          <div className="min-w-0">
-            <p className={`text-lg @min-[640px]:text-xl ${tokens.heading}`}>
-              {brandName}
-            </p>
-            <p className={`mt-1 text-sm ${tokens.body}`}>{tagline}</p>
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 @min-[640px]:px-6 @min-[640px]:py-5 @min-[768px]:gap-4 @min-[768px]:px-10">
+          <div className="flex flex-col gap-4 @min-[768px]:flex-row @min-[768px]:items-center @min-[768px]:justify-between">
+            <div className="min-w-0">
+              {eyebrow ? <p className={tokens.eyebrow}>{eyebrow}</p> : null}
+              <p className={`text-lg @min-[640px]:text-xl ${tokens.heading}`}>
+                {brandName}
+              </p>
+              <p className={`mt-1 text-sm ${tokens.body}`}>{tagline}</p>
+            </div>
+            <div className="flex items-center gap-3 self-stretch @min-[768px]:self-auto">
+              <button
+                type="button"
+                onClick={createScrollHandler("reservation")}
+                className={`${tokens.primaryButton} flex-1 @min-[768px]:flex-none`}
+                aria-label={ctaLabel}
+              >
+                {ctaLabel}
+              </button>
+              <MobileNavToggle
+                open={open}
+                menuId={menuId}
+                onToggle={toggle}
+                className={FAMILY_MOBILE_TRIGGER}
+              />
+            </div>
           </div>
+
           <nav
             aria-label="Primary navigation"
-            className="overflow-x-auto pb-1 @min-[768px]:overflow-visible @min-[768px]:pb-0"
+            className="hidden flex-wrap items-center gap-2 @min-[768px]:flex @min-[768px]:justify-end"
           >
-            <div className="flex min-w-max flex-wrap items-center gap-2 @min-[768px]:justify-end">
-              {navItems.map((item) => (
-                <button
-                  key={`${item.target}-${item.label}`}
-                  type="button"
-                  onClick={createScrollHandler(item.target)}
-                  className={tokens.navLink}
-                  aria-label={`Scroll to ${item.label}`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
+            {navItems.map((item) => (
+              <button
+                key={`${item.target}-${item.label}`}
+                type="button"
+                onClick={createScrollHandler(item.target)}
+                className={tokens.navLink}
+                aria-label={`Scroll to ${item.label}`}
+              >
+                {item.label}
+              </button>
+            ))}
           </nav>
+
+          <MobileNavPanel
+            open={open}
+            menuId={menuId}
+            navItems={navItems}
+            onNavigate={handleNavigate}
+            panelClassName={FAMILY_MOBILE_PANEL}
+            linkClassName={tokens.navLink}
+          />
         </div>
       </header>
     );

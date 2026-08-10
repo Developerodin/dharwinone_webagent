@@ -34,12 +34,12 @@ export function PremiumAbout02({ content, assets }: SectionComponentProps) {
           {imagePath ? (
             <SectionMedia
               src={imagePath}
-              className="aspect-[21/9] w-full object-cover transition duration-700 hover:scale-[1.015] @max-[639px]:aspect-[16/10]"
+              className="aspect-[4/5] w-full object-cover transition duration-700 hover:scale-[1.015] @min-[768px]:aspect-[3/4]"
             />
           ) : (
             <div
               aria-hidden="true"
-              className="aspect-[21/9] w-full bg-[var(--line)]/40 @max-[639px]:aspect-[16/10]"
+              className="aspect-[4/5] w-full bg-[var(--line)]/40 @min-[768px]:aspect-[3/4]"
             />
           )}
           <div

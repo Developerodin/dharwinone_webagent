@@ -32,6 +32,18 @@ describe("hasExplicitNameSignal", () => {
       ),
     ).toBe(true);
   });
+
+  it("accepts lowercase website for brand", () => {
+    expect(hasExplicitNameSignal("website for dragon wok")).toBe(true);
+  });
+
+  it("accepts bare brand reply after prior context", () => {
+    expect(
+      hasExplicitNameSignal(
+        "I want a Chinese restaurant website\n\nDragon Wok",
+      ),
+    ).toBe(true);
+  });
 });
 
 describe("resolveEditTarget", () => {
