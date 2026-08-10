@@ -27,12 +27,12 @@ export function PremiumTestimonials02({ content }: SectionComponentProps) {
           role="list"
         >
           {items.map((item) => (
-            <li key={item.name} className="border-t border-[var(--line)] pt-6">
+            <li key={item.name} className="border-t border-[var(--theme-line)] pt-6">
               <blockquote className={`text-base leading-relaxed ${pm.body}`}>
                 “{item.quote}”
               </blockquote>
-              <p className="mt-6 text-sm font-medium text-[var(--ink)]">{item.name}</p>
-              <p className="mt-1 text-xs uppercase tracking-[0.16em] text-[var(--accent)]">
+              <p className={`mt-6 text-sm font-medium ${pm.heading}`}>{item.name}</p>
+              <p className="mt-1 text-xs uppercase tracking-[0.16em] text-[var(--theme-accent)]">
                 {item.role}
               </p>
             </li>

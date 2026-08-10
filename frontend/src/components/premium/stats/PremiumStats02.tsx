@@ -22,7 +22,7 @@ export function PremiumStats02({ content }: SectionComponentProps) {
           role="list"
         >
           {items.map((item) => (
-            <li key={item.label} className="min-w-0 border-l border-[var(--line)] pl-4">
+            <li key={item.label} className="min-w-0 border-l border-[var(--theme-line)] pl-4">
               <p className={`text-2xl @min-[640px]:text-3xl ${pm.heading}`}>{item.value}</p>
               <p className={`mt-2 text-xs uppercase tracking-[0.16em] ${pm.body}`}>
                 {item.label}

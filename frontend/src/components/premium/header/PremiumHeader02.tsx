@@ -6,11 +6,14 @@ import {
   MobileNavPanel,
   MobileNavToggle,
 } from "@/components/shared/MobileNavMenu";
+import { headerCtaClasses } from "@/components/shared/headerChrome";
 import { useMobileNav } from "@/components/shared/useMobileNav";
 import { scrollToSection } from "@/lib/scrollToSection";
 
-/** Compact CTA for the centered header layout. */
-const headerCtaClass = `${pm.primaryButton} w-auto max-w-[10.5rem] shrink-0 truncate px-4 py-2 text-xs @min-[640px]/page:max-w-none @min-[640px]/page:px-6 @min-[640px]/page:text-sm`;
+/** Compact CTA for the centered header layout (display gated separately). */
+const { chrome: headerCtaChrome, drawer: headerCtaDrawer } = headerCtaClasses(
+  `${pm.primaryButton} w-auto max-w-[10.5rem] shrink-0 truncate px-4 py-2 text-xs @min-[640px]/page:max-w-none @min-[640px]/page:px-6 @min-[640px]/page:text-sm`,
+);
 
 /**
  * Premium centered header — brand lockup center, nav below, CTA top-right.
@@ -49,8 +52,8 @@ export function PremiumHeader02({ content }: SectionComponentProps) {
       className="sticky top-[var(--shell-header-h)] z-30 border-b border-white/10 bg-[var(--theme-bg)]/90 backdrop-blur-xl"
       role="banner"
     >
-      <div className="relative mx-auto max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10 @min-[768px]/page:py-5">
-        <div className="flex items-center justify-between gap-3 @min-[1024px]/page:block">
+      <div className="relative mx-auto w-full min-w-0 max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10 @min-[768px]/page:py-5">
+        <div className="flex w-full min-w-0 items-center justify-between gap-3 @min-[1024px]/page:block">
           <button
             type="button"
             onClick={() => handleNavigate("hero")}
@@ -86,7 +89,7 @@ export function PremiumHeader02({ content }: SectionComponentProps) {
             <button
               type="button"
               onClick={handleCta}
-              className={`hidden @min-[1024px]/page:inline-flex ${headerCtaClass}`}
+              className={headerCtaChrome}
             >
               {ctaLabel}
             </button>
@@ -124,7 +127,7 @@ export function PremiumHeader02({ content }: SectionComponentProps) {
           linkClassName={pm.navLink}
           ctaLabel={ctaLabel}
           onCta={handleCta}
-          ctaClassName={headerCtaClass}
+          ctaClassName={headerCtaDrawer}
         />
       </div>
     </header>

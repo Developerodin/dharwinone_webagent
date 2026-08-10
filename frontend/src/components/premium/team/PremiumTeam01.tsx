@@ -41,13 +41,13 @@ export function PremiumTeam01({ content, assets }: SectionComponentProps) {
                 ) : (
                   <div
                     aria-hidden="true"
-                    className="mx-auto aspect-[3/4] w-full max-w-xs bg-[var(--surface)]"
+                    className="mx-auto aspect-[3/4] w-full max-w-xs bg-[var(--theme-card)]"
                   />
                 )}
-                <h3 className="mt-5 text-lg font-medium text-[var(--ink)]">
+                <h3 className="mt-5 text-lg font-medium text-[var(--theme-ink)]">
                   {member.name}
                 </h3>
-                <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
+                <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[var(--theme-accent)]">
                   {member.role}
                 </p>
                 {member.bio ? (

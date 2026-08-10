@@ -25,13 +25,13 @@ export function PremiumServices02({ content }: SectionComponentProps) {
           {items.map((item, index) => (
             <li
               key={item.title}
-              className="grid grid-cols-[auto_1fr] gap-4 border-b border-[var(--line)] pb-6 last:border-b-0"
+              className="grid grid-cols-[auto_1fr] gap-4 border-b border-[var(--theme-line)] pb-6 last:border-b-0"
             >
-              <span className="pt-1 font-[family-name:var(--font-display)] text-sm text-[var(--accent)]">
+              <span className="pt-1 font-[family-name:var(--font-display)] text-sm text-[var(--theme-accent)]">
                 {String(index + 1).padStart(2, "0")}
               </span>
               <div>
-                <h3 className="text-lg font-medium text-[var(--ink)]">{item.title}</h3>
+                <h3 className="text-lg font-medium text-[var(--theme-ink)]">{item.title}</h3>
                 <p className={`mt-2 text-sm ${pm.body}`}>{item.description}</p>
               </div>
             </li>

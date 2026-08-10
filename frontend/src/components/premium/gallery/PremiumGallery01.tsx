@@ -23,7 +23,7 @@ export function PremiumGallery01({ content, assets }: SectionComponentProps) {
           </p>
         ) : null}
         {assets.length === 0 ? (
-          <p className="mt-10 text-center text-sm text-[var(--muted)] @min-[640px]:mt-12">
+          <p className="mt-10 text-center text-sm text-[var(--theme-muted)] @min-[640px]:mt-12">
             No gallery images available for this build.
           </p>
         ) : (

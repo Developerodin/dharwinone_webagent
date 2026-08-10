@@ -6,11 +6,14 @@ import {
   MobileNavPanel,
   MobileNavToggle,
 } from "@/components/shared/MobileNavMenu";
+import { headerCtaClasses } from "@/components/shared/headerChrome";
 import { useMobileNav } from "@/components/shared/useMobileNav";
 import { scrollToSection } from "@/lib/scrollToSection";
 
-/** Compact CTA for the single-row header. */
-const headerCtaClass = `${pm.primaryButton} w-auto max-w-[9.5rem] shrink-0 truncate px-3 py-2 text-xs @min-[640px]/page:max-w-none @min-[640px]/page:px-5`;
+/** Compact CTA for the single-row header (display gated separately). */
+const { chrome: headerCtaChrome, drawer: headerCtaDrawer } = headerCtaClasses(
+  `${pm.primaryButton} w-auto max-w-[9.5rem] shrink-0 truncate px-3 py-2 text-xs @min-[640px]/page:max-w-none @min-[640px]/page:px-5`,
+);
 
 /**
  * Premium compact single-row header — brand | inline nav | CTA.
@@ -43,7 +46,7 @@ export function PremiumHeader03({ content }: SectionComponentProps) {
       className="sticky top-[var(--shell-header-h)] z-30 border-b border-white/10 bg-[var(--theme-bg)]/92 backdrop-blur-xl"
       role="banner"
     >
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2.5 @min-[640px]/page:px-6 @min-[768px]/page:gap-6 @min-[768px]/page:px-10 @min-[768px]/page:py-3">
+      <div className="mx-auto flex w-full min-w-0 max-w-7xl items-center gap-3 px-4 py-2.5 @min-[640px]/page:px-6 @min-[768px]/page:gap-6 @min-[768px]/page:px-10 @min-[768px]/page:py-3">
         <button
           type="button"
           onClick={() => handleNavigate("hero")}
@@ -75,7 +78,7 @@ export function PremiumHeader03({ content }: SectionComponentProps) {
           <button
             type="button"
             onClick={handleCta}
-            className={`hidden @min-[1024px]/page:inline-flex ${headerCtaClass}`}
+            className={headerCtaChrome}
           >
             {ctaLabel}
           </button>
@@ -88,7 +91,7 @@ export function PremiumHeader03({ content }: SectionComponentProps) {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 @min-[640px]/page:px-6 @min-[768px]/page:px-10">
+      <div className="mx-auto w-full min-w-0 max-w-7xl px-4 @min-[640px]/page:px-6 @min-[768px]/page:px-10">
         <MobileNavPanel
           open={open}
           menuId={menuId}
@@ -98,7 +101,7 @@ export function PremiumHeader03({ content }: SectionComponentProps) {
           linkClassName={pm.navLink}
           ctaLabel={ctaLabel}
           onCta={handleCta}
-          ctaClassName={headerCtaClass}
+          ctaClassName={headerCtaDrawer}
         />
       </div>
     </header>

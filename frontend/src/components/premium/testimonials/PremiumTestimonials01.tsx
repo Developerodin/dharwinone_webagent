@@ -29,12 +29,12 @@ export function PremiumTestimonials01({ content }: SectionComponentProps) {
         {active ? (
           <figure className="mt-10 @min-[640px]:mt-14">
             <blockquote
-              className={`text-xl leading-relaxed text-[var(--ink)] @min-[640px]:text-2xl @min-[768px]:text-3xl ${pm.heading}`}
+              className={`text-xl leading-relaxed @min-[640px]:text-2xl @min-[768px]:text-3xl ${pm.heading}`}
             >
               “{active.quote}”
             </blockquote>
             <figcaption className="mt-8">
-              <p className="text-sm font-medium text-[var(--ink)]">{active.name}</p>
+              <p className={`text-sm font-medium ${pm.heading}`}>{active.name}</p>
               <p className={`mt-1 text-xs uppercase tracking-[0.18em] ${pm.body}`}>
                 {active.role}
               </p>
@@ -47,7 +47,7 @@ export function PremiumTestimonials01({ content }: SectionComponentProps) {
               type="button"
               onClick={prev}
               aria-label="Previous testimonial"
-              className="text-xs uppercase tracking-[0.2em] text-[var(--muted)] hover:text-[var(--ink)]"
+              className="text-xs uppercase tracking-[0.2em] text-[var(--theme-muted)] transition hover:text-[var(--theme-ink)]"
             >
               Prev
             </button>
@@ -61,7 +61,9 @@ export function PremiumTestimonials01({ content }: SectionComponentProps) {
                   aria-label={`Testimonial ${i + 1}`}
                   onClick={() => goTo(i)}
                   className={`h-1.5 w-6 transition-colors ${
-                    i === index ? "bg-[var(--accent)]" : "bg-[var(--line)]"
+                    i === index
+                      ? "bg-[var(--theme-accent)]"
+                      : "bg-[var(--theme-line)]"
                   }`}
                 />
               ))}
@@ -70,7 +72,7 @@ export function PremiumTestimonials01({ content }: SectionComponentProps) {
               type="button"
               onClick={next}
               aria-label="Next testimonial"
-              className="text-xs uppercase tracking-[0.2em] text-[var(--muted)] hover:text-[var(--ink)]"
+              className="text-xs uppercase tracking-[0.2em] text-[var(--theme-muted)] transition hover:text-[var(--theme-ink)]"
             >
               Next
             </button>

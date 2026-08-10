@@ -25,7 +25,7 @@ export function PremiumReservation01({ content }: SectionComponentProps) {
           </p>
         ) : null}
         {(phone || address) && (
-          <ul className="mt-6 space-y-1 text-sm text-[var(--ink)] @min-[640px]:mt-8" role="list">
+          <ul className="mt-6 space-y-1 text-sm text-[var(--theme-ink)] @min-[640px]:mt-8" role="list">
             {phone ? <li>{phone}</li> : null}
             {address ? <li className={pm.body}>{address}</li> : null}
           </ul>

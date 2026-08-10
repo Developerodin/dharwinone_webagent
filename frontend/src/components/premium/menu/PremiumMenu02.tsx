@@ -38,20 +38,20 @@ export function PremiumMenu02({ content }: SectionComponentProps) {
             items.map((item, index) => (
               <li
                 key={item.name}
-                className="group flex gap-4 border-t border-[var(--line)] py-5 first:border-t-0 @min-[640px]:gap-6 @min-[640px]:py-6"
+                className="group flex gap-4 border-t border-[var(--theme-line)] py-5 first:border-t-0 @min-[640px]:gap-6 @min-[640px]:py-6"
               >
                 <span
                   aria-hidden="true"
-                  className="mt-1 w-8 shrink-0 text-sm tabular-nums text-[var(--accent)] transition-opacity duration-200 group-hover:opacity-100 @min-[640px]:w-10 @min-[640px]:text-base"
+                  className="mt-1 w-8 shrink-0 text-sm tabular-nums text-[var(--theme-accent)] transition-opacity duration-200 group-hover:opacity-100 @min-[640px]:w-10 @min-[640px]:text-base"
                 >
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                    <h3 className="break-words text-lg font-medium text-[var(--ink)] @min-[640px]:text-xl">
+                    <h3 className={`break-words text-lg font-medium @min-[640px]:text-xl ${pm.heading}`}>
                       {item.name}
                     </h3>
-                    <span className="shrink-0 text-base font-medium tabular-nums text-[var(--accent)] @min-[640px]:text-lg">
+                    <span className="shrink-0 text-base font-medium tabular-nums text-[var(--theme-accent)] @min-[640px]:text-lg">
                       {formatPrice(item.price)}
                     </span>
                   </div>

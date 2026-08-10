@@ -72,12 +72,12 @@ export function EditorTopBar({
       className="builder-header flex shrink-0 items-center gap-2 px-2 sm:gap-3 sm:px-3"
       role="banner"
     >
-      <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+      <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:max-w-[40%] sm:flex-none sm:gap-2">
         {onToggleChat ? (
           <button
             type="button"
             onClick={onToggleChat}
-            className="inline-flex size-8 items-center justify-center rounded-lg text-[var(--lovable-text-muted)] transition hover:bg-[var(--lovable-hover)] hover:text-[var(--lovable-text)]"
+            className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-[var(--lovable-text-muted)] transition hover:bg-[var(--lovable-hover)] hover:text-[var(--lovable-text)] sm:size-8"
             aria-label={chatCollapsed ? "Show chat panel" : "Hide chat panel"}
             aria-pressed={!chatCollapsed}
           >
@@ -88,11 +88,11 @@ export function EditorTopBar({
         <button
           type="button"
           onClick={onGoHome}
-          className="flex min-w-0 items-center gap-1.5 rounded-lg px-1.5 py-1 text-left transition hover:bg-[var(--lovable-hover)]"
+          className="flex min-w-0 items-center gap-1.5 rounded-lg px-1 py-1 text-left transition hover:bg-[var(--lovable-hover)] sm:px-1.5"
           aria-label={`Project ${projectTitle}. Open dashboard`}
         >
           <div className="min-w-0">
-            <div className="flex items-center gap-1">
+            <div className="flex min-w-0 items-center gap-1">
               <p className="truncate text-[13px] font-medium text-[var(--lovable-text)]">
                 {projectTitle}
               </p>
@@ -221,7 +221,7 @@ export function EditorTopBar({
         ) : null}
       </div>
 
-      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+      <div className="ml-auto flex min-w-0 shrink-0 items-center gap-1 sm:gap-1.5 md:gap-2">
         <div
           className="flex rounded-lg border border-[var(--lovable-border)] bg-[var(--lovable-bg)] p-0.5 lg:hidden"
           role="tablist"
@@ -233,7 +233,7 @@ export function EditorTopBar({
             aria-selected={mobilePane === "chat"}
             onClick={() => onMobilePaneChange("chat")}
             className={cn(
-              "inline-flex min-h-8 items-center gap-1 rounded-md px-2 text-[11px] font-medium transition",
+              "inline-flex min-h-9 min-w-9 items-center justify-center gap-1 rounded-md px-2 text-[11px] font-medium transition sm:min-h-8",
               mobilePane === "chat"
                 ? "bg-[var(--lovable-active)] text-[var(--lovable-text)]"
                 : "text-[var(--lovable-text-faint)]",
@@ -241,7 +241,7 @@ export function EditorTopBar({
             aria-label="Show chat"
           >
             <MessageSquare className="size-3.5" aria-hidden="true" />
-            Chat
+            <span className="hidden sm:inline">Chat</span>
           </button>
           <button
             type="button"
@@ -249,7 +249,7 @@ export function EditorTopBar({
             aria-selected={mobilePane === "preview"}
             onClick={() => onMobilePaneChange("preview")}
             className={cn(
-              "inline-flex min-h-8 items-center gap-1 rounded-md px-2 text-[11px] font-medium transition",
+              "inline-flex min-h-9 min-w-9 items-center justify-center gap-1 rounded-md px-2 text-[11px] font-medium transition sm:min-h-8",
               mobilePane === "preview"
                 ? "bg-[var(--lovable-active)] text-[var(--lovable-text)]"
                 : "text-[var(--lovable-text-faint)]",
@@ -257,7 +257,7 @@ export function EditorTopBar({
             aria-label="Show preview"
           >
             <Monitor className="size-3.5" aria-hidden="true" />
-            Preview
+            <span className="hidden sm:inline">Preview</span>
           </button>
         </div>
 
@@ -282,7 +282,7 @@ export function EditorTopBar({
           type="button"
           disabled
           title="Coming soon"
-          className="hidden min-h-8 cursor-not-allowed items-center gap-1 rounded-lg bg-gradient-to-r from-[var(--lovable-upgrade-from)] to-[var(--lovable-upgrade-to)] px-2.5 text-[12px] font-medium text-white opacity-40 shadow-sm sm:inline-flex"
+          className="hidden min-h-8 cursor-not-allowed items-center gap-1 rounded-lg bg-gradient-to-r from-[var(--lovable-upgrade-from)] to-[var(--lovable-upgrade-to)] px-2.5 text-[12px] font-medium text-white opacity-40 shadow-sm lg:inline-flex"
           aria-label="Upgrade plan"
         >
           <Zap className="size-3.5" aria-hidden="true" />
@@ -293,10 +293,11 @@ export function EditorTopBar({
           type="button"
           disabled
           title="Coming soon"
-          className="inline-flex min-h-8 cursor-not-allowed items-center rounded-lg bg-[var(--lovable-publish)] px-3 text-[12px] font-medium text-white opacity-40"
+          className="inline-flex min-h-9 min-w-9 cursor-not-allowed items-center justify-center rounded-lg bg-[var(--lovable-publish)] px-2.5 text-[12px] font-medium text-white opacity-40 sm:min-h-8 sm:px-3"
           aria-label="Publish site"
         >
-          Publish
+          <span className="sm:hidden">Pub</span>
+          <span className="hidden sm:inline">Publish</span>
         </button>
       </div>
     </header>

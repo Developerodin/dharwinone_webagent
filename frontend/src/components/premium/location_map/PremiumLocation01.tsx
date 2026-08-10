@@ -27,23 +27,19 @@ export function PremiumLocation01({ content }: SectionComponentProps) {
         <dl className="mt-10 space-y-6 text-left @min-[640px]:mt-12 @min-[640px]:space-y-8 @min-[768px]:text-center">
           {address ? (
             <div className="min-w-0">
-              <dt className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--muted)] @min-[640px]:text-xs">
-                Address
-              </dt>
-              <dd className="mt-2 break-words text-base text-[var(--ink)] @min-[640px]:text-lg">
+              <dt className={pm.inputLabel}>Address</dt>
+              <dd className="mt-2 break-words text-base text-[var(--theme-ink)] @min-[640px]:text-lg">
                 {address}
               </dd>
             </div>
           ) : null}
           {phone ? (
             <div>
-              <dt className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--muted)] @min-[640px]:text-xs">
-                Phone
-              </dt>
+              <dt className={pm.inputLabel}>Phone</dt>
               <dd className="mt-2">
                 <a
                   href={`tel:${phone.replace(/\D/g, "")}`}
-                  className="break-all text-base text-[var(--accent)] hover:underline @min-[640px]:text-lg"
+                  className="break-all text-base text-[var(--theme-accent)] hover:underline @min-[640px]:text-lg"
                 >
                   {phone}
                 </a>

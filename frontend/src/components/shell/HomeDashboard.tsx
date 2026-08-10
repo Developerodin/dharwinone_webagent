@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Coffee,
   MapPin,
+  Menu,
   Sparkles,
   UtensilsCrossed,
   Wine,
@@ -60,6 +61,8 @@ type HomeDashboardProps = {
   userName?: string;
   onStartBuild: (prompt: string) => void;
   disabled?: boolean;
+  /** Opens the mobile workspace drawer (< md). */
+  onOpenMenu?: () => void;
 };
 
 /**
@@ -69,6 +72,7 @@ export function HomeDashboard({
   userName = "John",
   onStartBuild,
   disabled = false,
+  onOpenMenu,
 }: HomeDashboardProps) {
   const [prompt, setPrompt] = useState("");
 
@@ -82,7 +86,7 @@ export function HomeDashboard({
 
   return (
     <main
-      className="lovable-mesh relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden"
+      className="lovable-mesh relative flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overscroll-contain"
       aria-label="Dashboard"
     >
       <div
@@ -95,37 +99,59 @@ export function HomeDashboard({
         }}
       />
 
-      <div className="relative z-10 flex shrink-0 items-center justify-between gap-3 px-4 pt-4 sm:justify-center sm:pt-6">
-        <div className="flex items-center gap-2 md:hidden">
-          <div
-            className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 via-violet-500 to-blue-500 text-[10px] font-bold text-white"
-            aria-hidden="true"
-          >
-            P+
+      <div className="relative z-10 flex shrink-0 flex-col gap-2 px-3 pt-3 sm:gap-3 sm:px-4 sm:pt-5 md:items-center md:pt-6">
+        <div className="flex items-center justify-between gap-2 md:contents">
+          <div className="flex min-w-0 items-center gap-2 md:hidden">
+            {onOpenMenu ? (
+              <button
+                type="button"
+                onClick={onOpenMenu}
+                className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/12 bg-black/35 text-white/90 backdrop-blur-md transition hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                aria-label="Open workspace navigation"
+              >
+                <Menu className="size-4" aria-hidden="true" />
+              </button>
+            ) : null}
+            <div className="flex min-w-0 items-center gap-2">
+              <div
+                className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 via-violet-500 to-blue-500 text-[10px] font-bold text-white"
+                aria-hidden="true"
+              >
+                P+
+              </div>
+              <span className="truncate text-[13px] font-medium text-white/90">
+                ProwPlus
+              </span>
+            </div>
           </div>
-          <span className="text-[13px] font-medium text-white/90">ProwPlus</span>
         </div>
+
         <div
-          className="inline-flex max-w-full items-center gap-2 rounded-full border border-amber-400/25 bg-black/40 px-3 py-1.5 text-[12px] text-white/90 backdrop-blur-md"
+          className="inline-flex w-full max-w-xl items-center gap-2 self-stretch rounded-2xl border border-amber-400/25 bg-black/40 px-2.5 py-1.5 text-[11px] leading-snug text-white/90 backdrop-blur-md sm:self-center sm:rounded-full sm:px-3 sm:text-[12px]"
           role="status"
           aria-label="Internal use only: do not share this link — tokens may get exhausted"
         >
           <span className="shrink-0 rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-black uppercase">
             Internal
           </span>
-          <span className="truncate">
-            Open now — don’t share this link; tokens may get exhausted. Internal use only.
+          <span className="min-w-0 text-left sm:truncate">
+            <span className="sm:hidden">
+              Internal only — don’t share; tokens may run out.
+            </span>
+            <span className="hidden sm:inline">
+              Open now — don’t share this link; tokens may get exhausted.
+              Internal use only.
+            </span>
           </span>
         </div>
-        <span className="size-7 md:hidden" aria-hidden="true" />
       </div>
 
-      <div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center px-4 pb-16 pt-8 sm:pb-20">
-        <h1 className="max-w-3xl text-center text-[2rem] font-semibold tracking-tight text-white sm:text-4xl md:text-[2.75rem]">
+      <div className="relative z-10 flex min-h-[min(100%,32rem)] flex-1 flex-col items-center justify-center px-4 pb-10 pt-6 sm:pb-16 sm:pt-8">
+        <h1 className="max-w-3xl text-center text-[1.75rem] font-semibold tracking-tight text-white sm:text-4xl md:text-[2.75rem]">
           Got an idea, {userName}?
         </h1>
 
-        <div id="prompt" className="mt-8 w-full max-w-2xl scroll-mt-8">
+        <div id="prompt" className="mt-6 w-full max-w-2xl scroll-mt-8 sm:mt-8">
           <PromptComposer
             variant="home"
             value={prompt}
@@ -138,20 +164,20 @@ export function HomeDashboard({
         </div>
 
         <ul
-          className="mt-5 flex max-w-3xl flex-wrap items-center justify-center gap-2"
+          className="mt-4 flex w-full max-w-3xl snap-x snap-mandatory gap-2 overflow-x-auto px-1 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] mask-[linear-gradient(90deg,#000_calc(100%-1.25rem),transparent)] sm:mt-5 sm:mask-none sm:flex-wrap sm:items-center sm:justify-center sm:overflow-visible sm:px-0 sm:pb-0 sm:[&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar]:hidden"
           role="list"
           aria-label="Quick start templates"
         >
           {QUICK_CHIPS.map((chip) => {
             const Icon = chip.icon;
             return (
-              <li key={chip.id}>
+              <li key={chip.id} className="shrink-0 snap-start sm:shrink">
                 <button
                   type="button"
                   disabled={disabled}
                   onClick={() => fillFromChip(chip)}
                   className={cn(
-                    "inline-flex min-h-9 items-center gap-2 rounded-full border border-white/12 bg-black/30 px-3.5 py-2 text-[13px] text-white/90 backdrop-blur-md transition",
+                    "inline-flex min-h-10 items-center gap-2 rounded-full border border-white/12 bg-black/30 px-3.5 py-2 text-[13px] whitespace-nowrap text-white/90 backdrop-blur-md transition",
                     "hover:border-white/25 hover:bg-black/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
                     "disabled:cursor-not-allowed disabled:opacity-40",
                   )}

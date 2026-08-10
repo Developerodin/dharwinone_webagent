@@ -3,6 +3,7 @@ import {
   MobileNavPanel,
   MobileNavToggle,
 } from "@/components/shared/MobileNavMenu";
+import { headerCtaClasses } from "@/components/shared/headerChrome";
 import type { ThemeTokens } from "@/components/shared/themeTokens";
 import { useMobileNav } from "@/components/shared/useMobileNav";
 import { createScrollHandler, scrollToSection } from "@/lib/scrollToSection";
@@ -19,10 +20,16 @@ const FAMILY_MOBILE_TRIGGER =
 const FAMILY_MOBILE_PANEL = "mt-3 border-[var(--theme-line)]";
 
 /**
- * Builds compact CTA class string for family headers.
+ * Builds chrome/drawer CTA classes for family headers (display gated separately).
  */
-function headerCtaClass(tokens: ThemeTokens): string {
-  return `${tokens.primaryButton} w-auto max-w-[10.5rem] shrink-0 truncate px-4 py-2 text-xs @min-[640px]/page:max-w-none @min-[640px]/page:px-6 @min-[640px]/page:text-sm`;
+function familyHeaderCta(
+  tokens: ThemeTokens,
+  compact = false,
+): { chrome: string; drawer: string } {
+  const sizing = compact
+    ? "w-auto max-w-[9.5rem] shrink-0 truncate px-3 py-2 text-xs @min-[640px]/page:max-w-none @min-[640px]/page:px-5"
+    : "w-auto max-w-[10.5rem] shrink-0 truncate px-4 py-2 text-xs @min-[640px]/page:max-w-none @min-[640px]/page:px-6 @min-[640px]/page:text-sm";
+  return headerCtaClasses(`${tokens.primaryButton} ${sizing}`);
 }
 
 /**
@@ -43,7 +50,8 @@ export function createFamilyHeaders(
  * Brand left + CTA right; nav row under brand.
  */
 function createHeader01(tokens: ThemeTokens): SectionComponent {
-  const ctaClass = headerCtaClass(tokens);
+  const { chrome: headerCtaChrome, drawer: headerCtaDrawer } =
+    familyHeaderCta(tokens);
 
   /**
    * Sticky left-brand family header.
@@ -77,8 +85,8 @@ function createHeader01(tokens: ThemeTokens): SectionComponent {
         aria-label="Site header"
         className={`${tokens.section} sticky top-[var(--shell-header-h)] z-30 border-b border-[var(--theme-line)] bg-[color:color-mix(in_srgb,var(--theme-bg)_88%,transparent)]/95 shadow-[0_1px_0_rgba(17,17,17,0.04)] backdrop-blur-md`}
       >
-        <div className="mx-auto max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[640px]/page:py-4 @min-[768px]/page:px-10">
-          <div className="flex items-center justify-between gap-3">
+        <div className="mx-auto w-full min-w-0 max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[640px]/page:py-4 @min-[768px]/page:px-10">
+          <div className="flex w-full min-w-0 items-center justify-between gap-3">
             <button
               type="button"
               onClick={() => handleNavigate("hero")}
@@ -104,7 +112,7 @@ function createHeader01(tokens: ThemeTokens): SectionComponent {
               <button
                 type="button"
                 onClick={handleCta}
-                className={`hidden @min-[1024px]/page:inline-flex ${ctaClass}`}
+                className={headerCtaChrome}
                 aria-label={ctaLabel}
               >
                 {ctaLabel}
@@ -144,7 +152,7 @@ function createHeader01(tokens: ThemeTokens): SectionComponent {
             linkClassName={tokens.navLink}
             ctaLabel={ctaLabel}
             onCta={handleCta}
-            ctaClassName={ctaClass}
+            ctaClassName={headerCtaDrawer}
           />
         </div>
       </header>
@@ -158,7 +166,8 @@ function createHeader01(tokens: ThemeTokens): SectionComponent {
  * Centered brand lockup with nav below and CTA top-right.
  */
 function createHeader02(tokens: ThemeTokens): SectionComponent {
-  const ctaClass = headerCtaClass(tokens);
+  const { chrome: headerCtaChrome, drawer: headerCtaDrawer } =
+    familyHeaderCta(tokens);
 
   /**
    * Sticky centered family header.
@@ -192,8 +201,8 @@ function createHeader02(tokens: ThemeTokens): SectionComponent {
         aria-label="Site header"
         className={`${tokens.section} sticky top-[var(--shell-header-h)] z-30 border-b border-[var(--theme-line)] bg-[color:color-mix(in_srgb,var(--theme-bg)_90%,transparent)]/95 backdrop-blur-md`}
       >
-        <div className="relative mx-auto max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10 @min-[768px]/page:py-5">
-          <div className="flex items-center justify-between gap-3 @min-[1024px]/page:block">
+        <div className="relative mx-auto w-full min-w-0 max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10 @min-[768px]/page:py-5">
+          <div className="flex w-full min-w-0 items-center justify-between gap-3 @min-[1024px]/page:block">
             <button
               type="button"
               onClick={() => handleNavigate("hero")}
@@ -219,7 +228,7 @@ function createHeader02(tokens: ThemeTokens): SectionComponent {
               <button
                 type="button"
                 onClick={handleCta}
-                className={`hidden @min-[1024px]/page:inline-flex ${ctaClass}`}
+                className={headerCtaChrome}
                 aria-label={ctaLabel}
               >
                 {ctaLabel}
@@ -259,7 +268,7 @@ function createHeader02(tokens: ThemeTokens): SectionComponent {
             linkClassName={tokens.navLink}
             ctaLabel={ctaLabel}
             onCta={handleCta}
-            ctaClassName={ctaClass}
+            ctaClassName={headerCtaDrawer}
           />
         </div>
       </header>
@@ -273,7 +282,8 @@ function createHeader02(tokens: ThemeTokens): SectionComponent {
  * Compact single-row: brand | inline nav | CTA.
  */
 function createHeader03(tokens: ThemeTokens): SectionComponent {
-  const ctaClass = `${tokens.primaryButton} w-auto max-w-[9.5rem] shrink-0 truncate px-3 py-2 text-xs @min-[640px]/page:max-w-none @min-[640px]/page:px-5`;
+  const { chrome: headerCtaChrome, drawer: headerCtaDrawer } =
+    familyHeaderCta(tokens, true);
 
   /**
    * Sticky compact single-row family header.
@@ -305,7 +315,7 @@ function createHeader03(tokens: ThemeTokens): SectionComponent {
         aria-label="Site header"
         className={`${tokens.section} sticky top-[var(--shell-header-h)] z-30 border-b border-[var(--theme-line)] bg-[color:color-mix(in_srgb,var(--theme-bg)_92%,transparent)]/95 backdrop-blur-md`}
       >
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2.5 @min-[640px]/page:px-6 @min-[768px]/page:gap-6 @min-[768px]/page:px-10 @min-[768px]/page:py-3">
+        <div className="mx-auto flex w-full min-w-0 max-w-7xl items-center gap-3 px-4 py-2.5 @min-[640px]/page:px-6 @min-[768px]/page:gap-6 @min-[768px]/page:px-10 @min-[768px]/page:py-3">
           <button
             type="button"
             onClick={() => handleNavigate("hero")}
@@ -340,7 +350,7 @@ function createHeader03(tokens: ThemeTokens): SectionComponent {
             <button
               type="button"
               onClick={handleCta}
-              className={`hidden @min-[1024px]/page:inline-flex ${ctaClass}`}
+              className={headerCtaChrome}
               aria-label={ctaLabel}
             >
               {ctaLabel}
@@ -354,7 +364,7 @@ function createHeader03(tokens: ThemeTokens): SectionComponent {
           </div>
         </div>
 
-        <div className="mx-auto max-w-7xl px-4 @min-[640px]/page:px-6 @min-[768px]/page:px-10">
+        <div className="mx-auto w-full min-w-0 max-w-7xl px-4 @min-[640px]/page:px-6 @min-[768px]/page:px-10">
           <MobileNavPanel
             open={open}
             menuId={menuId}
@@ -364,7 +374,7 @@ function createHeader03(tokens: ThemeTokens): SectionComponent {
             linkClassName={tokens.navLink}
             ctaLabel={ctaLabel}
             onCta={handleCta}
-            ctaClassName={ctaClass}
+            ctaClassName={headerCtaDrawer}
           />
         </div>
       </header>

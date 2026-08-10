@@ -70,7 +70,7 @@ function SectionSlot({ section, animate, delayMs }: SectionSlotProps) {
       <div
         id={sectionDomId(section.type)}
         role="alert"
-        className="border border-[var(--line)] bg-[var(--surface)] px-4 py-6 text-sm text-[var(--muted)]"
+        className="border border-[var(--theme-line)] bg-[var(--theme-card)] px-4 py-6 text-sm text-[var(--theme-muted)]"
       >
         Unknown component: {section.componentId}
       </div>

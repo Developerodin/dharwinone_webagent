@@ -19,7 +19,7 @@ export function PremiumAbout01({ content, assets }: SectionComponentProps) {
             <>
               <div
                 aria-hidden="true"
-                className="absolute left-0 top-0 h-[calc(100%-0.5rem)] w-[calc(100%-0.5rem)] rounded-xl border-2 border-[var(--accent)]/30 @min-[640px]:h-[calc(100%-0.75rem)] @min-[640px]:w-[calc(100%-0.75rem)]"
+                className="absolute left-0 top-0 h-[calc(100%-0.5rem)] w-[calc(100%-0.5rem)] rounded-xl border-2 border-[var(--theme-accent)]/30 @min-[640px]:h-[calc(100%-0.75rem)] @min-[640px]:w-[calc(100%-0.75rem)]"
               />
               <SectionMedia
                 src={imagePath}
@@ -29,7 +29,7 @@ export function PremiumAbout01({ content, assets }: SectionComponentProps) {
           ) : (
             <div
               aria-hidden="true"
-              className="aspect-[4/5] w-full rounded-xl bg-[var(--surface)]"
+              className="aspect-[4/5] w-full rounded-xl bg-[var(--theme-card)]"
             />
           )}
         </div>

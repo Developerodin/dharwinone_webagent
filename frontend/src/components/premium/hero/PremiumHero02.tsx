@@ -54,7 +54,7 @@ export function PremiumHero02({ content, assets }: SectionComponentProps) {
           ) : (
             <div
               aria-hidden="true"
-              className="absolute inset-0 bg-[var(--surface)]"
+              className="absolute inset-0 bg-[var(--theme-card)]"
             />
           )}
           <div

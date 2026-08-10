@@ -12,6 +12,7 @@ import {
   formatLastSaved,
 } from "@/components/shell/EditorTopBar";
 import { HomeDashboard } from "@/components/shell/HomeDashboard";
+import { MobileSidebarDrawer } from "@/components/shell/MobileSidebarDrawer";
 import { PromptComposer } from "@/components/shell/PromptComposer";
 import { handleChatAction, useChatFlow } from "@/hooks/useChatFlow";
 import {
@@ -43,6 +44,7 @@ export function ChatApp() {
   const [projects, setProjects] = useState(() => listProjects());
   const [projectFilter, setProjectFilter] = useState<ProjectFilter>("all");
   const [mobilePane, setMobilePane] = useState<MobilePane>("chat");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [chatCollapsed, setChatCollapsed] = useState(false);
   const [deviceMode, setDeviceMode] = useState<DeviceMode>("desktop");
   const [editorViewMode, setEditorViewMode] =
@@ -230,36 +232,55 @@ export function ChatApp() {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, [refreshProjects, restoreProject, view]);
 
+  /**
+   * Focuses the home prompt composer (used by sidebar Search).
+   */
+  function focusHomePrompt() {
+    const field = document.querySelector<HTMLTextAreaElement>(
+      "#prompt textarea",
+    );
+    field?.focus();
+  }
+
+  const sidebarProjects =
+    projectFilter === "starred" || projectFilter === "shared" ? [] : projects;
+
   if (view === "home") {
     return (
-      <div className="builder-shell flex h-svh overflow-hidden font-sans">
+      <div className="builder-shell flex h-svh min-w-0 overflow-hidden font-sans">
         <div className="hidden h-full shrink-0 md:flex">
           <DashboardSidebar
-            projects={
-              projectFilter === "starred" || projectFilter === "shared"
-                ? []
-                : projects
-            }
+            projects={sidebarProjects}
             activeFilter={projectFilter}
             onFilterChange={setProjectFilter}
             onSelectProject={openProject}
             onGoDashboard={goHome}
             activeProjectId={projectId}
-            onSearch={() => {
-              const field = document.querySelector<HTMLTextAreaElement>(
-                "#prompt textarea",
-              );
-              field?.focus();
-            }}
+            onSearch={focusHomePrompt}
           />
         </div>
-        <HomeDashboard onStartBuild={startFromHome} disabled={isBusy} />
+        <HomeDashboard
+          onStartBuild={startFromHome}
+          disabled={isBusy}
+          onOpenMenu={() => setMobileNavOpen(true)}
+        />
+        <MobileSidebarDrawer
+          open={mobileNavOpen}
+          onClose={() => setMobileNavOpen(false)}
+          projects={sidebarProjects}
+          activeFilter={projectFilter}
+          onFilterChange={setProjectFilter}
+          onSelectProject={openProject}
+          onGoDashboard={goHome}
+          activeProjectId={projectId}
+          onSearch={focusHomePrompt}
+        />
       </div>
     );
   }
 
   return (
-    <div className="builder-shell flex h-svh flex-col overflow-hidden font-sans">
+    <div className="builder-shell flex h-svh min-w-0 flex-col overflow-hidden font-sans">
       <EditorTopBar
         projectTitle={projectTitle}
         lastSavedLabel={formatLastSaved(savedAt)}

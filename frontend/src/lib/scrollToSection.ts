@@ -50,6 +50,7 @@ const FAMILY_STICKY_OFFSET_PX = 88;
 
 /**
  * Smooth-scrolls to a section by type. Uses the preview scroll container when present.
+ * No-ops when the target section is not on the page.
  */
 export function scrollToSection(sectionType: SectionType | string): void {
   if (typeof document === "undefined") return;
@@ -57,22 +58,32 @@ export function scrollToSection(sectionType: SectionType | string): void {
   const target = document.getElementById(sectionDomId(sectionType));
   if (!target) return;
 
-  const scrollParent = findScrollParent(target);
-  if (!scrollParent) {
-    // Window scroll (PreviewPage): clear shell + sticky family header.
-    const offset = readShellHeaderOffsetPx() + FAMILY_STICKY_OFFSET_PX;
-    const nextTop = target.getBoundingClientRect().top + window.scrollY - offset;
-    window.scrollTo({ top: Math.max(0, nextTop), behavior: "smooth" });
-    return;
-  }
+  // Prefer scrolling after layout settles so sticky headers measure correctly.
+  requestAnimationFrame(() => {
+    const liveTarget = document.getElementById(sectionDomId(sectionType));
+    if (!liveTarget) return;
 
-  const parentRect = scrollParent.getBoundingClientRect();
-  const targetRect = target.getBoundingClientRect();
-  // Preview canvas scroll: shell sits outside the pane — only clear family sticky.
+    const scrollParent = findScrollParent(liveTarget);
+    if (!scrollParent) {
+      // Window scroll (PreviewPage): clear shell + sticky family header.
+      const offset = readShellHeaderOffsetPx() + FAMILY_STICKY_OFFSET_PX;
+      const nextTop =
+        liveTarget.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top: Math.max(0, nextTop), behavior: "smooth" });
+      return;
+    }
+
+    const parentRect = scrollParent.getBoundingClientRect();
+    const targetRect = liveTarget.getBoundingClientRect();
+  // Preview canvas scroll: sticky site header clears inside the artboard (shell offset is 0 there).
   const nextTop =
-    targetRect.top - parentRect.top + scrollParent.scrollTop - FAMILY_STICKY_OFFSET_PX;
+    targetRect.top -
+    parentRect.top +
+    scrollParent.scrollTop -
+    FAMILY_STICKY_OFFSET_PX;
 
-  scrollParent.scrollTo({ top: Math.max(0, nextTop), behavior: "smooth" });
+    scrollParent.scrollTo({ top: Math.max(0, nextTop), behavior: "smooth" });
+  });
 }
 
 /**

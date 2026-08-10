@@ -39,12 +39,12 @@ export function PremiumAbout02({ content, assets }: SectionComponentProps) {
           ) : (
             <div
               aria-hidden="true"
-              className="aspect-[4/5] w-full bg-[var(--line)]/40 @min-[768px]:aspect-[3/4]"
+              className="aspect-[4/5] w-full bg-[var(--theme-line)]/40 @min-[768px]:aspect-[3/4]"
             />
           )}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[var(--surface)]/80 to-transparent"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[var(--theme-card)]/80 to-transparent"
           />
         </div>
       </div>

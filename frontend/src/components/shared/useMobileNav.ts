@@ -78,19 +78,42 @@ export function useMobileNav(): UseMobileNavResult {
     }
 
     /**
-     * Closes the panel after the page scrolls (e.g. section jump or user scroll).
+     * Closes the panel after the page scrolls (window or preview pane).
      */
     function handleScroll() {
       setOpen(false);
     }
 
+    /**
+     * Finds the nearest scrollable ancestor to observe (preview canvas).
+     */
+    function findScrollParent(element: HTMLElement | null): HTMLElement | null {
+      let parent = element?.parentElement ?? null;
+      while (parent) {
+        const style = window.getComputedStyle(parent);
+        const overflowY = style.overflowY;
+        const canScroll =
+          (overflowY === "auto" ||
+            overflowY === "scroll" ||
+            overflowY === "overlay") &&
+          parent.scrollHeight > parent.clientHeight;
+        if (canScroll) return parent;
+        parent = parent.parentElement;
+      }
+      return null;
+    }
+
+    const scrollParent = findScrollParent(rootRef.current);
+
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("pointerdown", handlePointerDown);
     window.addEventListener("scroll", handleScroll, { passive: true });
+    scrollParent?.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("pointerdown", handlePointerDown);
       window.removeEventListener("scroll", handleScroll);
+      scrollParent?.removeEventListener("scroll", handleScroll);
     };
   }, [open]);
 

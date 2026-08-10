@@ -41,10 +41,10 @@ export function PremiumTeam02({ content, assets }: SectionComponentProps) {
                   className="aspect-[4/5] w-full object-cover"
                 />
               ) : null}
-              <h3 className="mt-5 text-2xl font-medium text-[var(--ink)]">
+              <h3 className="mt-5 text-2xl font-medium text-[var(--theme-ink)]">
                 {featured.name}
               </h3>
-              <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
+              <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[var(--theme-accent)]">
                 {featured.role}
               </p>
               {featured.bio ? (
@@ -60,13 +60,13 @@ export function PremiumTeam02({ content, assets }: SectionComponentProps) {
                       className="aspect-square w-full object-cover"
                     />
                   ) : (
-                    <div aria-hidden="true" className="aspect-square bg-[var(--surface)]" />
+                    <div aria-hidden="true" className="aspect-square bg-[var(--theme-card)]" />
                   )}
                   <div className="min-w-0">
-                    <h3 className="text-lg font-medium text-[var(--ink)]">
+                    <h3 className="text-lg font-medium text-[var(--theme-ink)]">
                       {member.name}
                     </h3>
-                    <p className="mt-1 text-xs uppercase tracking-[0.16em] text-[var(--accent)]">
+                    <p className="mt-1 text-xs uppercase tracking-[0.16em] text-[var(--theme-accent)]">
                       {member.role}
                     </p>
                     {member.bio ? (

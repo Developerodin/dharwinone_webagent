@@ -6,12 +6,14 @@ import {
   MobileNavPanel,
   MobileNavToggle,
 } from "@/components/shared/MobileNavMenu";
+import { headerCtaClasses } from "@/components/shared/headerChrome";
 import { useMobileNav } from "@/components/shared/useMobileNav";
 import { scrollToSection } from "@/lib/scrollToSection";
 
-/** Gold outline CTA for centered elegant header. */
-const headerCtaClass =
-  "inline-flex w-auto max-w-[10.5rem] shrink-0 items-center justify-center truncate border border-[var(--eg-gold)] px-4 py-2.5 text-[10px] uppercase tracking-[0.18em] text-[var(--eg-gold)] transition-colors duration-200 hover:bg-[var(--eg-gold)] hover:text-[var(--eg-bg)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--eg-gold)] @min-[640px]/page:max-w-none @min-[640px]/page:px-6 @min-[640px]/page:text-xs";
+/** Gold outline CTA for centered elegant header (display gated separately). */
+const { chrome: headerCtaChrome, drawer: headerCtaDrawer } = headerCtaClasses(
+  "w-auto max-w-[10.5rem] shrink-0 items-center justify-center truncate border border-[var(--eg-gold)] px-4 py-2.5 text-[10px] uppercase tracking-[0.18em] text-[var(--eg-gold)] transition-colors duration-200 hover:bg-[var(--eg-gold)] hover:text-[var(--eg-bg)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--eg-gold)] @min-[640px]/page:max-w-none @min-[640px]/page:px-6 @min-[640px]/page:text-xs",
+);
 
 /** Centered gold nav link. */
 const headerNavLinkClass =
@@ -57,8 +59,8 @@ export function ElegantHeader02({ content }: SectionComponentProps) {
       className="sticky top-[var(--shell-header-h)] z-30 border-b border-[var(--eg-gold)]/20 bg-[#000000]/94 backdrop-blur-xl"
       role="banner"
     >
-      <div className="relative mx-auto max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10 @min-[768px]/page:py-6">
-        <div className="flex items-center justify-between gap-3 @min-[1024px]/page:block">
+      <div className="relative mx-auto w-full min-w-0 max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10 @min-[768px]/page:py-6">
+        <div className="flex w-full min-w-0 items-center justify-between gap-3 @min-[1024px]/page:block">
           <button
             type="button"
             onClick={() => handleNavigate("hero")}
@@ -94,7 +96,7 @@ export function ElegantHeader02({ content }: SectionComponentProps) {
             <button
               type="button"
               onClick={handleCta}
-              className={`hidden @min-[1024px]/page:inline-flex ${headerCtaClass}`}
+              className={headerCtaChrome}
             >
               {ctaLabel}
             </button>
@@ -132,7 +134,7 @@ export function ElegantHeader02({ content }: SectionComponentProps) {
           linkClassName={mobileNavLinkClass}
           ctaLabel={ctaLabel}
           onCta={handleCta}
-          ctaClassName={headerCtaClass}
+          ctaClassName={headerCtaDrawer}
         />
       </div>
     </header>

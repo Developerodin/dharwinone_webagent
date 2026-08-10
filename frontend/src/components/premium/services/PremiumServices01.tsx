@@ -29,9 +29,9 @@ export function PremiumServices01({ content }: SectionComponentProps) {
           {items.map((item) => (
             <li
               key={item.title}
-              className="border-t border-[var(--line)] pt-5"
+              className="border-t border-[var(--theme-line)] pt-5"
             >
-              <h3 className="text-lg font-medium text-[var(--ink)]">{item.title}</h3>
+              <h3 className="text-lg font-medium text-[var(--theme-ink)]">{item.title}</h3>
               <p className={`mt-3 text-sm ${pm.body}`}>{item.description}</p>
             </li>
           ))}

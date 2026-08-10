@@ -136,17 +136,17 @@ export function LivePreviewPane({
       aria-label="Live site preview"
       className="relative flex h-full min-h-0 min-w-0 flex-col overflow-hidden bg-[#0a0a0c]"
     >
-      <div className="flex shrink-0 items-center gap-3 border-b border-[var(--lovable-border)] bg-[var(--lovable-panel)] px-3 py-2 sm:px-4">
-        <div className="flex items-center gap-1.5" aria-hidden="true">
+      <div className="flex shrink-0 items-center gap-2 border-b border-[var(--lovable-border)] bg-[var(--lovable-panel)] px-2.5 py-2 sm:gap-3 sm:px-4">
+        <div className="flex shrink-0 items-center gap-1.5" aria-hidden="true">
           <span className="preview-browser-dot bg-[#ff5f57]" />
           <span className="preview-browser-dot bg-[#febc2e]" />
           <span className="preview-browser-dot bg-[#28c840]" />
         </div>
         <div
-          className="flex min-w-0 flex-1 items-center justify-center rounded-full border border-[var(--lovable-border)] bg-[var(--lovable-bg)] px-3 py-1.5"
+          className="flex min-w-0 flex-1 items-center justify-center rounded-full border border-[var(--lovable-border)] bg-[var(--lovable-bg)] px-2.5 py-1.5 sm:px-3"
           title={hostLabel}
         >
-          <p className="truncate text-center text-[11px] text-[var(--lovable-text-muted)] tabular-nums">
+          <p className="truncate text-center text-[10px] text-[var(--lovable-text-muted)] tabular-nums sm:text-[11px]">
             {urlLabel}
           </p>
         </div>
@@ -194,21 +194,30 @@ export function LivePreviewPane({
                   className="relative w-full overflow-hidden"
                   style={{ height: scaledHeight }}
                 >
-                  <div
-                    ref={artboardRef}
-                    className="@container/preview origin-top-left"
-                    style={{
-                      width: artboardWidth,
-                      transform: `scale(${scale})`,
-                    }}
-                  >
-                    <PageRenderer page={page} />
-                  </div>
+                <div
+                  ref={artboardRef}
+                  className="@container/preview origin-top-left"
+                  style={{
+                    width: artboardWidth,
+                    transform: `scale(${scale})`,
+                    // Preview chrome sits outside this scroller — sticky site headers pin to 0.
+                    ["--shell-header-h" as string]: "0px",
+                  }}
+                >
+                  <PageRenderer page={page} />
+                </div>
                 </div>
               </div>
             ) : (
               <div className="relative w-full bg-white">
-                <div ref={artboardRef} className="@container/preview w-full">
+                <div
+                  ref={artboardRef}
+                  className="@container/preview w-full"
+                  style={{
+                    // Desktop canvas scroll is local — sticky headers should not clear the editor top bar.
+                    ["--shell-header-h" as string]: "0px",
+                  }}
+                >
                   <PageRenderer page={page} />
                 </div>
               </div>
@@ -320,14 +329,14 @@ function BuildingPreview({
         </div>
       </div>
 
-      <div className="relative z-10 mt-auto flex flex-col items-center px-8 pb-16 pt-16 text-center">
+      <div className="relative z-10 mt-auto flex flex-col items-center px-5 pb-12 pt-12 text-center sm:px-8 sm:pb-16 sm:pt-16">
         <div
-          className="mb-4 flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 via-violet-500 to-blue-500 text-sm font-semibold text-white shadow-[0_0_0_6px_rgba(168,85,247,0.2)] animate-think-pulse"
+          className="mb-4 flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 via-violet-500 to-blue-500 text-sm font-semibold text-white shadow-[0_0_0_6px_rgba(168,85,247,0.2)] animate-think-pulse sm:size-12"
           aria-hidden="true"
         >
           P+
         </div>
-        <p className="text-2xl font-semibold tracking-tight text-[var(--lovable-text)]">
+        <p className="text-xl font-semibold tracking-tight text-[var(--lovable-text)] sm:text-2xl">
           {businessName ? `Building ${businessName}` : "Building your site"}
         </p>
         <p className="mt-2 max-w-sm text-sm leading-relaxed text-[var(--lovable-text-muted)]">
@@ -346,14 +355,14 @@ function BuildingPreview({
  */
 function EmptyPreview() {
   return (
-    <div className="flex h-full min-h-[280px] flex-col items-center justify-center rounded-xl border border-dashed border-[var(--lovable-border)] bg-[var(--lovable-panel)]/80 px-8 text-center animate-shell-in">
+    <div className="flex h-full min-h-[240px] flex-col items-center justify-center rounded-xl border border-dashed border-[var(--lovable-border)] bg-[var(--lovable-panel)]/80 px-5 text-center animate-shell-in sm:min-h-[280px] sm:px-8">
       <div
-        className="mb-4 flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 via-violet-500 to-blue-500 text-sm font-semibold text-white"
+        className="mb-4 flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 via-violet-500 to-blue-500 text-sm font-semibold text-white sm:size-12"
         aria-hidden="true"
       >
         P+
       </div>
-      <p className="text-2xl font-semibold tracking-tight text-[var(--lovable-text)]">
+      <p className="text-xl font-semibold tracking-tight text-[var(--lovable-text)] sm:text-2xl">
         Your site preview
       </p>
       <p className="mt-2 max-w-sm text-sm leading-relaxed text-[var(--lovable-text-muted)]">

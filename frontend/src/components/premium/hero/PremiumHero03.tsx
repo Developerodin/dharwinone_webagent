@@ -43,7 +43,7 @@ export function PremiumHero03({ content, assets }: SectionComponentProps) {
         </div>
       ))}
       {paths.length === 0 ? (
-        <div aria-hidden="true" className="absolute inset-0 bg-[var(--ink)]" />
+        <div aria-hidden="true" className="absolute inset-0 bg-[var(--theme-bg-dark)]" />
       ) : null}
       <div className="absolute inset-0 bg-gradient-to-t from-[#070b14]/70 via-[#070b14]/35 to-[#070b14]/10" />
       <div className="relative mx-auto flex min-h-[60svh] max-w-6xl flex-col items-center justify-center px-4 py-16 text-center @min-[640px]:min-h-[70svh] @min-[640px]:px-6 @min-[768px]:min-h-[85vh] @min-[768px]:px-10">

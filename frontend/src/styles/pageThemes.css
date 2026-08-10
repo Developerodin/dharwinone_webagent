@@ -1,3 +1,9 @@
+/**
+ * Each `.*-theme` remaps legacy short tokens (--ink/--surface/…) onto
+ * --theme-* so section text stays readable on dark or light families.
+ * Builder chrome outside these scopes keeps :root values from index.css.
+ */
+
 /** Shared page family theme scopes for rendered restaurant pages. */
 .elegant-theme {
   /* Formal fine-dining: near-black + classic warm gold (not twin of premium steel). */
@@ -26,6 +32,14 @@
   --theme-font-body: var(--eg-font-body);
   --font-display: var(--eg-font-display);
   --font-body: var(--eg-font-body);
+  /* Legacy short aliases */
+  --ink: var(--theme-ink);
+  --muted: var(--theme-muted);
+  --accent: var(--theme-accent);
+  --line: var(--theme-line);
+  --surface: var(--theme-card);
+  --paper: var(--theme-bg);
+  --accent-soft: color-mix(in srgb, var(--theme-accent) 18%, transparent);
   background-color: var(--eg-bg);
   color: var(--eg-cream);
 }
@@ -49,6 +63,14 @@
   --theme-font-body: "DM Sans", system-ui, sans-serif;
   --font-display: "Instrument Serif", Georgia, serif;
   --font-body: "DM Sans", system-ui, sans-serif;
+  /* Legacy short aliases — fixes dark-on-dark / light-on-light in sections */
+  --ink: var(--theme-ink);
+  --muted: var(--theme-muted);
+  --accent: var(--theme-accent);
+  --line: var(--theme-line);
+  --surface: var(--theme-card);
+  --paper: var(--theme-bg);
+  --accent-soft: color-mix(in srgb, var(--theme-accent) 18%, transparent);
   background-color: var(--theme-bg);
   color: var(--theme-ink);
 }
@@ -70,6 +92,13 @@
   --theme-accent-contrast: #fdfdf9;
   --theme-font-display: "Geist Variable", "DM Sans", system-ui, sans-serif;
   --theme-font-body: "Geist Variable", "DM Sans", system-ui, sans-serif;
+  --ink: var(--theme-ink);
+  --muted: var(--theme-muted);
+  --accent: var(--theme-accent);
+  --line: var(--theme-line);
+  --surface: var(--theme-card);
+  --paper: var(--theme-bg);
+  --accent-soft: color-mix(in srgb, var(--theme-accent) 18%, transparent);
   background-color: var(--theme-bg);
   color: var(--theme-ink);
 }
@@ -90,6 +119,13 @@
   --theme-accent-contrast: #fff7ef;
   --theme-font-display: "Instrument Serif", Georgia, serif;
   --theme-font-body: "DM Sans", system-ui, sans-serif;
+  --ink: var(--theme-ink);
+  --muted: var(--theme-muted);
+  --accent: var(--theme-accent);
+  --line: var(--theme-line);
+  --surface: var(--theme-card);
+  --paper: var(--theme-bg);
+  --accent-soft: color-mix(in srgb, var(--theme-accent) 18%, transparent);
   background-color: var(--theme-bg);
   color: var(--theme-ink);
 }
@@ -110,6 +146,13 @@
   --theme-accent-contrast: #fff7f1;
   --theme-font-display: "Geist Variable", "DM Sans", system-ui, sans-serif;
   --theme-font-body: "Geist Variable", "DM Sans", system-ui, sans-serif;
+  --ink: var(--theme-ink);
+  --muted: var(--theme-muted);
+  --accent: var(--theme-accent);
+  --line: var(--theme-line);
+  --surface: var(--theme-card);
+  --paper: var(--theme-bg);
+  --accent-soft: color-mix(in srgb, var(--theme-accent) 18%, transparent);
   background-color: var(--theme-bg);
   color: var(--theme-ink);
 }

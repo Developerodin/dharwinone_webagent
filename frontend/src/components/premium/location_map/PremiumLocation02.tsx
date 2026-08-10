@@ -4,7 +4,7 @@ import { getString } from "../contentHelpers";
 import { pm } from "../shared/premiumTokens";
 
 /**
- * Premium location variant — split contact panel with lucide icons.
+ * Premium location variant — split Find Us panel using theme surfaces only.
  */
 export function PremiumLocation02({ content }: SectionComponentProps) {
   const headline = getString(content, "headline", "Visit Us");
@@ -15,8 +15,8 @@ export function PremiumLocation02({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Location" className={`${pm.sectionPad} ${pm.section}`}>
-      <div className="mx-auto grid max-w-6xl gap-8 overflow-hidden border border-[var(--line)] @min-[768px]:grid-cols-2 @min-[768px]:gap-0">
-        <div className="animate-section-enter bg-[var(--surface)] px-5 py-10 @min-[640px]:px-8 @min-[640px]:py-14 @min-[768px]:px-10">
+      <div className="mx-auto grid max-w-6xl overflow-hidden rounded-[1.75rem] border border-[var(--theme-line)] @min-[768px]:grid-cols-2">
+        <div className="animate-section-enter bg-[var(--theme-bg-alt)] px-5 py-10 @min-[640px]:px-8 @min-[640px]:py-14 @min-[768px]:px-10">
           <p className={pm.eyebrow}>Find Us</p>
           <h2 className={`mt-3 @min-[640px]:mt-4 ${pm.heading} ${pm.headingSection}`}>
             {headline}
@@ -28,19 +28,17 @@ export function PremiumLocation02({ content }: SectionComponentProps) {
           ) : null}
         </div>
 
-        <div className="flex flex-col justify-center border-t border-[var(--line)] px-5 py-10 @min-[640px]:px-8 @min-[640px]:py-14 @min-[768px]:border-l @min-[768px]:border-t-0 @min-[768px]:px-10">
+        <div className="flex flex-col justify-center border-t border-[var(--theme-line)] bg-[var(--theme-card)] px-5 py-10 @min-[640px]:px-8 @min-[640px]:py-14 @min-[768px]:border-l @min-[768px]:border-t-0 @min-[768px]:px-10">
           <dl className="space-y-8">
             {address ? (
               <div className="flex gap-4">
                 <MapPin
                   aria-hidden="true"
-                  className="mt-0.5 size-5 shrink-0 text-[var(--accent)]"
+                  className="mt-0.5 size-5 shrink-0 text-[var(--theme-accent)]"
                 />
                 <div className="min-w-0">
-                  <dt className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--muted)] @min-[640px]:text-xs">
-                    Address
-                  </dt>
-                  <dd className="mt-2 break-words text-base text-[var(--ink)] @min-[640px]:text-lg">
+                  <dt className={pm.inputLabel}>Address</dt>
+                  <dd className="mt-2 break-words text-base text-[var(--theme-ink)] @min-[640px]:text-lg">
                     {address}
                   </dd>
                 </div>
@@ -50,16 +48,14 @@ export function PremiumLocation02({ content }: SectionComponentProps) {
               <div className="flex gap-4">
                 <Phone
                   aria-hidden="true"
-                  className="mt-0.5 size-5 shrink-0 text-[var(--accent)]"
+                  className="mt-0.5 size-5 shrink-0 text-[var(--theme-accent)]"
                 />
                 <div className="min-w-0">
-                  <dt className="text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--muted)] @min-[640px]:text-xs">
-                    Phone
-                  </dt>
+                  <dt className={pm.inputLabel}>Phone</dt>
                   <dd className="mt-2">
                     <a
                       href={`tel:${phone.replace(/\D/g, "")}`}
-                      className="break-all text-base text-[var(--accent)] transition-colors duration-200 hover:underline @min-[640px]:text-lg"
+                      className="break-all text-base text-[var(--theme-accent-on-dark)] transition-colors duration-200 hover:text-[var(--theme-ink)] hover:underline @min-[640px]:text-lg"
                     >
                       {phone}
                     </a>

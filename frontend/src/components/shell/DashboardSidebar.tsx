@@ -10,6 +10,7 @@ import {
   Star,
   User,
   Users,
+  X,
 } from "lucide-react";
 import type { StoredProject } from "@/lib/projectStorage";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,10 @@ type DashboardSidebarProps = {
   onGoDashboard?: () => void;
   onSearch?: () => void;
   activeProjectId?: string | null;
+  /** Optional class overrides (e.g. full-width inside a mobile drawer). */
+  className?: string;
+  /** When set, shows a close control for the mobile drawer. */
+  onCloseMobile?: () => void;
 };
 
 type NavItem = {
@@ -63,6 +68,8 @@ export function DashboardSidebar({
   onGoDashboard,
   onSearch,
   activeProjectId = null,
+  className,
+  onCloseMobile,
 }: DashboardSidebarProps) {
   const primaryNav: NavItem[] = [
     {
@@ -108,7 +115,10 @@ export function DashboardSidebar({
 
   return (
     <aside
-      className="flex h-full w-[var(--lovable-sidebar-w)] shrink-0 flex-col border-r border-[var(--lovable-border)] bg-[var(--lovable-bg)]"
+      className={cn(
+        "flex h-full w-[var(--lovable-sidebar-w)] shrink-0 flex-col border-r border-[var(--lovable-border)] bg-[var(--lovable-bg)]",
+        className,
+      )}
       aria-label="Workspace navigation"
     >
       <div className="flex items-center gap-2.5 px-3 pt-3.5 pb-2">
@@ -138,6 +148,16 @@ export function DashboardSidebar({
             aria-hidden="true"
           />
         </button>
+        {onCloseMobile ? (
+          <button
+            type="button"
+            onClick={onCloseMobile}
+            className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg text-[var(--lovable-text-muted)] transition hover:bg-[var(--lovable-hover)] hover:text-[var(--lovable-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/35"
+            aria-label="Close workspace navigation"
+          >
+            <X className="size-4" aria-hidden="true" />
+          </button>
+        ) : null}
       </div>
 
       <nav className="px-2 pt-1" aria-label="Primary">
