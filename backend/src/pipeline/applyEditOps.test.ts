@@ -155,4 +155,40 @@ describe("applyEditOps", () => {
       );
     }
   });
+
+  it("backfills empty location_map assets on any edit", async () => {
+    resetCatalogCache();
+    const built = await runPipeline({
+      chatText: "ignored",
+      useFixture: true,
+      family: "minimal",
+    });
+    const location = built.page.sections.find(
+      (section) => section.type === "location_map",
+    );
+    expect(location).toBeTruthy();
+    if (location) location.assets = [];
+
+    const result = await applyEditOps({
+      page: built.page,
+      brief: built.brief,
+      family: "minimal",
+      ops: [
+        {
+          op: "set_copy",
+          section: "location_map",
+          field: "headline",
+          value: "Visit Jaipur Tea",
+        },
+      ],
+    });
+
+    const healed = result.page.sections.find(
+      (section) => section.type === "location_map",
+    );
+    expect(healed?.content.headline).toBe("Visit Jaipur Tea");
+    expect(healed?.assets[0]?.imagePath).toMatch(
+      /^\/images\/restaurant\/about\/.+\.webp$/,
+    );
+  });
 });

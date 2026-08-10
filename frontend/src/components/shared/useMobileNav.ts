@@ -9,8 +9,8 @@ import {
   type RefObject,
 } from "react";
 
-/** Desktop breakpoint matching `@min-[768px]/page` header layouts. */
-const DESKTOP_MIN_WIDTH = 768;
+/** Desktop breakpoint matching `@min-[1024px]/page` header layouts. */
+const DESKTOP_MIN_WIDTH = 1024;
 
 export type UseMobileNavResult = {
   open: boolean;

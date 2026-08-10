@@ -110,6 +110,8 @@ const VIBRANT_PATTERNS: RegExp[] = [
 /**
  * Soft cuisine → family affinity (cuisine ≠ theme, but nudges diversity).
  * Weight is added once per matching pattern.
+ * Tea affinity is handled separately (see applyTeaAffinity) so tea-house can
+ * outrank cafe/Indian without hard-mapping all Indian → elegant.
  */
 const CUISINE_AFFINITY: Array<{ re: RegExp; family: PageFamily; weight: number }> =
   [
@@ -124,6 +126,43 @@ const CUISINE_AFFINITY: Array<{ re: RegExp; family: PageFamily; weight: number }
     { re: /\bcaf[eé]\b|\bbrunch\b|\bbakery\b|\bpizza\b/, family: "premium", weight: 2 },
     { re: /\bchinese\b|\bindian\b|\bthai\b|\bwok\b/, family: "premium", weight: 1 },
   ];
+
+/** Strong “tea house” phrase → elegant +3. */
+const TEA_HOUSE_RE = /\btea[\s-]?house\b/;
+
+/**
+ * Other tea cues (room / lounge / chai / afternoon tea / bare tea) → elegant +2.
+ * Applied only when TEA_HOUSE_RE did not already fire (avoids double-count).
+ */
+const TEA_CUE_RE =
+  /\btea[\s-]?(?:room|lounge)\b|\bafternoon[\s-]?tea\b|\bchai\b|\btea\b/;
+
+/** Casual cafe/service words that should keep tea from auto-winning elegant. */
+const STRONG_CASUAL_CAFE_RE =
+  /\bcaf[eé]\b|\bbrunch\b|\bbakery\b|\bcasual\b|\bdiner\b|\bfood[\s-]?truck\b|\bcounter[\s-]?service\b/;
+
+/**
+ * Applies tea → elegant affinity on the menu-free corpus.
+ * Bumps elegant further when tea matched and no strong casual cafe words.
+ */
+function applyTeaAffinity(
+  affinityCorpus: string,
+  scores: Record<PageFamily, number>,
+): void {
+  let teaMatched = false;
+  if (TEA_HOUSE_RE.test(affinityCorpus)) {
+    scores.elegant += 3;
+    teaMatched = true;
+  } else if (TEA_CUE_RE.test(affinityCorpus)) {
+    scores.elegant += 2;
+    teaMatched = true;
+  }
+
+  // Tea without casual cafe cues should win elegant without relying on hash.
+  if (teaMatched && !STRONG_CASUAL_CAFE_RE.test(affinityCorpus)) {
+    scores.elegant += 2;
+  }
+}
 
 const FAMILY_PATTERNS: Record<PageFamily, RegExp[]> = {
   elegant: ELEGANT_PATTERNS,
@@ -201,6 +240,8 @@ export function inferPageFamily(brief: Brief, chatText = ""): PageFamily {
   for (const { re, family, weight } of CUISINE_AFFINITY) {
     if (re.test(affinityCorpus)) scores[family] += weight;
   }
+
+  applyTeaAffinity(affinityCorpus, scores);
 
   // Casual cuisine should not lose to a lone weak elegant word like "gourmet".
   if (scores.elegant === 1 && scores.premium >= 1) {

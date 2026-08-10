@@ -11,8 +11,9 @@ const SECTION_TO_CATALOG: Partial<Record<SectionType, string>> = {
   menu: "menu",
   about: "about",
   gallery: "gallery",
-  // Reuse about/hero pools for team portraits and reservation banners
+  // Reuse about/hero pools for team portraits, visit-us venue shots, and reservation banners
   team: "about",
+  location_map: "about",
   reservation: "hero",
 };
 
@@ -27,6 +28,8 @@ const SECTION_ORIENTATION: Partial<
   menu: "square",
   gallery: "landscape",
   team: "portrait",
+  // Visit-us media panel is ~5:4; prefer landscape about shots, fall back to any
+  location_map: "landscape",
   reservation: "landscape",
 };
 

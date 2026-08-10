@@ -122,7 +122,7 @@ const SECTION_SPECS: SectionManifestSpec[] = [
     copyFields: ["brandName", "tagline", "ctaLabel", "eyebrow"],
     contentSchema: headerContentSchema,
     requiresImage: false,
-    variants: ["01"],
+    variants: ["01", "02", "03"],
   },
   {
     sectionType: "hero",

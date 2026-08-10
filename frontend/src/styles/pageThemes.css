@@ -1,48 +1,54 @@
 /** Shared page family theme scopes for rendered restaurant pages. */
 .elegant-theme {
-  --eg-bg: #1a1a1a;
-  --eg-bg-alt: #0f0f0f;
+  /* Formal fine-dining: near-black + classic warm gold (not twin of premium steel). */
+  --eg-bg: #0a0a0a;
+  --eg-bg-alt: #121212;
   --eg-gold: #c9a962;
   --eg-gold-light: #e8d5a3;
   --eg-cream: #f5f0e8;
   --eg-muted: #a89f8f;
   --eg-font-display: "Playfair Display", "Instrument Serif", Georgia, serif;
   --eg-font-body: "DM Sans", system-ui, sans-serif;
-  --theme-bg: #181513;
-  --theme-bg-alt: #11100f;
-  --theme-bg-dark: #090908;
+  --theme-bg: #0a0a0a;
+  --theme-bg-alt: #121212;
+  --theme-bg-dark: #050505;
   --theme-card: rgba(255, 255, 255, 0.03);
   --theme-ink: #f5f0e8;
   --theme-on-dark: #f5f0e8;
   --theme-muted: #a89f8f;
   --theme-muted-on-dark: rgba(245, 240, 232, 0.76);
-  --theme-line: rgba(201, 169, 98, 0.22);
+  --theme-line: rgba(201, 169, 98, 0.28);
   --theme-line-strong: #c9a962;
   --theme-accent: #c9a962;
   --theme-accent-on-dark: #e8d5a3;
-  --theme-accent-contrast: #11100f;
+  --theme-accent-contrast: #0a0a0a;
   --theme-font-display: var(--eg-font-display);
   --theme-font-body: var(--eg-font-body);
+  --font-display: var(--eg-font-display);
+  --font-body: var(--eg-font-body);
   background-color: var(--eg-bg);
   color: var(--eg-cream);
 }
 
 .premium-theme {
-  --theme-bg: #110d0b;
-  --theme-bg-alt: #17120f;
-  --theme-bg-dark: #0a0807;
-  --theme-card: #1c1613;
-  --theme-ink: #f6efe8;
-  --theme-on-dark: #f6efe8;
-  --theme-muted: #cbb8a9;
-  --theme-muted-on-dark: rgba(246, 239, 232, 0.78);
-  --theme-line: rgba(255, 255, 255, 0.12);
-  --theme-line-strong: #c68e6b;
-  --theme-accent: #c68e6b;
-  --theme-accent-on-dark: #e0b08f;
-  --theme-accent-contrast: #140f0d;
-  --theme-font-display: "Playfair Display", "Instrument Serif", Georgia, serif;
+  /* Modern premium casual: cool graphite + soft steel (not copper/gold twin). */
+  --theme-bg: #0e1014;
+  --theme-bg-alt: #151820;
+  --theme-bg-dark: #08090c;
+  --theme-card: #1a1e26;
+  --theme-ink: #e8eaef;
+  --theme-on-dark: #e8eaef;
+  --theme-muted: #9aa3b2;
+  --theme-muted-on-dark: rgba(232, 234, 239, 0.78);
+  --theme-line: rgba(255, 255, 255, 0.1);
+  --theme-line-strong: #8fa0b5;
+  --theme-accent: #8fa0b5;
+  --theme-accent-on-dark: #b8c4d4;
+  --theme-accent-contrast: #0e1014;
+  --theme-font-display: "Instrument Serif", Georgia, serif;
   --theme-font-body: "DM Sans", system-ui, sans-serif;
+  --font-display: "Instrument Serif", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
   background-color: var(--theme-bg);
   color: var(--theme-ink);
 }

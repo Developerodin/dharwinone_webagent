@@ -9,23 +9,22 @@ import {
 import { useMobileNav } from "@/components/shared/useMobileNav";
 import { scrollToSection } from "@/lib/scrollToSection";
 
-/** Compact gold outline CTA for the sticky header action row. */
+/** Gold outline CTA for centered elegant header. */
 const headerCtaClass =
   "inline-flex w-auto max-w-[10.5rem] shrink-0 items-center justify-center truncate border border-[var(--eg-gold)] px-4 py-2.5 text-[10px] uppercase tracking-[0.18em] text-[var(--eg-gold)] transition-colors duration-200 hover:bg-[var(--eg-gold)] hover:text-[var(--eg-bg)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--eg-gold)] @min-[640px]/page:max-w-none @min-[640px]/page:px-6 @min-[640px]/page:text-xs";
 
-/** Desktop nav link — gold uppercase, no pill chrome. */
+/** Centered gold nav link. */
 const headerNavLinkClass =
   "inline-flex min-h-10 items-center justify-center px-1 py-1 text-[11px] uppercase tracking-[0.22em] text-[var(--eg-gold)] transition-opacity duration-200 hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--eg-gold)]";
 
-/** Mobile panel link — same gold treatment with fuller tap targets. */
+/** Mobile panel gold link. */
 const mobileNavLinkClass =
   "inline-flex min-h-11 w-full items-center justify-start rounded-xl px-3 py-3 text-xs uppercase tracking-[0.22em] text-[var(--eg-gold)] transition-colors duration-200 hover:bg-white/[0.04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--eg-gold)]";
 
 /**
- * Elegant sticky header with Aurelia-style brand lockup, gold nav, and CTA.
- * Mobile: compact brand + hamburger; desktop: brand/CTA row + nav row.
+ * Elegant centered header — brand center with flanking rules, nav below, CTA right.
  */
-export function ElegantHeader01({ content }: SectionComponentProps) {
+export function ElegantHeader02({ content }: SectionComponentProps) {
   const brandName = getString(content, "brandName", "Caverta House");
   const tagline = getString(
     content,
@@ -55,15 +54,15 @@ export function ElegantHeader01({ content }: SectionComponentProps) {
   return (
     <header
       ref={rootRef}
-      className="sticky top-[var(--shell-header-h)] z-30 border-b border-[var(--eg-gold)]/20 bg-[#000000]/92 backdrop-blur-xl"
+      className="sticky top-[var(--shell-header-h)] z-30 border-b border-[var(--eg-gold)]/20 bg-[#000000]/94 backdrop-blur-xl"
       role="banner"
     >
-      <div className="mx-auto max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[640px]/page:py-4 @min-[768px]/page:px-10 @min-[768px]/page:py-5">
-        <div className="flex items-center justify-between gap-4 @min-[1024px]/page:items-start">
+      <div className="relative mx-auto max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10 @min-[768px]/page:py-6">
+        <div className="flex items-center justify-between gap-3 @min-[1024px]/page:block">
           <button
             type="button"
             onClick={() => handleNavigate("hero")}
-            className="min-w-0 flex-1 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--eg-gold)]"
+            className="min-w-0 flex-1 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--eg-gold)] @min-[1024px]/page:mx-auto @min-[1024px]/page:max-w-2xl @min-[1024px]/page:flex-none @min-[1024px]/page:text-center"
             aria-label="Scroll to hero section"
           >
             {eyebrow ? (
@@ -72,22 +71,26 @@ export function ElegantHeader01({ content }: SectionComponentProps) {
               </span>
             ) : null}
             <div
-              className={`${eyebrow ? "@min-[1024px]/page:mt-2" : ""} flex items-center gap-2.5 @min-[640px]/page:gap-3`}
+              className={`${eyebrow ? "@min-[1024px]/page:mt-2" : ""} flex items-center gap-3 @min-[1024px]/page:justify-center`}
             >
               <span
-                className={`hidden ${eg.goldRule} w-8 shrink-0 @min-[480px]/page:block @min-[640px]/page:w-10`}
+                className={`hidden ${eg.goldRule} w-10 shrink-0 @min-[1024px]/page:block`}
                 aria-hidden="true"
               />
-              <span className="truncate font-[family-name:var(--eg-font-display)] text-xl tracking-[0.08em] text-[var(--eg-cream)] @min-[640px]/page:text-2xl @min-[768px]/page:text-[2rem]">
+              <span className="truncate font-[family-name:var(--eg-font-display)] text-xl tracking-[0.1em] text-[var(--eg-cream)] @min-[640px]/page:text-2xl @min-[768px]/page:text-[2.125rem]">
                 {brandName}
               </span>
+              <span
+                className={`hidden ${eg.goldRule} w-10 shrink-0 @min-[1024px]/page:block`}
+                aria-hidden="true"
+              />
             </div>
-            <p className="mt-1.5 hidden max-w-xl font-[family-name:var(--eg-font-body)] text-sm text-[var(--eg-muted)] @min-[1024px]/page:block">
+            <p className="mt-2 hidden font-[family-name:var(--eg-font-body)] text-sm text-[var(--eg-muted)] @min-[1024px]/page:block">
               {tagline}
             </p>
           </button>
 
-          <div className="flex shrink-0 items-center gap-2 @min-[1024px]/page:pt-6">
+          <div className="flex shrink-0 items-center gap-2 @min-[1024px]/page:absolute @min-[1024px]/page:right-10 @min-[1024px]/page:top-6">
             <button
               type="button"
               onClick={handleCta}
@@ -106,7 +109,7 @@ export function ElegantHeader01({ content }: SectionComponentProps) {
 
         <nav
           aria-label="Primary"
-          className="mt-5 hidden flex-nowrap items-center gap-x-7 overflow-x-auto @min-[1024px]/page:flex"
+          className="mt-5 hidden flex-nowrap items-center justify-center gap-x-8 overflow-x-auto @min-[1024px]/page:flex"
         >
           {navItems.map((item) => (
             <button

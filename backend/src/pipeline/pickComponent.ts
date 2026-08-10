@@ -24,7 +24,11 @@ function familyVariants(
       : ([`${family}-hero-01`, `${family}-hero-02`] as const);
 
   return {
-    header: [`${family}-header-01`],
+    header: [
+      `${family}-header-01`,
+      `${family}-header-02`,
+      `${family}-header-03`,
+    ],
     hero,
     about: [`${family}-about-01`, `${family}-about-02`],
     services: [`${family}-services-01`, `${family}-services-02`],
@@ -75,6 +79,21 @@ export function stableHash(input: string): number {
 }
 
 /**
+ * Diversity points for a variant. Uses a non-sequential suffix salt so
+ * "01"/"02"/"03" do not track consecutively under stableHash.
+ */
+function diversityScore(
+  sectionType: string,
+  businessName: string,
+  suffix: string,
+  modulus = 5,
+): number {
+  const salt =
+    suffix === "01" ? "alpha" : suffix === "02" ? "bravo" : suffix === "03" ? "charlie" : suffix;
+  return stableHash(`${sectionType}:${businessName}:${salt}`) % modulus;
+}
+
+/**
  * Builds scoring corpus from brief + chat including menu and location.
  */
 function buildCorpus(brief?: Brief, chatText = ""): string {
@@ -86,7 +105,53 @@ function buildCorpus(brief?: Brief, chatText = ""): string {
 }
 
 /**
- * Scores variants using brief signals (no free +1 for *-01).
+ * Scores header variants from brief vibe signals.
+ * Street/quick → 03; tea/lounge/refined cafe soft-boost 01/02 (not 03);
+ * cafe|brunch alone no longer force header-03.
+ */
+function scoreHeaderVariant(
+  suffix: string,
+  corpus: string,
+  businessName: string,
+): number {
+  let score = 0;
+  const fineDining =
+    /\b(fine\s*dining|tasting|michelin|upscale|luxury|elegant|refined|candlelit)\b/.test(
+      corpus,
+    );
+  const storyForward =
+    /\b(story|heritage|family|tradition|history|chef|since|legacy)\b/.test(
+      corpus,
+    );
+  const streetQuick =
+    /\b(street\s*food|quick\s*service|counter\s*service|food\s*truck|taco|poke\s*bowl|takeout|grab[\s-]?and[\s-]?go)\b/.test(
+      corpus,
+    );
+  const teaRefined =
+    /\b(tea[\s-]?house|tea[\s-]?room|afternoon[\s-]?tea|chai|lounge|refined[\s-]?caf[eé])\b|\btea\b/.test(
+      corpus,
+    );
+
+  if (suffix === "01" && fineDining) score += 6;
+  if (suffix === "02" && storyForward) score += 6;
+  if (suffix === "03" && streetQuick) score += 6;
+
+  // Tea / lounge / refined cafe → soft boost 01 or 02 equally, never 03.
+  if (teaRefined && !streetQuick) {
+    if (suffix === "01" || suffix === "02") score += 3;
+  }
+
+  // Wider hash + mild anti-stick so 03 is not sticky for cafe-ish briefs.
+  const spread = diversityScore("header", businessName, suffix, 5);
+  score += spread;
+  if (suffix === "03" && !streetQuick) score -= 1;
+
+  return score;
+}
+
+/**
+ * Scores variants using brief signals + business-seeded diversity.
+ * Avoids unconditional *-02 bias for typical restaurant language.
  */
 function scoreVariant(
   componentId: string,
@@ -96,7 +161,12 @@ function scoreVariant(
 ): number {
   const suffix = getVariantSuffix(componentId);
   const corpus = buildCorpus(brief, chatText);
+  const businessName = brief?.businessName ?? "restaurant";
   let score = 0;
+
+  if (sectionType === "header") {
+    return scoreHeaderVariant(suffix, corpus, businessName);
+  }
 
   const photoHeavy =
     /\b(photo|gallery|visual|instagram|image|pictures?)\b/.test(corpus);
@@ -105,34 +175,51 @@ function scoreVariant(
   const storyForward =
     /\b(story|heritage|family|tradition|history|chef|since)\b/.test(corpus);
   const menuFocus =
-    /\b(menu|dishes|food|cuisine)\b/.test(corpus) ||
-    (brief?.menuItems?.length ?? 0) > 0;
+    /\b(tasting\s*menu|prix\s*fixe|signature\s*dishes)\b/.test(corpus);
   const teamForward = /\b(team|chef|staff|founder)\b/.test(corpus);
   const socialProof = /\b(review|testimonial|award|rated|stars?)\b/.test(corpus);
+  const servicesFocus =
+    /\b(catering|private\s*dining|events?|delivery|takeout|lunch\s*special)\b/.test(
+      corpus,
+    );
+  const elegantOrTea =
+    /\b(elegant|fine\s*dining|upscale|tea[\s-]?house|tea[\s-]?room|afternoon[\s-]?tea|chai|lounge)\b|\btea\b/.test(
+      corpus,
+    );
 
   if (suffix === "02") {
-    if (sectionType === "hero" && photoHeavy) score += 3;
-    if (sectionType === "gallery" && photoHeavy) score += 3;
-    if (sectionType === "contact" && formForward) score += 3;
-    if (sectionType === "about" && storyForward) score += 3;
-    if (sectionType === "menu" && menuFocus) score += 2;
-    if (sectionType === "reservation" && formForward) score += 3;
-    if (sectionType === "team" && teamForward) score += 2;
-    if (sectionType === "testimonials" && socialProof) score += 2;
-    if (sectionType === "services") score += 1;
-    if (sectionType === "stats" && socialProof) score += 2;
-    if (sectionType === "footer" && formForward) score += 1;
+    if (sectionType === "hero" && photoHeavy && !elegantOrTea) score += 5;
+    if (sectionType === "gallery" && photoHeavy) score += 5;
+    if (sectionType === "contact" && formForward) score += 5;
+    if (sectionType === "about" && storyForward) score += 5;
+    if (sectionType === "menu" && menuFocus) score += 4;
+    if (sectionType === "reservation" && formForward) score += 4;
+    if (sectionType === "team" && teamForward) score += 4;
+    if (sectionType === "testimonials" && socialProof) score += 4;
+    if (sectionType === "services" && servicesFocus) score += 4;
+    if (sectionType === "stats" && socialProof) score += 4;
+    if (sectionType === "footer" && formForward) score += 2;
     if (sectionType === "location_map" && Boolean(brief?.address)) score += 2;
   }
 
-  if (suffix === "03" && sectionType === "hero" && photoHeavy) {
-    score += 4;
+  // photoHeavy → hero-03 only when not elegant/tea (those rely on diversity + recentSuffixes).
+  if (suffix === "03" && sectionType === "hero" && photoHeavy && !elegantOrTea) {
+    score += 6;
+  }
+  // Equal soft nudge for tea/elegant so hash + recentSuffixes diversify 01/02/03.
+  if (sectionType === "hero" && elegantOrTea) {
+    if (suffix === "01" || suffix === "02") score += 2;
   }
 
   if (suffix === "01") {
-    if (sectionType === "hero" && !photoHeavy) score += 1;
-    if (sectionType === "about" && !storyForward) score += 1;
+    if (sectionType === "hero" && !photoHeavy && !elegantOrTea) score += 2;
+    if (sectionType === "about" && !storyForward) score += 2;
+    if (sectionType === "menu" && !menuFocus) score += 2;
+    if (sectionType === "services" && !servicesFocus) score += 2;
   }
+
+  // Business-seeded mix so two similar restaurants diverge.
+  score += diversityScore(sectionType, businessName, suffix, 5);
 
   return score;
 }
@@ -141,12 +228,14 @@ export type PickComponentOptions = {
   preferComponentId?: string;
   brief?: Brief;
   chatText?: string;
+  /** Previously chosen suffixes on this page — lightly penalize repeats. */
+  recentSuffixes?: readonly string[];
 };
 
 /**
  * Stage 3 — section type + family → component id.
  * Prefers brief-aware scoring; theme remap preserves *-NN suffix.
- * Ties broken by stableHash(section:businessName:category) so businesses diverge.
+ * Ties broken by stableHash(section:businessName:category).
  */
 export function pickComponent(
   sectionType: SectionType,
@@ -161,10 +250,15 @@ export function pickComponent(
     return matched ?? variants[0]!;
   }
 
-  const scored = variants.map((id) => ({
-    id,
-    score: scoreVariant(id, sectionType, options?.brief, options?.chatText),
-  }));
+  const recent = options?.recentSuffixes ?? [];
+  const scored = variants.map((id) => {
+    let score = scoreVariant(id, sectionType, options?.brief, options?.chatText);
+    const suffix = getVariantSuffix(id);
+    const repeatCount = recent.filter((item) => item === suffix).length;
+    if (repeatCount > 0) score -= repeatCount * 2;
+    if (recent[recent.length - 1] === suffix) score -= 2;
+    return { id, score };
+  });
 
   const bestScore = Math.max(...scored.map((item) => item.score));
   const top = scored.filter((item) => item.score === bestScore);

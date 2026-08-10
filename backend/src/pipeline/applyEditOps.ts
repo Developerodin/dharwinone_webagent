@@ -149,7 +149,6 @@ function applyTheme(page: Page, family: PageFamily, brief: Brief): void {
     });
 
     if (
-      section.type === "location_map" ||
       section.type === "menu" ||
       section.type === "services" ||
       section.type === "stats" ||
@@ -381,7 +380,6 @@ async function applyOneOp(
         return { family, note: `No ${op.section} section for image change.` };
       }
       if (
-        section.type === "location_map" ||
         section.type === "menu" ||
         section.type === "services" ||
         section.type === "stats" ||
@@ -500,6 +498,29 @@ async function applyOneOp(
 }
 
 /**
+ * Backfills a venue image when location_map has no assets (e.g. pages built
+ * before location_map was wired to the about catalog pool).
+ */
+function ensureLocationAssets(
+  page: Page,
+  family: PageFamily,
+  brief: Brief,
+): void {
+  const section = findSection(page.sections, "location_map");
+  if (!section || section.assets.length > 0) return;
+
+  const imagePath = pickImage({
+    sectionType: "location_map",
+    orientation: orientationForSection("location_map"),
+    family,
+    category: brief.category,
+    seed: `${brief.businessName}:${brief.category}`,
+  });
+  if (!imagePath) return;
+  section.assets = [{ key: "primary", imagePath }];
+}
+
+/**
  * Applies structured edit ops to page + brief. Pure aside from catalog reads / rewrite LLM.
  */
 export async function applyEditOps(args: {
@@ -520,6 +541,8 @@ export async function applyEditOps(args: {
     applied.push(op);
     if (result.note) notes.push(result.note);
   }
+
+  ensureLocationAssets(page, family, brief);
 
   return { page, brief, family, applied, notes };
 }

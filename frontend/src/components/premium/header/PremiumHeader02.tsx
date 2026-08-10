@@ -9,14 +9,14 @@ import {
 import { useMobileNav } from "@/components/shared/useMobileNav";
 import { scrollToSection } from "@/lib/scrollToSection";
 
-/** Compact CTA sizing for the sticky header action row. */
+/** Compact CTA for the centered header layout. */
 const headerCtaClass = `${pm.primaryButton} w-auto max-w-[10.5rem] shrink-0 truncate px-4 py-2 text-xs @min-[640px]/page:max-w-none @min-[640px]/page:px-6 @min-[640px]/page:text-sm`;
 
 /**
- * Premium sticky header with brand lockup, section nav, and reservation CTA.
- * Mobile: single-row brand + hamburger; desktop: full brand/CTA/nav.
+ * Premium centered header — brand lockup center, nav below, CTA top-right.
+ * Mobile: brand + hamburger; desktop: stacked centered composition.
  */
-export function PremiumHeader01({ content }: SectionComponentProps) {
+export function PremiumHeader02({ content }: SectionComponentProps) {
   const brandName = getString(content, "brandName", "Maison Copper");
   const tagline = getString(
     content,
@@ -46,15 +46,15 @@ export function PremiumHeader01({ content }: SectionComponentProps) {
   return (
     <header
       ref={rootRef}
-      className="sticky top-[var(--shell-header-h)] z-30 border-b border-white/10 bg-[var(--theme-bg)]/85 backdrop-blur-xl"
+      className="sticky top-[var(--shell-header-h)] z-30 border-b border-white/10 bg-[var(--theme-bg)]/90 backdrop-blur-xl"
       role="banner"
     >
-      <div className="mx-auto max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10">
-        <div className="flex items-center justify-between gap-3">
+      <div className="relative mx-auto max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10 @min-[768px]/page:py-5">
+        <div className="flex items-center justify-between gap-3 @min-[1024px]/page:block">
           <button
             type="button"
             onClick={() => handleNavigate("hero")}
-            className="min-w-0 flex-1 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-accent)]"
+            className="min-w-0 flex-1 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-accent)] @min-[1024px]/page:mx-auto @min-[1024px]/page:max-w-2xl @min-[1024px]/page:flex-none @min-[1024px]/page:text-center"
             aria-label="Scroll to hero section"
           >
             {eyebrow ? (
@@ -63,22 +63,26 @@ export function PremiumHeader01({ content }: SectionComponentProps) {
               </span>
             ) : null}
             <div
-              className={`${eyebrow ? "@min-[1024px]/page:mt-2" : ""} flex items-center gap-2 @min-[640px]/page:gap-3`}
+              className={`${eyebrow ? "@min-[1024px]/page:mt-2" : ""} flex items-center gap-2 @min-[640px]/page:gap-3 @min-[1024px]/page:justify-center`}
             >
               <span
-                className="hidden h-px w-8 shrink-0 bg-[var(--theme-accent)]/55 @min-[480px]/page:block @min-[640px]/page:w-10"
+                className="hidden h-px w-8 shrink-0 bg-[var(--theme-accent)]/55 @min-[1024px]/page:block"
                 aria-hidden="true"
               />
               <span className="truncate font-[family-name:var(--font-display)] text-xl tracking-[0.06em] text-[var(--theme-ink)] @min-[640px]/page:text-2xl @min-[768px]/page:text-[2rem]">
                 {brandName}
               </span>
+              <span
+                className="hidden h-px w-8 shrink-0 bg-[var(--theme-accent)]/55 @min-[1024px]/page:block"
+                aria-hidden="true"
+              />
             </div>
-            <p className="mt-1.5 hidden max-w-xl text-sm text-[var(--theme-muted)] @min-[1024px]/page:block">
+            <p className="mt-1.5 hidden text-sm text-[var(--theme-muted)] @min-[1024px]/page:block">
               {tagline}
             </p>
           </button>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2 @min-[1024px]/page:absolute @min-[1024px]/page:right-10 @min-[1024px]/page:top-5">
             <button
               type="button"
               onClick={handleCta}
@@ -97,7 +101,7 @@ export function PremiumHeader01({ content }: SectionComponentProps) {
 
         <nav
           aria-label="Primary"
-          className="mt-4 hidden flex-nowrap items-center gap-2 overflow-x-auto @min-[1024px]/page:flex"
+          className="mt-4 hidden flex-nowrap items-center justify-center gap-x-6 overflow-x-auto @min-[1024px]/page:flex"
         >
           {navItems.map((item) => (
             <button

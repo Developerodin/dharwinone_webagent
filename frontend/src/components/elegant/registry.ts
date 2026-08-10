@@ -8,6 +8,8 @@ import { ElegantFooter02 } from "./footer/ElegantFooter02";
 import { ElegantGallery01 } from "./gallery/ElegantGallery01";
 import { ElegantGallery02 } from "./gallery/ElegantGallery02";
 import { ElegantHeader01 } from "./header/ElegantHeader01";
+import { ElegantHeader02 } from "./header/ElegantHeader02";
+import { ElegantHeader03 } from "./header/ElegantHeader03";
 import { ElegantHero01 } from "./hero/ElegantHero01";
 import { ElegantHero02 } from "./hero/ElegantHero02";
 import { ElegantHero03 } from "./hero/ElegantHero03";
@@ -33,6 +35,8 @@ export type { SectionComponentProps } from "../premium/registry";
  */
 export const elegantRegistry: Record<string, SectionComponent> = {
   "elegant-header-01": ElegantHeader01,
+  "elegant-header-02": ElegantHeader02,
+  "elegant-header-03": ElegantHeader03,
   "elegant-hero-01": ElegantHero01,
   "elegant-hero-02": ElegantHero02,
   "elegant-hero-03": ElegantHero03,

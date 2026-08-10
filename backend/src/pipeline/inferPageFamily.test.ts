@@ -118,4 +118,70 @@ describe("inferPageFamily", () => {
     );
     expect(family).toBe("vibrant");
   });
+
+  it("biases tea house toward elegant without needing hash", () => {
+    const family = inferPageFamily(
+      {
+        ...FIXTURE_BRIEF,
+        category: "Tea house",
+        businessName: "Jaipur Tea House",
+        menuItems: [],
+      },
+      "Authentic chai and afternoon tea in Jaipur",
+    );
+    expect(family).toBe("elegant");
+  });
+
+  it("biases bare tea name toward elegant when no casual cafe cues", () => {
+    const family = inferPageFamily(
+      {
+        ...FIXTURE_BRIEF,
+        category: "Tea",
+        businessName: "Jaipur Tea",
+        menuItems: [],
+      },
+      "Quiet tea lounge with chai service",
+    );
+    expect(family).toBe("elegant");
+  });
+
+  it("keeps casual cafe on premium", () => {
+    const family = inferPageFamily(
+      {
+        ...FIXTURE_BRIEF,
+        category: "Cafe",
+        businessName: "Harbor Brunch Cafe",
+        menuItems: [],
+      },
+      "Casual neighborhood cafe with bakery brunch",
+    );
+    expect(family).toBe("premium");
+  });
+
+  it("does not force Indian without tea cues to elegant", () => {
+    const family = inferPageFamily(
+      {
+        ...FIXTURE_BRIEF,
+        category: "Indian restaurant",
+        businessName: "Spice Route",
+        menuItems: [],
+      },
+      "Family-friendly Indian takeout and tandoor",
+    );
+    expect(family).not.toBe("elegant");
+    expect(family).toBe("premium");
+  });
+
+  it("keeps fine dining on elegant", () => {
+    const family = inferPageFamily(
+      {
+        ...FIXTURE_BRIEF,
+        category: "Fine dining",
+        businessName: "Atelier Noir",
+        menuItems: [],
+      },
+      "Upscale tasting menu with sommelier pairings",
+    );
+    expect(family).toBe("elegant");
+  });
 });

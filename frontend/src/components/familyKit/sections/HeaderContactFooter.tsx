@@ -1,16 +1,12 @@
 import { getNavItems } from "@/components/shared/contentExtras";
-import {
-  MobileNavPanel,
-  MobileNavToggle,
-} from "@/components/shared/MobileNavMenu";
 import type { ThemeTokens } from "@/components/shared/themeTokens";
-import { useMobileNav } from "@/components/shared/useMobileNav";
-import { createScrollHandler, scrollToSection } from "@/lib/scrollToSection";
+import { createScrollHandler } from "@/lib/scrollToSection";
 import { getString } from "@/components/premium/contentHelpers";
 import type {
   SectionComponent,
   SectionComponentProps,
 } from "@/components/premium/registry";
+import { createFamilyHeaders } from "./FamilyHeaders";
 import {
   SectionIntro,
   getBodyCopy,
@@ -22,12 +18,6 @@ import {
   getHoursText,
 } from "./shared";
 
-const FAMILY_MOBILE_TRIGGER =
-  "border border-[var(--theme-line)] bg-[var(--theme-card)] text-[var(--theme-ink)] hover:bg-[color:color-mix(in_srgb,var(--theme-bg)_80%,white_20%)] focus-visible:outline-[var(--theme-accent)]";
-
-const FAMILY_MOBILE_PANEL =
-  "mt-3 border-[var(--theme-line)]";
-
 /**
  * Creates family-scoped header, contact, and footer sections.
  */
@@ -36,129 +26,12 @@ export function createHeaderContactFooter(
   tokens: ThemeTokens,
 ): Record<string, SectionComponent> {
   return {
-    [`${family}-header-01`]: createHeader01(tokens),
+    ...createFamilyHeaders(family, tokens),
     [`${family}-contact-01`]: createContact01(tokens),
     [`${family}-contact-02`]: createContact02(tokens),
     [`${family}-footer-01`]: createFooter01(tokens),
     [`${family}-footer-02`]: createFooter02(tokens),
   };
-}
-
-/**
- * Builds the sticky family header component.
- */
-function createHeader01(tokens: ThemeTokens): SectionComponent {
-  /** Compact CTA sizing for the sticky header action row. */
-  const headerCtaClass = `${tokens.primaryButton} w-auto max-w-[10.5rem] shrink-0 truncate px-4 py-2 text-xs @min-[640px]/page:max-w-none @min-[640px]/page:px-6 @min-[640px]/page:text-sm`;
-
-  /**
-   * Sticky navigation header with scroll-linked section buttons.
-   * Mobile: single-row brand + hamburger; desktop: brand/CTA/nav.
-   */
-  function FamilyHeader01({ content }: SectionComponentProps) {
-    const brandName = getBrandName(content);
-    const tagline = getTagline(content);
-    const ctaLabel = getString(content, "ctaLabel", "Reserve a Table");
-    const eyebrow = getString(content, "eyebrow", "");
-    const navItems = getNavItems(content);
-    const { open, menuId, rootRef, toggle, close } = useMobileNav();
-
-    /**
-     * Scrolls to a section and closes the mobile menu.
-     */
-    function handleNavigate(target: string) {
-      close();
-      scrollToSection(target);
-    }
-
-    /**
-     * Scrolls to the reservation section and closes the mobile menu.
-     */
-    function handleCta() {
-      handleNavigate("reservation");
-    }
-
-    return (
-      <header
-        ref={rootRef}
-        aria-label="Site header"
-        className={`${tokens.section} sticky top-[var(--shell-header-h)] z-30 border-b border-[var(--theme-line)] bg-[color:color-mix(in_srgb,var(--theme-bg)_88%,transparent)]/95 shadow-[0_1px_0_rgba(17,17,17,0.04)] backdrop-blur-md`}
-      >
-        <div className="mx-auto max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[640px]/page:py-4 @min-[768px]/page:px-10">
-          <div className="flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => handleNavigate("hero")}
-              className="min-w-0 flex-1 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-accent)]"
-              aria-label="Scroll to hero section"
-            >
-              {eyebrow ? (
-                <p className={`hidden @min-[768px]/page:block ${tokens.eyebrow}`}>
-                  {eyebrow}
-                </p>
-              ) : null}
-              <p
-                className={`truncate text-lg text-[var(--theme-ink)] @min-[640px]/page:text-xl ${tokens.heading} ${eyebrow ? "@min-[768px]/page:mt-1" : ""}`}
-              >
-                {brandName}
-              </p>
-              <p className={`mt-1 hidden text-sm @min-[768px]/page:block ${tokens.body}`}>
-                {tagline}
-              </p>
-            </button>
-
-            <div className="flex shrink-0 items-center gap-2">
-              <button
-                type="button"
-                onClick={handleCta}
-                className={`hidden @min-[768px]/page:inline-flex ${headerCtaClass}`}
-                aria-label={ctaLabel}
-              >
-                {ctaLabel}
-              </button>
-              <MobileNavToggle
-                open={open}
-                menuId={menuId}
-                onToggle={toggle}
-                className={FAMILY_MOBILE_TRIGGER}
-              />
-            </div>
-          </div>
-
-          <nav
-            aria-label="Primary navigation"
-            className="mt-4 hidden flex-wrap items-center justify-end gap-2 @min-[768px]/page:flex"
-          >
-            {navItems.map((item) => (
-              <button
-                key={`${item.target}-${item.label}`}
-                type="button"
-                onClick={createScrollHandler(item.target)}
-                className={tokens.navLink}
-                aria-label={`Scroll to ${item.label}`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
-
-          <MobileNavPanel
-            open={open}
-            menuId={menuId}
-            navItems={navItems}
-            onNavigate={handleNavigate}
-            panelClassName={FAMILY_MOBILE_PANEL}
-            linkClassName={tokens.navLink}
-            ctaLabel={ctaLabel}
-            onCta={handleCta}
-            ctaClassName={headerCtaClass}
-          />
-        </div>
-      </header>
-    );
-  }
-
-  return FamilyHeader01;
 }
 
 /**

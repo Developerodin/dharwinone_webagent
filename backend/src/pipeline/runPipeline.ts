@@ -127,6 +127,8 @@ function enrichSectionContent(
   sectionType: SectionType,
   content: Record<string, unknown>,
   brief: Brief,
+  presentSections: readonly SectionType[],
+  chatText = "",
 ): Record<string, unknown> {
   if (sectionType === "menu") {
     return {
@@ -144,7 +146,7 @@ function enrichSectionContent(
   }
 
   if (sectionType === "services") {
-    return { ...content, items: defaultServices(brief) };
+    return { ...content, items: defaultServices(brief, chatText) };
   }
 
   if (sectionType === "stats") {
@@ -189,7 +191,7 @@ function enrichSectionContent(
       tagline,
       ctaLabel,
       eyebrow,
-      navItems: defaultNavItems(),
+      navItems: defaultNavItems(brief, presentSections),
     };
   }
 
@@ -207,7 +209,7 @@ function enrichSectionContent(
       brandName: brief.businessName,
       phone: brief.phone,
       address: brief.address,
-      navItems: defaultNavItems(),
+      navItems: defaultNavItems(brief, presentSections),
     };
   }
 
@@ -215,16 +217,30 @@ function enrichSectionContent(
 }
 
 /**
- * Default in-page nav targets for header / footer.
+ * Builds in-page nav from sections that exist, with cuisine-aware menu labels.
  */
-function defaultNavItems(): Array<{ label: string; target: SectionType }> {
-  return [
+function defaultNavItems(
+  brief: Brief,
+  presentSections: readonly SectionType[],
+): Array<{ label: string; target: SectionType }> {
+  const present = new Set(presentSections);
+  const category = brief.category.toLowerCase();
+  const menuLabel = /\b(tasting|fine\s*dining|kaiseki|omakase)\b/.test(category)
+    ? "Tasting Menu"
+    : /\b(cafe|coffee|bakery)\b/.test(category)
+      ? "Offerings"
+      : "Menu";
+
+  const candidates: Array<{ label: string; target: SectionType }> = [
     { label: "About", target: "about" },
-    { label: "Menu", target: "menu" },
+    { label: menuLabel, target: "menu" },
     { label: "Gallery", target: "gallery" },
+    { label: "Team", target: "team" },
     { label: "Reservations", target: "reservation" },
     { label: "Contact", target: "contact" },
   ];
+
+  return candidates.filter((item) => present.has(item.target));
 }
 
 /**
@@ -244,12 +260,13 @@ async function generateCopy(
   componentId: string,
   brief: Brief,
   useFixture: boolean,
+  family: PageFamily,
 ): Promise<Record<string, unknown>> {
   if (useFixture) {
-    return writeCopyFixture({ componentId, brief });
+    return writeCopyFixture({ componentId, brief, family });
   }
 
-  let copy = await writeCopy({ sectionType, componentId, brief });
+  let copy = await writeCopy({ sectionType, componentId, brief, family });
   let check = factCheck({ copy, brief });
 
   if (!check.ok) {
@@ -257,6 +274,7 @@ async function generateCopy(
       sectionType,
       componentId,
       brief,
+      family,
       flaggedSpans: check.flaggedSpans,
     });
     check = factCheck({ copy, brief });
@@ -273,6 +291,7 @@ async function generateCopy(
 
 /**
  * Picks components and filters sections that cannot be rendered.
+ * Tracks recent suffixes to avoid all-*-02 pages.
  */
 function planSectionComponents(
   sectionTypes: SectionType[],
@@ -285,11 +304,13 @@ function planSectionComponents(
 } {
   const planned: PlannedSection[] = [];
   const droppedSections: SectionType[] = [];
+  const recentSuffixes: string[] = [];
 
   for (const sectionType of sectionTypes) {
     const componentId = pickComponent(sectionType, family, {
       brief,
       chatText,
+      recentSuffixes,
     });
     const manifest = getManifest(componentId);
     const imageSeed = `${brief.businessName}:${brief.category}`;
@@ -318,6 +339,10 @@ function planSectionComponents(
         continue;
       }
     }
+
+    const suffix = componentId.match(/-(\d+)$/)?.[1] ?? "01";
+    recentSuffixes.push(suffix);
+    if (recentSuffixes.length > 4) recentSuffixes.shift();
 
     planned.push({ sectionType, componentId, imagePath });
   }
@@ -356,7 +381,10 @@ export async function runPipeline(input: PipelineInput): Promise<PipelineResult>
 
   const planStart = Date.now();
   emitStage(stages, "Section Planner", "running", onStage);
-  const sectionTypes = planSections();
+  const sectionTypes = planSections({
+    brief,
+    chatText: input.chatText,
+  });
   await completeStage(stages, "Section Planner", onStage, planStart);
 
   const pickStart = Date.now();
@@ -370,6 +398,7 @@ export async function runPipeline(input: PipelineInput): Promise<PipelineResult>
   await completeStage(stages, "Component Picker", onStage, pickStart);
 
   const sections: PageSection[] = [];
+  const presentSections = planned.map((item) => item.sectionType);
 
   const copyStart = Date.now();
   emitStage(stages, "Copywriter", "running", onStage);
@@ -381,6 +410,7 @@ export async function runPipeline(input: PipelineInput): Promise<PipelineResult>
       componentId,
       brief,
       useFixture,
+      family,
     );
 
     sections.push({
@@ -407,6 +437,8 @@ export async function runPipeline(input: PipelineInput): Promise<PipelineResult>
       sectionType,
       section.content,
       brief,
+      presentSections,
+      input.chatText,
     );
     section.assets = buildAssets(
       sectionType,

@@ -11,22 +11,37 @@ import { writeCopyFixture } from "../pipeline/writeCopy.js";
 import { verifyBriefAgainstSource } from "../pipeline/verifyBrief.js";
 
 describe("planSections", () => {
-  it("returns fixed casual_discovery section order", () => {
-    expect(planSections()).toEqual([
+  it("returns a core spine without optional blocks when brief has no cues", () => {
+    expect(planSections({ brief: FIXTURE_BRIEF })).toEqual([
       "header",
       "hero",
       "about",
-      "services",
       "menu",
-      "stats",
       "gallery",
       "testimonials",
-      "team",
       "reservation",
       "location_map",
       "contact",
       "footer",
     ]);
+  });
+
+  it("includes team and drops default testimonials when only team cues exist", () => {
+    const sections = planSections({
+      brief: FIXTURE_BRIEF,
+      chatText: "Meet our chef and kitchen staff",
+    });
+    expect(sections).toContain("team");
+    expect(sections).not.toContain("testimonials");
+    expect(sections).not.toContain("services");
+  });
+
+  it("includes services when catering or private dining is mentioned", () => {
+    const sections = planSections({
+      brief: FIXTURE_BRIEF,
+      chatText: "We offer catering and private dining events",
+    });
+    expect(sections).toContain("services");
   });
 });
 
@@ -62,17 +77,41 @@ describe("pickComponent", () => {
     ).toBe("premium-menu-01");
   });
 
-  it("diversifies tied variants by business identity", () => {
-    const a = pickComponent("services", "premium", {
-      brief: { ...FIXTURE_BRIEF, businessName: "Alpha Cafe", category: "Cafe" },
-    });
-    const b = pickComponent("services", "premium", {
-      brief: { ...FIXTURE_BRIEF, businessName: "Zeta Kitchen", category: "Cafe" },
-    });
-    expect(a).toMatch(/^premium-services-0[12]$/);
-    expect(b).toMatch(/^premium-services-0[12]$/);
-    // Different brands should not always collapse to the same suffix.
-    expect(new Set([a, b]).size).toBeGreaterThanOrEqual(1);
+  it("diversifies variants by business identity", () => {
+    const names = [
+      "Alpha Kitchen",
+      "Zeta Dining",
+      "Harbor House",
+      "Maple Room",
+      "Copper Spoon",
+      "Nightingale",
+      "Orchard Table",
+      "Lumen Hall",
+    ];
+    const picked = names.map((businessName) =>
+      pickComponent("header", "premium", {
+        brief: {
+          ...FIXTURE_BRIEF,
+          businessName,
+          category: "Restaurant",
+          address: "100 Main Ave, Portland, OR",
+        },
+      }),
+    );
+    expect(picked.every((id) => /^premium-header-0[123]$/.test(id))).toBe(true);
+    expect(new Set(picked).size).toBeGreaterThan(1);
+  });
+
+  it("exposes three header variants in the pool", () => {
+    expect(pickComponent("header", "premium", {
+      preferComponentId: "premium-header-01",
+    })).toBe("premium-header-01");
+    expect(pickComponent("header", "elegant", {
+      preferComponentId: "premium-header-02",
+    })).toBe("elegant-header-02");
+    expect(pickComponent("header", "minimal", {
+      preferComponentId: "premium-header-03",
+    })).toBe("minimal-header-03");
   });
 
   it("prefers story-forward about-02", () => {
@@ -81,6 +120,78 @@ describe("pickComponent", () => {
       chatText: "Our family heritage and chef tradition since 1982",
     });
     expect(id).toBe("premium-about-02");
+  });
+
+  it("prefers fine-dining header-01 and street/quick header-03", () => {
+    const fine = pickComponent("header", "elegant", {
+      brief: {
+        ...FIXTURE_BRIEF,
+        businessName: "Atelier Noir",
+        category: "Fine dining",
+        address: "12 Oak Ave, Chicago, IL",
+      },
+      chatText: "elegant tasting menu and refined service",
+    });
+    const casual = pickComponent("header", "vibrant", {
+      brief: {
+        ...FIXTURE_BRIEF,
+        businessName: "Taco Contra",
+        category: "Taco cafe",
+        address: "88 Market Ave, Austin, TX",
+      },
+      chatText: "casual modern counter service brunch",
+    });
+    expect(fine).toBe("elegant-header-01");
+    expect(casual).toBe("vibrant-header-03");
+  });
+
+  it("soft-boosts tea/lounge headers toward 01/02, not always 03", () => {
+    const seeds = [
+      "Jaipur Tea",
+      "Jaipur Tea House",
+      "Lotus Tea Lounge",
+      "Chai Court",
+      "Afternoon Tea Hall",
+      "Silk Tea Room",
+    ];
+    const headers = seeds.map((businessName) =>
+      pickComponent("header", "elegant", {
+        brief: {
+          ...FIXTURE_BRIEF,
+          businessName,
+          category: "Tea house",
+          address: "1 Palace Rd, Jaipur",
+        },
+        chatText: "tea lounge with chai and afternoon tea",
+      }),
+    );
+    expect(headers.every((id) => /^elegant-header-0[12]$/.test(id))).toBe(true);
+    expect(new Set(headers).size).toBeGreaterThan(1);
+  });
+
+  it("varies tea hero suffixes across name seeds (not stuck on hero-03)", () => {
+    const seeds = [
+      "Jaipur Tea",
+      "Jaipur Tea House",
+      "Lotus Tea",
+      "Chai Court",
+      "Silk Tea Room",
+      "Amber Leaf Tea",
+    ];
+    const heroes = seeds.map((businessName) =>
+      pickComponent("hero", "elegant", {
+        brief: {
+          ...FIXTURE_BRIEF,
+          businessName,
+          category: "Tea house",
+          address: "1 Palace Rd, Jaipur",
+        },
+        chatText: "photo gallery visual tea lounge",
+      }),
+    );
+    expect(heroes.every((id) => /^elegant-hero-0[123]$/.test(id))).toBe(true);
+    expect(heroes.every((id) => id === "elegant-hero-03")).toBe(false);
+    expect(new Set(heroes).size).toBeGreaterThan(1);
   });
 });
 
@@ -124,6 +235,16 @@ describe("pickImage", () => {
           path.startsWith("/images/restaurant/gallery/") && path.endsWith(".webp"),
       ),
     ).toBe(true);
+  });
+
+  it("returns venue images for location_map (reuses about catalog)", () => {
+    const path = pickImage({
+      sectionType: "location_map",
+      orientation: "landscape",
+      family: "minimal",
+      category: "Indian",
+    });
+    expect(path).toMatch(/^\/images\/restaurant\/about\/.+\.webp$/);
   });
 
   it("prefers cuisine-tagged images when category is provided", () => {
@@ -241,6 +362,22 @@ describe("writeCopyFixture header", () => {
     expect(copy.ctaLabel).toBe("Reserve a Table");
     expect(copy.eyebrow).toBe(FIXTURE_BRIEF.category);
   });
+
+  it("varies fixture tone by family", () => {
+    const elegant = writeCopyFixture({
+      componentId: "elegant-hero-01",
+      brief: FIXTURE_BRIEF,
+      family: "elegant",
+    });
+    const rustic = writeCopyFixture({
+      componentId: "rustic-hero-01",
+      brief: FIXTURE_BRIEF,
+      family: "rustic",
+    });
+    expect(String(elegant.subheading)).toMatch(/elegant/i);
+    expect(String(rustic.subheading)).toMatch(/heartfelt|care/i);
+    expect(elegant.subheading).not.toBe(rustic.subheading);
+  });
 });
 
 describe("assemblePage", () => {
@@ -268,6 +405,21 @@ describe("runPipeline fixture mode", () => {
     expect(result.stages.length).toBe(8);
   });
 
+  it("assigns a primary image to location_map for minimal family", async () => {
+    const result = await runPipeline({
+      chatText: "ignored",
+      useFixture: true,
+      family: "minimal",
+    });
+    const location = result.page.sections.find(
+      (section) => section.type === "location_map",
+    );
+    expect(location).toBeTruthy();
+    expect(location?.assets[0]?.imagePath).toMatch(
+      /^\/images\/restaurant\/about\/.+\.webp$/,
+    );
+  });
+
   it("uses elegant components when family is elegant", async () => {
     const result = await runPipeline({
       chatText: "ignored",
@@ -275,7 +427,9 @@ describe("runPipeline fixture mode", () => {
       family: "elegant",
     });
     expect(result.family).toBe("elegant");
-    expect(result.page.sections[0]?.componentId).toBe("elegant-header-01");
+    expect(result.page.sections[0]?.componentId).toMatch(
+      /^elegant-header-0[123]$/,
+    );
     expect(
       result.page.sections.some((section) =>
         section.componentId.startsWith("elegant-hero-"),
@@ -330,7 +484,9 @@ describe("runPipeline fixture mode", () => {
       family: "rustic",
     });
     expect(result.family).toBe("rustic");
-    expect(result.page.sections[0]?.componentId).toBe("rustic-header-01");
+    expect(result.page.sections[0]?.componentId).toMatch(
+      /^rustic-header-0[123]$/,
+    );
     expect(
       result.page.sections.some((s) => s.type === "contact"),
     ).toBe(true);

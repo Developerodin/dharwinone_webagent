@@ -23,7 +23,7 @@ export function MobileNavToggle({
   return (
     <button
       type="button"
-      className={`hidden size-11 shrink-0 items-center justify-center rounded-full transition duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 @max-[767px]/page:inline-flex ${className}`}
+      className={`hidden size-11 shrink-0 items-center justify-center rounded-full transition duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 @max-[1023px]/page:inline-flex ${className}`}
       aria-label={open ? "Close navigation menu" : "Open navigation menu"}
       aria-expanded={open}
       aria-controls={menuId}
@@ -69,7 +69,7 @@ export function MobileNavPanel({
   return (
     <div
       id={menuId}
-      className={`hidden overflow-hidden transition-[grid-template-rows] duration-200 ease-out @max-[767px]/page:grid ${
+      className={`hidden overflow-hidden transition-[grid-template-rows] duration-200 ease-out @max-[1023px]/page:grid ${
         open ? "grid-rows-[1fr]" : "pointer-events-none grid-rows-[0fr]"
       }`}
       aria-hidden={!open}

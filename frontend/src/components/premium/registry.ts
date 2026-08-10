@@ -9,6 +9,8 @@ import { PremiumFooter02 } from "./footer/PremiumFooter02";
 import { PremiumGallery01 } from "./gallery/PremiumGallery01";
 import { PremiumGallery02 } from "./gallery/PremiumGallery02";
 import { PremiumHeader01 } from "./header/PremiumHeader01";
+import { PremiumHeader02 } from "./header/PremiumHeader02";
+import { PremiumHeader03 } from "./header/PremiumHeader03";
 import { PremiumHero01 } from "./hero/PremiumHero01";
 import { PremiumHero02 } from "./hero/PremiumHero02";
 import { PremiumHero03 } from "./hero/PremiumHero03";
@@ -39,6 +41,8 @@ export type SectionComponent = ComponentType<SectionComponentProps>;
  */
 export const componentRegistry: Record<string, SectionComponent> = {
   "premium-header-01": PremiumHeader01,
+  "premium-header-02": PremiumHeader02,
+  "premium-header-03": PremiumHeader03,
   "premium-hero-01": PremiumHero01,
   "premium-hero-02": PremiumHero02,
   "premium-hero-03": PremiumHero03,
