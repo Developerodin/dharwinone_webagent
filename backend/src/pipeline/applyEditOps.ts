@@ -435,7 +435,7 @@ async function applyOneOp(
       applyTheme(page, op.family, brief);
       return {
         family: op.family,
-        note: `Switched theme to ${op.family}.`,
+        note: `Switched theme to ${op.family.charAt(0).toUpperCase()}${op.family.slice(1)}.`,
       };
     }
     case "set_gallery_count": {

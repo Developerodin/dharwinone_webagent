@@ -190,7 +190,7 @@ export function parseEditOpsFixture(
     return {
       ops: [],
       summary:
-        "Could not parse that edit. Try: change about section, rewrite gallery headline, set Item to $12, different about image, use premium theme.",
+        "Could not parse that edit. Try: change about section, rewrite gallery headline, set Item to $12, different about image.",
     };
   }
 
