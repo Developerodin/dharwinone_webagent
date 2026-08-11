@@ -332,7 +332,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
           appendMessage({
             role: "assistant",
             content:
-              "Could not apply that edit. Try rephrasing (headline, price, remove menu item, different image, use premium theme).",
+              "Could not apply that edit. Try rephrasing (headline, price, remove menu item, different image).",
           });
           setPhase("editing");
         } else {

@@ -31,17 +31,49 @@ export function getPageFamilyDescription(family: PageFamily): string {
 }
 
 /**
- * Suggests available vibes/themes the user can switch between while editing.
+ * True when the user is asking which themes exist or to pick one,
+ * without naming a specific theme to apply.
+ */
+export function isThemeInquiryIntent(instruction: string): boolean {
+  const text = instruction.trim().toLowerCase();
+  if (!text) return false;
+
+  const namedFamily =
+    /\b(premium|premum|preimum|elegant|elegent|elegan|minimal|minimalist|minmal|rustic|rustik|farmhouse|vibrant|vibant|colorful|colourful|exquisite|fine[\s-]?dining)\b/.test(
+      text,
+    );
+
+  const listAsk =
+    /\b(what|which|show|list|available|see|tell\s+me)\b.{0,48}\bthemes?\b/.test(
+      text,
+    ) ||
+    /\bthemes?\b.{0,24}\b(available|do you (have|offer)|can i (use|pick|choose))\b/.test(
+      text,
+    ) ||
+    /\b(show|list)\b.{0,24}\b(themes?|vibes?)\b/.test(text);
+
+  if (listAsk) return true;
+
+  const vagueSwitch =
+    /\b((change|switch|update|set|pick|choose|select)(\s+(the|a|my))?\s+(theme|vibe|look|style)|different\s+theme|another\s+theme|other\s+themes?)\b/.test(
+      text,
+    );
+
+  return vagueSwitch && !namedFamily;
+}
+
+/**
+ * Lists available vibes/themes — only for explicit theme inquiries.
  */
 export function formatThemeSuggestions(current: PageFamily): string {
   const currentLabel = getPageFamilyLabel(current);
   return [
-    `**Themes available now** (current: ${currentLabel}):`,
+    `**Themes available** (current: ${currentLabel}):`,
     `• **Premium** — exquisite warm layout — say “use premium theme”`,
     `• **Elegant** — dark/gold upscale — say “use elegant theme”`,
     `• **Minimal** — clean modern — say “use minimal theme”`,
     `• **Rustic** — earthy farmhouse — say “use rustic theme”`,
     `• **Vibrant** — bold colorful — say “use vibrant theme”`,
-    `You can move between them anytime.`,
+    `Say which one you want (e.g. “use minimal theme”).`,
   ].join("\n");
 }

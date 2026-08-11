@@ -1,44 +1,33 @@
-import {
-  formatThemeSuggestions,
-  getPageFamilyLabel,
-} from "@/lib/pageFamilyLabel";
+import { getPageFamilyLabel } from "@/lib/pageFamilyLabel";
 import { formatStageContent } from "@/lib/pipelineAgents";
 import type { PageFamily } from "@/lib/pageFamily";
 import type { Brief } from "@/types/intake";
 
 export { formatStageContent };
 
-/** Shared edit tips shown after build and after each edit. */
+/** Shared edit tips shown after build (no theme promo — themes only on explicit ask). */
 export const EDIT_HINTS =
-  "Try: change about section · rewrite gallery headline · attach Media in chat · different about image · use premium/elegant theme";
+  "Try: change about section · rewrite gallery headline · attach Media in chat · different about image";
 
 /**
- * Builds the post-build assistant message with theme suggestions.
+ * Builds the post-build assistant message without dumping theme options.
  */
 export function formatBuildReadyMessage(
   businessName: string,
-  family: PageFamily,
   droppedNote = "",
 ): string {
   return [
     `Your page for **${businessName}** is ready!${droppedNote}`,
-    "",
-    formatThemeSuggestions(family),
     "",
     `Ask for changes anytime — ${EDIT_HINTS}`,
   ].join("\n");
 }
 
 /**
- * Builds the post-edit assistant message with theme suggestions.
+ * Builds the post-edit assistant message (summary only — no theme menu spam).
  */
-export function formatEditResultMessage(
-  summary: string,
-  family: PageFamily,
-): string {
-  return [summary, "", formatThemeSuggestions(family), "", EDIT_HINTS].join(
-    "\n",
-  );
+export function formatEditResultMessage(summary: string): string {
+  return summary.trim();
 }
 
 /**

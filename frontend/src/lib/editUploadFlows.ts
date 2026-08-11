@@ -2,6 +2,10 @@ import type { Dispatch, SetStateAction } from "react";
 import { createMessageId } from "@/lib/chatFormatters";
 import { performPageEdit } from "@/lib/performPageEdit";
 import {
+  formatThemeSuggestions,
+  isThemeInquiryIntent,
+} from "@/lib/pageFamilyLabel";
+import {
   ensureProjectId,
   persistProjectState,
   syncPreviewPayload,
@@ -62,6 +66,22 @@ export type UploadImageFlowDeps = {
 };
 
 /**
+ * Replies with the theme menu when the user asks about themes (no edit API).
+ */
+function replyWithThemeOptions(args: {
+  family: PageFamily;
+  appendMessage: AppendMessage;
+  setPhase: (phase: ChatPhase) => void;
+}): void {
+  args.appendMessage({
+    role: "assistant",
+    content: formatThemeSuggestions(args.family),
+    pageFamily: args.family,
+  });
+  args.setPhase("editing");
+}
+
+/**
  * Runs a chat edit: show Editor working → apply → mark done → success CTAs.
  */
 export async function runEditFlow(deps: RunEditFlowDeps): Promise<void> {
@@ -83,6 +103,13 @@ export async function runEditFlow(deps: RunEditFlowDeps): Promise<void> {
     setPhase,
   } = deps;
 
+  const family = pageFamily ?? "premium";
+
+  if (isThemeInquiryIntent(instruction)) {
+    replyWithThemeOptions({ family, appendMessage, setPhase });
+    return;
+  }
+
   setPhase("editing");
   appendMessage({
     role: "agent",
@@ -97,7 +124,7 @@ export async function runEditFlow(deps: RunEditFlowDeps): Promise<void> {
       instruction,
       page,
       brief,
-      family: pageFamily ?? "premium",
+      family,
       useFixture,
     });
 

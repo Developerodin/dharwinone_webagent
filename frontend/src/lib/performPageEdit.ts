@@ -26,6 +26,6 @@ export async function performPageEdit(args: {
     page: result.page,
     brief: result.brief,
     family: result.family,
-    message: formatEditResultMessage(result.summary, result.family),
+    message: formatEditResultMessage(result.summary),
   };
 }

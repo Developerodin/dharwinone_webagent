@@ -109,11 +109,7 @@ export async function runConfirmBuild(deps: ConfirmBuildDeps): Promise<void> {
     const completionMessage: ChatMessage = {
       id: createMessageId(),
       role: "assistant",
-      content: formatBuildReadyMessage(
-        brief.businessName,
-        family,
-        droppedNote,
-      ),
+      content: formatBuildReadyMessage(brief.businessName, droppedNote),
       timestamp: Date.now(),
       pageFamily: family,
       actions: [
