@@ -5,40 +5,32 @@
 
 import { resolveThemeFamilyIntent } from "./resolveThemeIntent.js";
 
-const COLOR_PATTERNS: RegExp[] = [
-  /\b(green|red|blue|yellow|orange|pink|purple|violet|teal|maroon|brown|grey|gray|white|black|cream|gold|silver)\b/i,
-  /\b(background|bg)\s*colou?r\b/i,
-  /\bbutton\s*colou?r\b/i,
-  /\bcolou?r\s*(scheme|palette|of|to|from)\b/i,
-  /\bmake\s+it\s+(green|red|blue|light|dark)\b/i,
-  /\bchange\s+the\s+colou?r\b/i,
-];
-
-const LAYOUT_PATTERNS: RegExp[] = [
-  /\bfont\b/i,
+const UNSUPPORTED_PATTERNS: RegExp[] = [
   /\banimation\b/i,
-  /\bvideo\b/i,
   /\bmap\s+embed\b/i,
   /\bgoogle\s+maps?\b/i,
-  /\badd\s+a\s+(section|page)\b/i,
-  /\bremove\s+(the\s+)?(section|hero|about|menu|gallery)\b/i,
-  /\breorder\b/i,
-  /\b(?:spacing|gap|padding|margin)\b.+\b(?:section|moments|gallery|hero)\b/i,
-  /\bmanage\s+the\s+space\b/i,
+  /\bdrag[\s-]?resize\b/i,
+  /\bcustom\s+font\s+upload\b/i,
+  /\bmulti[\s-]?page\b/i,
 ];
 
-/** Light/dark are theme switches we DO support (premium/elegant). */
+/** Light/dark are theme switches we DO support. */
 const SUPPORTED_THEME_COLOR =
   /\b(dark\s+to\s+light|light\s+to\s+dark|make\s+it\s+light|make\s+it\s+dark|lighter|darker)\b/i;
 
 const SUPPORTED_LIST = [
   "• Change / rewrite headlines — “change gallery headline to …” or “rewrite moments headline”",
+  "• Color a word — “make Bite! red” / “color Italy #c9a962”",
+  "• Brand / button / section colors — “use accent green”, “hero background cream”, “CTA blue”",
+  "• Fonts — “use serif on headlines” / “body font sans”",
+  "• Add / remove sections — “add testimonials” / “remove gallery”",
+  "• Spacing — “tighter about section” / “more space on hero”",
   "• Swap section layouts — “change the about section” / “different hero layout”",
   "• Menu prices / rename / remove items",
   "• Swap catalog images — “different about image”",
-  "• Gallery count — “show 4 gallery images” / “add two more images”",
-  "• Themes — **Premium** (light) or **Elegant** (dark/gold)",
-  "• Upload your own photos — attach Image in chat (jpg/png/webp up to 25MB)",
+  "• Gallery count — “show 4 gallery images”",
+  "• Themes — Premium, Elegant, Minimal, Rustic, Vibrant",
+  "• Upload your own photos — attach Media in chat",
 ].join("\n");
 
 /**
@@ -51,7 +43,7 @@ export function formatUnsupportedEditMessage(kind: string): string {
     "For this test phase we support:",
     SUPPORTED_LIST,
     "",
-    "**Not available yet:** custom brand colors (green/red/etc.), button/section color picks, fonts, videos, new sections, manual spacing tweaks.",
+    "**Not available yet:** map embeds, multi-page sites, drag-resize spacing, custom font uploads.",
     "",
     "Try one of the supported edits above — thank you!",
   ].join("\n");
@@ -86,21 +78,13 @@ export function checkUnsupportedEdit(instruction: string): string | null {
     ].join("\n");
   }
 
-  if (LAYOUT_PATTERNS.some((pattern) => pattern.test(text))) {
-    return formatUnsupportedEditMessage("layout / fonts / spacing / advanced UI");
+  if (UNSUPPORTED_PATTERNS.some((pattern) => pattern.test(text))) {
+    return formatUnsupportedEditMessage("advanced media / layout");
   }
 
-  if (
-    COLOR_PATTERNS.some((pattern) => pattern.test(text)) &&
-    !SUPPORTED_THEME_COLOR.test(text) &&
-    !/\b(premium|elegant|elegent|elegan|premum)\s+theme\b/i.test(text)
-  ) {
-    const onlyLightDark =
-      /\b(light|dark)\b/i.test(text) &&
-      !/\b(green|red|blue|yellow|orange|pink|purple|teal|maroon)\b/i.test(text);
-    if (!onlyLightDark) {
-      return formatUnsupportedEditMessage("custom colors like green/red");
-    }
+  // Keep light/dark language from being misread — still supported via themes
+  if (SUPPORTED_THEME_COLOR.test(text)) {
+    return null;
   }
 
   return null;

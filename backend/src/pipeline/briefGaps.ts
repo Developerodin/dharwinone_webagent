@@ -4,11 +4,28 @@ import type { Brief } from "../schemas/brief.schema.js";
 export type BriefGap =
   | "businessName"
   | "category"
+  | "usp"
+  | "signatureDishes"
+  | "audience"
+  | "story"
+  | "hours"
+  | "neighbourhood"
   | "menuItems"
   | "phone"
-  | "address";
+  | "address"
+  | "brandColors";
 
+/** Required — cannot skip. */
 const CRITICAL_GAPS: BriefGap[] = ["businessName", "category"];
+
+/** Highest copy impact — ask before contact details. */
+const P1_GAPS: BriefGap[] = ["usp", "signatureDishes", "audience"];
+
+/** Nice-to-have story / visit facts. */
+const P2_GAPS: BriefGap[] = ["story", "hours", "neighbourhood"];
+
+/** Lowest impact for page uniqueness. */
+const P3_GAPS: BriefGap[] = ["menuItems", "phone", "address", "brandColors"];
 
 const GENERIC_BUSINESS_NAMES = new Set([
   "restaurant",
@@ -101,14 +118,31 @@ export function enrichVagueCategory(
   const cuisine = findCuisineLabel(`${chatText}\n${category}`);
   if (!cuisine) return category.trim();
   const vertical = category.trim().toLowerCase();
-  if (!vertical || vertical === "food" || vertical === "dining" || vertical === "website" || vertical === "business") {
+  if (
+    !vertical ||
+    vertical === "food" ||
+    vertical === "dining" ||
+    vertical === "website" ||
+    vertical === "business"
+  ) {
     return `${cuisine} restaurant`;
   }
   return `${cuisine} ${vertical}`;
 }
 
 /**
- * Detects missing or unclear brief fields after extraction.
+ * Gap sort order: P0 critical → P1 copy → P2 story → P3 contact.
+ */
+function gapRank(gap: BriefGap): number {
+  if (CRITICAL_GAPS.includes(gap)) return 0;
+  if (P1_GAPS.includes(gap)) return 1;
+  if (P2_GAPS.includes(gap)) return 2;
+  if (P3_GAPS.includes(gap)) return 3;
+  return 9;
+}
+
+/**
+ * Detects missing or unclear brief fields after extraction (value-ranked).
  */
 export function detectBriefGaps(brief: Brief): BriefGap[] {
   const gaps: BriefGap[] = [];
@@ -119,17 +153,18 @@ export function detectBriefGaps(brief: Brief): BriefGap[] {
   if (!brief.category?.trim() || isVagueCategory(brief.category)) {
     gaps.push("category");
   }
-  if (brief.menuItems.length === 0) {
-    gaps.push("menuItems");
-  }
-  if (!brief.phone?.trim()) {
-    gaps.push("phone");
-  }
-  if (!brief.address?.trim()) {
-    gaps.push("address");
-  }
+  if (!brief.usp?.trim()) gaps.push("usp");
+  if (!brief.signatureDishes?.length) gaps.push("signatureDishes");
+  if (!brief.audience?.trim()) gaps.push("audience");
+  if (!brief.story?.trim() && brief.foundedYear == null) gaps.push("story");
+  if (!brief.hours?.length) gaps.push("hours");
+  if (!brief.neighbourhood?.trim()) gaps.push("neighbourhood");
+  if (brief.menuItems.length === 0) gaps.push("menuItems");
+  if (!brief.phone?.trim()) gaps.push("phone");
+  if (!brief.address?.trim()) gaps.push("address");
+  if (!brief.brandColors?.length) gaps.push("brandColors");
 
-  return gaps;
+  return gaps.sort((a, b) => gapRank(a) - gapRank(b));
 }
 
 /**
@@ -163,9 +198,8 @@ export type BriefReadiness =
     };
 
 /**
- * Evaluates whether a brief is ready to build or needs clarification.
- * Keeps asking until gaps are filled, or the user confirms skip for optional fields.
- * Name + cuisine are required and cannot be skipped.
+ * Evaluates whether a brief is ready to build.
+ * Ready when P0 filled AND (P1 mostly filled OR skip confirmed OR only P2/P3 remain).
  */
 export function evaluateBriefReadiness(
   brief: Brief,
@@ -179,6 +213,33 @@ export function evaluateBriefReadiness(
       status: "needs_clarification",
       gaps: critical,
       canSkip: false,
+    };
+  }
+
+  const p1Missing = optional.filter((g) => P1_GAPS.includes(g));
+  const p1Filled = P1_GAPS.length - p1Missing.length;
+
+  // Two good P1 answers are enough to build even if phone/address missing.
+  if (p1Filled >= 2 && p1Missing.length > 0) {
+    const onlyLowValue = optional.every(
+      (g) => P2_GAPS.includes(g) || P3_GAPS.includes(g) || P1_GAPS.includes(g),
+    );
+    if (onlyLowValue && p1Filled >= 2) {
+      // Still ask remaining P1 once unless skip — but allow ready if skip or rounds exhausted upstream.
+      if (options.skipConfirmed) return { status: "ready" };
+    }
+  }
+
+  if (p1Filled >= 2 && optional.every((g) => !P1_GAPS.includes(g))) {
+    // P1 done; P2/P3 optional — ready unless we want one more round (handled by rounds).
+    if (options.skipConfirmed || optional.length === 0) {
+      return { status: "ready" };
+    }
+    // Soft: treat P2/P3 as skippable clarification
+    return {
+      status: "needs_clarification",
+      gaps: optional,
+      canSkip: true,
     };
   }
 

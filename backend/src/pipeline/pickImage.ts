@@ -264,18 +264,49 @@ export function listCatalogImagePaths(args: {
  * Stage 6 — pure code: filter catalog by section_type, pick first match.
  * Returns null when no catalog entry matches (caller may drop section).
  */
+/**
+ * Picks the first unused path from ranked matches, recording it in usedPaths.
+ * When every candidate is already used, reuses the top match (exhaustion).
+ */
+function pickUnusedPath(
+  paths: string[],
+  usedPaths?: Set<string>,
+): string | null {
+  if (paths.length === 0) return null;
+  if (!usedPaths) return paths[0] ?? null;
+
+  const fresh = paths.find((path) => !usedPaths.has(path));
+  const chosen = fresh ?? paths[0] ?? null;
+  if (chosen) usedPaths.add(chosen);
+  return chosen;
+}
+
+/**
+ * Stage 6 — pure code: filter catalog by section_type, pick first unused match.
+ * Returns null when no catalog entry matches (caller may drop section).
+ */
 export function pickImage(args: {
   sectionType: SectionType;
   orientation?: "landscape" | "portrait" | "square";
   family?: PageFamily;
   category?: string | null;
   seed?: string | null;
+  /** Cross-section dedup set for a single page build/edit. */
+  usedPaths?: Set<string>;
+  /** Optional user-uploaded paths preferred over the catalog. */
+  preferPaths?: string[];
 }): string | null {
+  if (args.preferPaths?.length) {
+    const preferred = pickUnusedPath(args.preferPaths, args.usedPaths);
+    if (preferred) return preferred;
+  }
+
   const matches = filterCatalogEntries({
     ...args,
     seed: args.seed ?? args.category,
   });
-  return matches[0]?.path ?? null;
+  const paths = matches.map((entry) => entry.path);
+  return pickUnusedPath(paths, args.usedPaths);
 }
 
 /**
@@ -286,8 +317,18 @@ export function pickGalleryImages(
   family: PageFamily = getDefaultPageFamily(),
   category?: string | null,
   seed?: string | null,
+  usedPaths?: Set<string>,
+  preferPaths?: string[],
 ): string[] {
-  return pickSectionImages("gallery", limit, family, category, seed);
+  return pickSectionImages(
+    "gallery",
+    limit,
+    family,
+    category,
+    seed,
+    usedPaths,
+    preferPaths,
+  );
 }
 
 /**
@@ -299,7 +340,20 @@ export function pickSectionImages(
   family: PageFamily = getDefaultPageFamily(),
   category?: string | null,
   seed?: string | null,
+  usedPaths?: Set<string>,
+  preferPaths?: string[],
 ): string[] {
+  const unique: string[] = [];
+
+  if (preferPaths?.length) {
+    for (const path of preferPaths) {
+      if (usedPaths?.has(path) || unique.includes(path)) continue;
+      unique.push(path);
+      usedPaths?.add(path);
+      if (unique.length >= limit) return unique;
+    }
+  }
+
   const matches = filterCatalogEntries({
     sectionType,
     orientation: orientationForSection(sectionType),
@@ -308,10 +362,23 @@ export function pickSectionImages(
     seed: seed ?? category,
   });
 
-  const unique: string[] = [];
   for (const entry of matches) {
-    if (!unique.includes(entry.path)) unique.push(entry.path);
+    if (unique.includes(entry.path)) continue;
+    if (usedPaths?.has(entry.path)) continue;
+    unique.push(entry.path);
+    usedPaths?.add(entry.path);
     if (unique.length >= limit) break;
   }
+
+  // Exhaustion: allow reuse only after all unique unused paths are taken.
+  if (unique.length < limit) {
+    for (const entry of matches) {
+      if (unique.includes(entry.path)) continue;
+      unique.push(entry.path);
+      usedPaths?.add(entry.path);
+      if (unique.length >= limit) break;
+    }
+  }
+
   return unique;
 }

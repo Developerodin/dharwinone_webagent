@@ -1,7 +1,7 @@
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 import { FIXTURE_BRIEF } from "../data/fixtureBrief.js";
-import { getOpenAIClient, getOpenAIModel } from "../lib/openai.js";
+import { getModelFor, getOpenAIClient } from "../lib/openai.js";
 import type { Brief } from "../schemas/brief.schema.js";
 import {
   enrichVagueCategory,
@@ -21,7 +21,7 @@ import type { PageFamily } from "../config/pageFamily.js";
 
 const MAX_QUESTIONS = 3;
 /** After this many clarification rounds, stop re-asking optional gaps. */
-const MAX_CLARIFICATION_ROUNDS = 2;
+const MAX_CLARIFICATION_ROUNDS = 3;
 
 const questionsSchema = z.object({
   questions: z.array(z.string().min(1)).max(MAX_QUESTIONS),
@@ -62,9 +62,26 @@ export type AssessBriefResult =
 const GAP_LABELS: Record<BriefGap, string> = {
   businessName: "business name",
   category: "restaurant type or cuisine",
+  usp: "what makes you different (one line a regular would say)",
+  signatureDishes: "2–3 signature dishes you are known for",
+  audience: "who usually sits at your tables (date nights, families, office lunch…)",
+  story: "how the place started (or founding year)",
+  hours: "opening hours",
+  neighbourhood: "neighbourhood or landmark",
   menuItems: "menu items with prices",
   phone: "phone number",
   address: "street address",
+  brandColors: "brand colors (name or #hex — or skip for theme defaults)",
+};
+
+const GAP_QUESTIONS: Partial<Record<BriefGap, string>> = {
+  usp: "In one line — what would a regular say makes you different?",
+  signatureDishes: "Which 2–3 dishes are you known for?",
+  audience:
+    "Who's usually at your tables — date nights, families, office lunches?",
+  story: "How did the place start? (or what year did you open?)",
+  hours: "What are your opening hours?",
+  neighbourhood: "Which neighbourhood or landmark are you near?",
 };
 
 /**
@@ -72,7 +89,7 @@ const GAP_LABELS: Record<BriefGap, string> = {
  */
 export function buildFallbackQuestions(gaps: BriefGap[]): string[] {
   return gaps.slice(0, MAX_QUESTIONS).map(
-    (gap) => `What is the ${GAP_LABELS[gap]}?`,
+    (gap) => GAP_QUESTIONS[gap] ?? `What is the ${GAP_LABELS[gap]}?`,
   );
 }
 
@@ -91,14 +108,16 @@ export async function generateClarificationQuestions(
   try {
     const client = getOpenAIClient();
     const completion = await client.chat.completions.parse({
-      model: getOpenAIModel(),
+      model: getModelFor("questions"),
       messages: [
         {
           role: "system",
           content: `You help clarify an incomplete restaurant website brief.
 Generate at most ${MAX_QUESTIONS} short, specific questions.
 Ask only about missing items. Do not ask what is already known.
-If asking for phone, address, or menu, keep questions friendly and specific.
+PRIORITY ORDER (ask higher first): USP / signature dishes / audience → story/hours/neighbourhood → phone/address/menu/brand colors.
+Prefer questions that improve copy uniqueness over contact details.
+For brand colors, mention they can reply with color names or #hex, or skip to use theme defaults.
 Return plain questions only — no numbering prefix.`,
         },
         {

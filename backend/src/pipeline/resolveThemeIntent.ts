@@ -22,6 +22,10 @@ const FAMILY_NAME_MATCHERS: Array<{ family: PageFamily; pattern: RegExp }> = [
     family: "vibrant",
     pattern: /\b(vibrant|vibant|colorful|colourful)\b/i,
   },
+  {
+    family: "bold",
+    pattern: /\b(bold|burger|qsr|fast[\s-]?food)\b/i,
+  },
 ];
 
 /** Synonyms that map to elegant without saying the theme name. */

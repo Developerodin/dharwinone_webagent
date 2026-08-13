@@ -10,7 +10,7 @@ const catalogEntrySchema = z.object({
   orientation: z.enum(["landscape", "portrait", "square"]),
   section_type: z.enum(["hero", "menu", "about", "gallery"]),
   family: z
-    .enum(["premium", "elegant", "minimal", "rustic", "vibrant"])
+    .enum(["premium", "elegant", "minimal", "rustic", "vibrant", "bold"])
     .optional(),
 });
 

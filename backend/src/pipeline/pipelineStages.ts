@@ -1,6 +1,7 @@
 /** Ordered pipeline stages shown in the UI during build. */
 export const PIPELINE_STAGE_NAMES = [
   "Brief Extractor",
+  "Creative Director",
   "Section Planner",
   "Component Picker",
   "Copywriter",
@@ -34,6 +35,7 @@ export type EmitStageOptions = {
 /** Trust-oriented running copy — sounds like building from scratch. */
 const STAGE_RUNNING_MESSAGE: Record<PipelineStageName, string> = {
   "Brief Extractor": "Reading your brief and locking in business facts…",
+  "Creative Director": "Setting visual direction — theme, palette, layouts…",
   "Section Planner": "Planning page sections from scratch…",
   "Component Picker": "Choosing layouts that fit your brand…",
   Copywriter: "Writing original headlines and body copy…",
@@ -46,6 +48,7 @@ const STAGE_RUNNING_MESSAGE: Record<PipelineStageName, string> = {
 /** Done-state trust copy. */
 const STAGE_DONE_MESSAGE: Record<PipelineStageName, string> = {
   "Brief Extractor": "Brief locked in",
+  "Creative Director": "Direction locked in",
   "Section Planner": "Section plan ready",
   "Component Picker": "Layouts selected",
   Copywriter: "Copy drafted",
@@ -58,6 +61,7 @@ const STAGE_DONE_MESSAGE: Record<PipelineStageName, string> = {
 /** Light collaboration handoff lines. */
 const STAGE_RUNNING_DETAIL: Record<PipelineStageName, string> = {
   "Brief Extractor": "Agent extracting structured facts from your description",
+  "Creative Director": "Picking family, brand palette, and section variants",
   "Section Planner": "Coordinating with Component Picker on section order",
   "Component Picker": "Handing section specs to Copywriter",
   Copywriter: "Drafting section-by-section with Fact-Safety watching",
@@ -68,7 +72,8 @@ const STAGE_RUNNING_DETAIL: Record<PipelineStageName, string> = {
 };
 
 const STAGE_DONE_DETAIL: Record<PipelineStageName, string> = {
-  "Brief Extractor": "Passed brief to Section Planner",
+  "Brief Extractor": "Passed brief to Creative Director",
+  "Creative Director": "Passed direction to Section Planner",
   "Section Planner": "Passed layout plan to Component Picker",
   "Component Picker": "Passed component map to Copywriter",
   Copywriter: "Passed drafts to Fact-Safety",

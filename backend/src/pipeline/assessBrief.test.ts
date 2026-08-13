@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { FIXTURE_BRIEF } from "../data/fixtureBrief.js";
+import type { Brief } from "../schemas/brief.schema.js";
+import { coerceBriefInput } from "../schemas/brief.schema.js";
 import { assessBrief, buildFallbackQuestions } from "./assessBrief.js";
 import {
   briefNeedsClarification,
@@ -11,15 +13,54 @@ import {
 } from "./briefGaps.js";
 import { mergeClarificationAnswers } from "./mergeClarifications.js";
 
+/**
+ * Minimal Wave 2 field defaults for inline brief objects used in tests.
+ * Spread before custom fields to satisfy the full Brief type.
+ */
+const W2: Pick<
+  Brief,
+  | "usp"
+  | "story"
+  | "foundedYear"
+  | "signatureDishes"
+  | "audience"
+  | "priceBand"
+  | "vibe"
+  | "hours"
+  | "neighbourhood"
+  | "awards"
+  | "testimonials"
+  | "team"
+  | "dietary"
+  | "socials"
+> = {
+  usp: null,
+  story: null,
+  foundedYear: null,
+  signatureDishes: [],
+  audience: null,
+  priceBand: null,
+  vibe: [],
+  hours: [],
+  neighbourhood: null,
+  awards: [],
+  testimonials: [],
+  team: [],
+  dietary: [],
+  socials: null,
+};
+
 describe("detectBriefGaps", () => {
   it("flags vague restaurant dump with missing details", () => {
     const gaps = detectBriefGaps({
+      ...W2,
       businessName: "Restaurant",
       category: "restaurant",
       phone: null,
       address: null,
       menuItems: [],
       photos: [],
+      brandColors: null,
     });
 
     expect(gaps).toContain("businessName");
@@ -27,11 +68,79 @@ describe("detectBriefGaps", () => {
     expect(gaps).toContain("menuItems");
     expect(gaps).toContain("phone");
     expect(gaps).toContain("address");
+    expect(gaps).toContain("brandColors");
   });
 
   it("returns no gaps for a complete brief", () => {
-    const gaps = detectBriefGaps(FIXTURE_BRIEF);
+    const gaps = detectBriefGaps({
+      ...FIXTURE_BRIEF,
+      brandColors: ["#c9a962", "cream"],
+    });
     expect(gaps).toHaveLength(0);
+  });
+
+  it("treats missing brand colors as an optional soft gap", () => {
+    expect(detectBriefGaps(FIXTURE_BRIEF)).toEqual(["brandColors"]);
+  });
+
+  it("gap ranking: usp appears before phone in gap list", () => {
+    const gaps = detectBriefGaps({
+      ...W2,
+      businessName: "Spice House",
+      category: "Indian restaurant",
+      phone: null,
+      address: null,
+      menuItems: [{ name: "Butter Chicken", price: 380, description: null }],
+      photos: [],
+      brandColors: null,
+    });
+    const uspIndex = gaps.indexOf("usp");
+    const phoneIndex = gaps.indexOf("phone");
+    expect(uspIndex).toBeGreaterThanOrEqual(0);
+    expect(phoneIndex).toBeGreaterThanOrEqual(0);
+    expect(uspIndex).toBeLessThan(phoneIndex);
+  });
+});
+
+describe("coerceBriefInput", () => {
+  it("defaults missing Wave 2 array fields to []", () => {
+    const result = coerceBriefInput({
+      businessName: "Old Cafe",
+      category: "cafe",
+      phone: null,
+      address: null,
+      menuItems: [],
+      photos: [],
+      brandColors: null,
+    }) as Brief;
+
+    expect(result.signatureDishes).toEqual([]);
+    expect(result.vibe).toEqual([]);
+    expect(result.hours).toEqual([]);
+    expect(result.awards).toEqual([]);
+    expect(result.testimonials).toEqual([]);
+    expect(result.team).toEqual([]);
+    expect(result.dietary).toEqual([]);
+  });
+
+  it("defaults missing Wave 2 nullable scalars to null", () => {
+    const result = coerceBriefInput({
+      businessName: "Old Cafe",
+      category: "cafe",
+      phone: null,
+      address: null,
+      menuItems: [],
+      photos: [],
+      brandColors: null,
+    }) as Brief;
+
+    expect(result.usp).toBeNull();
+    expect(result.story).toBeNull();
+    expect(result.foundedYear).toBeNull();
+    expect(result.audience).toBeNull();
+    expect(result.priceBand).toBeNull();
+    expect(result.neighbourhood).toBeNull();
+    expect(result.socials).toBeNull();
   });
 });
 
@@ -60,24 +169,28 @@ describe("enrichVagueCategory", () => {
 describe("briefNeedsClarification", () => {
   it("requires clarification when optional detail fields are missing", () => {
     const gaps = detectBriefGaps({
+      ...W2,
       businessName: "Luigi's",
       category: "Italian restaurant",
       phone: null,
       address: null,
       menuItems: [],
       photos: [],
+      brandColors: null,
     });
     expect(briefNeedsClarification(gaps)).toBe(true);
   });
 
   it("still needs clarification when only menu is missing", () => {
     const gaps = detectBriefGaps({
+      ...W2,
       businessName: "Luigi's",
       category: "Italian restaurant",
       phone: "(555) 111-2222",
       address: "1 Main St",
       menuItems: [],
       photos: [],
+      brandColors: null,
     });
     expect(briefNeedsClarification(gaps)).toBe(true);
   });
@@ -85,13 +198,15 @@ describe("briefNeedsClarification", () => {
 
 describe("evaluateBriefReadiness", () => {
   it("keeps asking for critical fields even without skip", () => {
-    const vagueBrief = {
+    const vagueBrief: Brief = {
+      ...W2,
       businessName: "Restaurant",
       category: "restaurant",
       phone: null,
       address: null,
       menuItems: [],
       photos: [],
+      brandColors: null,
     };
 
     const result = evaluateBriefReadiness(vagueBrief, { skipConfirmed: true });
@@ -103,13 +218,15 @@ describe("evaluateBriefReadiness", () => {
   });
 
   it("allows skip only for optional fields after name/cuisine exist", () => {
-    const partial = {
+    const partial: Brief = {
+      ...W2,
       businessName: "Luigi's",
       category: "Italian restaurant",
       phone: null,
       address: null,
       menuItems: [],
       photos: [],
+      brandColors: null,
     };
 
     expect(evaluateBriefReadiness(partial).status).toBe("needs_clarification");
@@ -119,13 +236,15 @@ describe("evaluateBriefReadiness", () => {
   });
 
   it("returns needs_clarification for vague input", () => {
-    const vagueBrief = {
+    const vagueBrief: Brief = {
+      ...W2,
       businessName: "Restaurant",
       category: "restaurant",
       phone: null,
       address: null,
       menuItems: [],
       photos: [],
+      brandColors: null,
     };
 
     const result = evaluateBriefReadiness(vagueBrief);

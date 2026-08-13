@@ -7,31 +7,28 @@ import { pickGalleryImages, pickImage } from "../pipeline/pickImage.js";
 import { loadCatalog, resetCatalogCache } from "../lib/catalog.js";
 import { planSections } from "../pipeline/planSections.js";
 import { runPipeline } from "../pipeline/runPipeline.js";
+import { writeAllSectionCopy } from "../pipeline/writeAllCopy.js";
 import { writeCopyFixture } from "../pipeline/writeCopy.js";
 import { verifyBriefAgainstSource } from "../pipeline/verifyBrief.js";
 
 describe("planSections", () => {
-  it("returns a core spine without optional blocks when brief has no cues", () => {
-    expect(planSections({ brief: FIXTURE_BRIEF })).toEqual([
-      "header",
-      "hero",
-      "about",
-      "menu",
-      "gallery",
-      "testimonials",
-      "reservation",
-      "location_map",
-      "contact",
-      "footer",
-    ]);
+  it("returns a core spine without fabricated social-proof blocks", () => {
+    const sections = planSections({ brief: FIXTURE_BRIEF });
+    // Testimonials/team require real brief arrays — never fabricated.
+    expect(sections).not.toContain("testimonials");
+    expect(sections).not.toContain("team");
+    expect(sections[0]).toBe("header");
+    expect(sections).toContain("hero");
+    expect(sections).toContain("menu");
+    expect(sections[sections.length - 1]).toBe("footer");
   });
 
-  it("includes team and drops default testimonials when only team cues exist", () => {
+  it("omits team/testimonials when only keyword cues exist without brief data", () => {
     const sections = planSections({
       brief: FIXTURE_BRIEF,
       chatText: "Meet our chef and kitchen staff",
     });
-    expect(sections).toContain("team");
+    expect(sections).not.toContain("team");
     expect(sections).not.toContain("testimonials");
     expect(sections).not.toContain("services");
   });
@@ -323,6 +320,7 @@ describe("verifyBriefAgainstSource", () => {
           { name: "Invented Dish", price: 99, description: null },
         ],
         photos: [],
+      brandColors: null,
       },
       chatText,
     );
@@ -343,6 +341,7 @@ describe("verifyBriefAgainstSource", () => {
           { name: "Chicken Biryani", price: 1295, description: null },
         ],
         photos: [],
+      brandColors: null,
       },
       chatText,
     );
@@ -363,20 +362,34 @@ describe("writeCopyFixture header", () => {
     expect(copy.eyebrow).toBe(FIXTURE_BRIEF.category);
   });
 
-  it("varies fixture tone by family", () => {
+  it("varies fixture tone by family when USP is absent", () => {
+    const thinBrief = {
+      ...FIXTURE_BRIEF,
+      usp: null,
+      signatureDishes: [] as string[],
+    };
     const elegant = writeCopyFixture({
       componentId: "elegant-hero-01",
-      brief: FIXTURE_BRIEF,
+      brief: thinBrief,
       family: "elegant",
     });
     const rustic = writeCopyFixture({
       componentId: "rustic-hero-01",
-      brief: FIXTURE_BRIEF,
+      brief: thinBrief,
       family: "rustic",
     });
     expect(String(elegant.subheading)).toMatch(/elegant/i);
     expect(String(rustic.subheading)).toMatch(/heartfelt|care/i);
     expect(elegant.subheading).not.toBe(rustic.subheading);
+  });
+
+  it("prefers USP in hero fixture when present", () => {
+    const copy = writeCopyFixture({
+      componentId: "premium-hero-01",
+      brief: FIXTURE_BRIEF,
+      family: "premium",
+    });
+    expect(String(copy.subheading)).toContain("Wood-fired");
   });
 });
 
@@ -402,7 +415,7 @@ describe("runPipeline fixture mode", () => {
     });
     expect(result.page.sections.length).toBeGreaterThan(0);
     expect(result.brief.businessName).toBe(FIXTURE_BRIEF.businessName);
-    expect(result.stages.length).toBe(8);
+    expect(result.stages.length).toBe(9);
   });
 
   it("assigns a primary image to location_map for minimal family", async () => {
@@ -493,5 +506,65 @@ describe("runPipeline fixture mode", () => {
     expect(
       result.page.sections.some((s) => s.type === "footer"),
     ).toBe(true);
+  });
+});
+
+describe("writeAllSectionCopy fixture path", () => {
+  it("returns copy for every planned section without LLM", async () => {
+    const sections = [
+      { sectionType: "hero" as const, componentId: "premium-hero-01" },
+      { sectionType: "about" as const, componentId: "premium-about-01" },
+      { sectionType: "menu" as const, componentId: "premium-menu-01" },
+      { sectionType: "footer" as const, componentId: "premium-footer-01" },
+    ];
+    const direction = {
+      family: "premium" as const,
+      seed: "fixture-seed",
+      palette: null,
+      paletteSource: "creative_pick" as const,
+      sectionVariantHints: {},
+      rationale: "fixture",
+    };
+    const copy = await writeAllSectionCopy({
+      brief: FIXTURE_BRIEF,
+      direction,
+      sections,
+      useFixture: true,
+    });
+    expect(copy["hero"]).toBeDefined();
+    expect(copy["about"]).toBeDefined();
+    expect(copy["menu"]).toBeDefined();
+    expect(copy["footer"]).toBeDefined();
+    // Each section must have at least one string field
+    expect(typeof copy["hero"]?.headline).toBe("string");
+    expect(typeof copy["about"]?.headline).toBe("string");
+  });
+
+  it("fills all sections with non-empty strings in fixture mode", async () => {
+    const allTypes = planSections({ brief: FIXTURE_BRIEF });
+    // Pick any valid componentId for each type (premium-01 variants)
+    const sections = allTypes.map((sectionType) => ({
+      sectionType,
+      componentId: sectionType === "location_map"
+        ? "premium-location-01"
+        : `premium-${sectionType}-01`,
+    }));
+    const direction = {
+      family: "premium" as const,
+      seed: "all-sections",
+      palette: null,
+      paletteSource: "creative_pick" as const,
+      sectionVariantHints: {},
+      rationale: "fixture",
+    };
+    const copy = await writeAllSectionCopy({
+      brief: FIXTURE_BRIEF,
+      direction,
+      sections,
+      useFixture: true,
+    });
+    for (const { sectionType } of sections) {
+      expect(copy[sectionType], `missing copy for ${sectionType}`).toBeDefined();
+    }
   });
 });

@@ -4,7 +4,7 @@ import { parsePageFamily } from "../config/pageFamily.js";
 import { inferPageFamily } from "../pipeline/inferPageFamily.js";
 import { runPipeline } from "../pipeline/runPipeline.js";
 import type { Brief } from "../schemas/brief.schema.js";
-import { briefSchema } from "../schemas/brief.schema.js";
+import { briefSchema, coerceBriefInput } from "../schemas/brief.schema.js";
 
 export const buildRouter = Router();
 
@@ -23,7 +23,7 @@ function writeSse(res: Response, payload: unknown): void {
 }
 
 /**
- * Accepts a confirmed brief and runs the 8-stage pipeline.
+ * Accepts a confirmed brief and runs the build pipeline (incl. Creative Director).
  * Query ?fixture=1 or USE_FIXTURE_BRIEF=true skips LLM for testing.
  * Query ?stream=1 emits stage events via SSE.
  */
@@ -46,7 +46,7 @@ buildRouter.post("/", async (req, res) => {
 
     let brief: Brief | undefined;
     if (body.brief) {
-      const parsed = briefSchema.safeParse(body.brief);
+      const parsed = briefSchema.safeParse(coerceBriefInput(body.brief));
       if (!parsed.success) {
         res.status(400).json({
           ok: false,
@@ -95,6 +95,8 @@ buildRouter.post("/", async (req, res) => {
     const payload = {
       ok: true,
       page: result.page,
+      brief: result.brief,
+      direction: result.direction,
       meta: {
         droppedSections: result.droppedSections,
         fixture: useFixture,

@@ -7,7 +7,10 @@ const familySchema = z.enum([
   "minimal",
   "rustic",
   "vibrant",
+  "bold",
 ]);
+
+const paddingYSchema = z.enum(["tight", "normal", "roomy"]);
 
 /** Structured edit operations applied to an existing Page JSON. */
 export const editOpSchema = z.discriminatedUnion("op", [
@@ -30,6 +33,12 @@ export const editOpSchema = z.discriminatedUnion("op", [
   z.object({
     op: z.literal("remove_menu_item"),
     name: z.string().min(1),
+  }),
+  z.object({
+    op: z.literal("add_menu_item"),
+    name: z.string().min(1),
+    price: z.number().nonnegative(),
+    description: z.string().nullable(),
   }),
   z.object({
     op: z.literal("cycle_image"),
@@ -61,6 +70,61 @@ export const editOpSchema = z.discriminatedUnion("op", [
   z.object({
     op: z.literal("cycle_section_component"),
     section: sectionTypeSchema,
+  }),
+  z.object({
+    op: z.literal("set_theme_tokens"),
+    accent: z.string().nullable(),
+    accentContrast: z.string().nullable(),
+    bg: z.string().nullable(),
+    bgAlt: z.string().nullable(),
+    ink: z.string().nullable(),
+    fontDisplay: z.string().nullable(),
+    fontBody: z.string().nullable(),
+  }),
+  z.object({
+    op: z.literal("set_section_style"),
+    section: sectionTypeSchema,
+    background: z.string().nullable(),
+    text: z.string().nullable(),
+    button: z.string().nullable(),
+    paddingY: paddingYSchema.nullable(),
+  }),
+  z.object({
+    op: z.literal("set_text_style"),
+    section: sectionTypeSchema,
+    field: z.string().min(1),
+    match: z.string().min(1),
+    color: z.string().min(1),
+  }),
+  z.object({
+    op: z.literal("add_section"),
+    section: sectionTypeSchema,
+  }),
+  z.object({
+    op: z.literal("remove_section"),
+    section: sectionTypeSchema,
+  }),
+  z.object({
+    op: z.literal("reorder_section"),
+    section: sectionTypeSchema,
+    /** Absolute 0-based index among page.sections after move. */
+    toIndex: z.number().int().nonnegative(),
+  }),
+  z.object({
+    op: z.literal("set_section_spacing"),
+    section: sectionTypeSchema,
+    paddingY: paddingYSchema,
+  }),
+  z.object({
+    op: z.literal("remix_layout"),
+    /** Salt so repeated remixes diverge; null = timestamp at apply. */
+    salt: z.string().nullable(),
+  }),
+  z.object({
+    op: z.literal("remix_section"),
+    section: sectionTypeSchema,
+    /** Salt so repeated remixes diverge; null = timestamp at apply. */
+    salt: z.string().nullable(),
   }),
 ]);
 

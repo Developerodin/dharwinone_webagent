@@ -1,7 +1,7 @@
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 import type { PageFamily } from "../config/pageFamily.js";
-import { getOpenAIClient, getOpenAIModel } from "../lib/openai.js";
+import { getModelFor, getOpenAIClient } from "../lib/openai.js";
 import type { Brief } from "../schemas/brief.schema.js";
 import { getManifest } from "../schemas/manifest.schema.js";
 
@@ -27,6 +27,8 @@ function toneForFamily(family: PageFamily): string {
       return "warm and grounded — hearth, craft, honest hospitality";
     case "vibrant":
       return "energetic and vivid — lively, colorful, inviting";
+    case "bold":
+      return "casual QSR energy — punchy, playful, burger-joint confident, short sentences";
     case "minimal":
       return "sparse modern — clean, understated, few adjectives";
     case "premium":
@@ -49,6 +51,7 @@ function resolveFamily(
     prefix === "minimal" ||
     prefix === "rustic" ||
     prefix === "vibrant" ||
+    prefix === "bold" ||
     prefix === "premium"
   ) {
     return prefix;
@@ -101,7 +104,7 @@ Theme family: ${family}`;
 
   const client = getOpenAIClient();
   const completion = await client.chat.completions.parse({
-    model: getOpenAIModel(),
+    model: getModelFor("copy"),
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
@@ -181,35 +184,50 @@ export function writeCopyFixture(args: {
  * Hero fixture copy by family voice.
  */
 function heroFixture(family: PageFamily, brief: Brief) {
+  const dish = brief.signatureDishes?.[0];
+  const usp = brief.usp?.trim();
+  const specific =
+    usp ||
+    (dish
+      ? `${dish} — ${brief.neighbourhood ?? brief.category}`
+      : null);
+
   switch (family) {
     case "elegant":
       return {
         headline: brief.businessName,
-        subheading: `An elegant ${brief.category} experience crafted for the discerning palate`,
+        subheading:
+          specific ??
+          `An elegant ${brief.category} experience crafted for the discerning palate`,
         ctaLabel: "Reserve a Table",
       };
     case "rustic":
       return {
         headline: brief.businessName,
-        subheading: `Heartfelt ${brief.category} from a kitchen that cooks with care`,
+        subheading:
+          specific ??
+          `Heartfelt ${brief.category} from a kitchen that cooks with care`,
         ctaLabel: "See the Menu",
       };
+    case "bold":
     case "vibrant":
       return {
         headline: brief.businessName,
-        subheading: `Bold ${brief.category} flavors made for sharing and celebrating`,
+        subheading:
+          specific ??
+          `Bold ${brief.category} flavors made for sharing and celebrating`,
         ctaLabel: "Explore Dishes",
       };
     case "minimal":
       return {
         headline: brief.businessName,
-        subheading: `${brief.category}. Clear flavors. Calm room.`,
+        subheading: specific ?? `${brief.category}. Clear flavors. Calm room.`,
         ctaLabel: "View Menu",
       };
     default:
       return {
         headline: brief.businessName,
-        subheading: `Authentic ${brief.category} experience`,
+        subheading: specific ?? `Authentic ${brief.category} experience`,
         ctaLabel: "View Menu",
       };
   }
@@ -231,6 +249,7 @@ function menuFixture(family: PageFamily) {
         sectionTitle: "From Our Kitchen",
         introText: "Simple plates, honest ingredients, familiar comfort.",
       };
+    case "bold":
     case "vibrant":
       return {
         sectionTitle: "What's Cooking",
@@ -264,6 +283,7 @@ function aboutFixture(family: PageFamily, brief: Brief) {
         headline: `Welcome to ${brief.businessName}`,
         body: `A neighborhood ${brief.category} built on slow cooking, warm tables, and recipes passed hand to hand.`,
       };
+    case "bold":
     case "vibrant":
       return {
         headline: `Meet ${brief.businessName}`,
@@ -298,6 +318,7 @@ function galleryFixture(family: PageFamily) {
         headline: "Around the Table",
         caption: "Hearth, harvest, and the plates we share.",
       };
+    case "bold":
     case "vibrant":
       return {
         headline: "Color & Craft",
@@ -332,6 +353,7 @@ function locationFixture(family: PageFamily) {
         headline: "Find Us",
         directionsNote: "Pull up a chair — we are glad you made the trip.",
       };
+    case "bold":
     case "vibrant":
       return {
         headline: "Come Through",
@@ -366,6 +388,7 @@ function servicesFixture(family: PageFamily) {
         headline: "How We Host",
         introText: "From weeknight tables to gatherings that feel like home.",
       };
+    case "bold":
     case "vibrant":
       return {
         headline: "More Ways to Enjoy",
@@ -393,6 +416,7 @@ function statsFixture(family: PageFamily) {
       return { headline: "Numbers That Speak" };
     case "rustic":
       return { headline: "Years at the Table" };
+    case "bold":
     case "vibrant":
       return { headline: "The Buzz" };
     case "minimal":
@@ -418,6 +442,7 @@ function testimonialsFixture(family: PageFamily) {
         headline: "Words From the Neighborhood",
         introText: "Guests who come for comfort and stay for the welcome.",
       };
+    case "bold":
     case "vibrant":
       return {
         headline: "Guest Love",
@@ -451,6 +476,7 @@ function teamFixture(family: PageFamily) {
         headline: "The People in the Kitchen",
         introText: "Cooks who treat every service like a family meal.",
       };
+    case "bold":
     case "vibrant":
       return {
         headline: "The Crew",
@@ -486,6 +512,7 @@ function reservationFixture(family: PageFamily) {
         body: "Reserve a table and settle in for an honest meal.",
         ctaLabel: "Book a Table",
       };
+    case "bold":
     case "vibrant":
       return {
         headline: "Grab a Table",
@@ -524,6 +551,7 @@ function headerTaglineFixture(
       return place
         ? `Homestyle ${brief.category} in ${place}`
         : `Homestyle ${brief.category} worth the trip`;
+    case "bold":
     case "vibrant":
       return place
         ? `Lively ${brief.category} in ${place}`
@@ -556,6 +584,7 @@ function contactFixture(family: PageFamily) {
         introText: "Questions or bookings — send a note and we will reply.",
         ctaLabel: "Send Message",
       };
+    case "bold":
     case "vibrant":
       return {
         headline: "Get In Touch",
@@ -586,6 +615,7 @@ function footerTaglineFixture(family: PageFamily, brief: Brief): string {
       return "An evening of refined hospitality";
     case "rustic":
       return "Good food, warm tables, glad you stopped by";
+    case "bold":
     case "vibrant":
       return "Come hungry. Leave happy.";
     case "minimal":

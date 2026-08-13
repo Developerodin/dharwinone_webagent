@@ -57,6 +57,7 @@ export const COMPONENT_VARIANTS: Record<PageFamily, VariantMap> = {
   minimal: familyVariants("minimal", 2),
   rustic: familyVariants("rustic", 2),
   vibrant: familyVariants("vibrant", 2),
+  bold: familyVariants("bold", 2),
 };
 
 /**
@@ -226,6 +227,15 @@ function scoreVariant(
     if (sectionType === "about" && !storyForward) score += 2;
     if (sectionType === "menu" && !menuFocus) score += 2;
     if (sectionType === "services" && !servicesFocus) score += 2;
+  }
+
+  // Bold (Demo9) sunburst hero lives on *-01 — prefer it over the alt band.
+  if (
+    componentId.startsWith("bold-") &&
+    sectionType === "hero" &&
+    suffix === "01"
+  ) {
+    score += 8;
   }
 
   // Business-seeded mix so two similar restaurants diverge.

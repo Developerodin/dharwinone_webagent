@@ -42,9 +42,17 @@ describe("checkUnsupportedEdit theme exemption", () => {
     expect(checkUnsupportedEdit("use Elegant")).toBeNull();
   });
 
-  it("still blocks custom brand colors", () => {
-    expect(checkUnsupportedEdit("make the buttons green")).toContain(
-      "custom colors",
+  it("allows custom brand colors (now supported)", () => {
+    expect(checkUnsupportedEdit("make the buttons green")).toBeNull();
+  });
+
+  it("allows video language (uploads support video)", () => {
+    expect(checkUnsupportedEdit("add a video background")).toBeNull();
+  });
+
+  it("still blocks map embeds", () => {
+    expect(checkUnsupportedEdit("add a google maps embed")).toContain(
+      "advanced media",
     );
   });
 });

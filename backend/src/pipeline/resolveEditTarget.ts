@@ -1,56 +1,101 @@
 import type { Page, SectionType } from "../schemas/page.schema.js";
+import {
+  bestFuzzyMatch,
+  normalizeSearchText,
+  similarity,
+  tokenOverlapScore,
+} from "./fuzzyMatch.js";
+import {
+  inferEditSection,
+  resolveSectionFromText,
+} from "./sectionResolve.js";
+import { textFieldToPlain } from "./textRuns.js";
+
+export {
+  isCycleSectionComponentIntent,
+  isRewriteCopyIntent,
+} from "./editIntents.js";
+export {
+  inferEditSection,
+  resolveSectionFromText,
+} from "./sectionResolve.js";
+
+/** Field alias phrases → logical field keys (section-aware remap later). */
+const FIELD_ALIASES: Array<{ alias: string; field: string }> = [
+  { alias: "headline", field: "headline" },
+  { alias: "heading", field: "headline" },
+  { alias: "title", field: "headline" },
+  { alias: "subheading", field: "subheading" },
+  { alias: "subtitle", field: "subheading" },
+  { alias: "tagline", field: "subheading" },
+  { alias: "suhadeing", field: "subheading" },
+  { alias: "subheadingg", field: "subheading" },
+  { alias: "subheding", field: "subheading" },
+  { alias: "headlne", field: "headline" },
+  { alias: "hedline", field: "headline" },
+  { alias: "body", field: "body" },
+  { alias: "caption", field: "caption" },
+  { alias: "intro", field: "introText" },
+  { alias: "intro text", field: "introText" },
+  { alias: "section title", field: "sectionTitle" },
+  { alias: "cta", field: "ctaLabel" },
+  { alias: "button", field: "ctaLabel" },
+  { alias: "directions", field: "directionsNote" },
+];
+
+export type ResolvedEditTarget = {
+  section: SectionType;
+  field?: string;
+  copyMatch?: string;
+  confidence: number;
+};
 
 /**
- * Resolves which section an edit instruction most likely targets.
- * Moments / gallery cues beat generic “headline” → hero.
- */
-export function inferEditSection(
-  text: string,
-  fallback: SectionType = "hero",
-): SectionType {
-  const lower = text.toLowerCase();
-
-  if (/\bmoments\b|\bgallery\b/.test(lower)) return "gallery";
-  if (/\babout\b|\bstory\b/.test(lower)) return "about";
-  if (/\bmenu\b|\bdish(?:es)?\b|\bpizza\b|\bpasta\b/.test(lower)) {
-    return "menu";
-  }
-  if (/\b(testimonial|review|comment|guests? say)\b/.test(lower)) {
-    return "testimonials";
-  }
-  if (/\b(services?|features?|what we offer)\b/.test(lower)) return "services";
-  if (/\b(stats?|counters?|happy guests?)\b/.test(lower)) return "stats";
-  if (/\b(team|chefs?|staff)\b/.test(lower)) return "team";
-  if (/\b(reservations?|book a table|book your)\b/.test(lower)) {
-    return "reservation";
-  }
-  if (/\blocation\b|\baddress\b|\bvisit\b|\bmap\b/.test(lower)) {
-    return "location_map";
-  }
-  if (/\bhero\b|\bbanner\b|\bslider\b/.test(lower)) return "hero";
-
-  return fallback;
-}
-
-/**
- * Finds a section + content field whose string value contains `needle`.
+ * Finds a section + content field whose value matches `needle` (exact then fuzzy).
  */
 export function findCopyTarget(
   page: Page,
   needle: string,
 ): { section: SectionType; field: string; value: string } | null {
-  const cleaned = needle.trim().toLowerCase();
-  if (cleaned.length < 4) return null;
+  const cleaned = needle.trim();
+  if (cleaned.length < 3) return null;
+  const needleLower = cleaned.toLowerCase();
 
   for (const section of page.sections) {
     for (const [field, raw] of Object.entries(section.content)) {
-      if (typeof raw !== "string") continue;
-      if (raw.toLowerCase().includes(cleaned)) {
-        return { section: section.type, field, value: raw };
+      const plain = textFieldToPlain(raw);
+      if (!plain) continue;
+      if (plain.toLowerCase().includes(needleLower)) {
+        return { section: section.type, field, value: plain };
       }
     }
   }
-  return null;
+
+  let best: {
+    section: SectionType;
+    field: string;
+    value: string;
+    score: number;
+  } | null = null;
+
+  for (const section of page.sections) {
+    for (const [field, raw] of Object.entries(section.content)) {
+      const plain = textFieldToPlain(raw);
+      if (plain.length < 3) continue;
+      const score = Math.max(
+        similarity(cleaned, plain),
+        tokenOverlapScore(cleaned, plain),
+      );
+      if (score < 0.78) continue;
+      if (!best || score > best.score) {
+        best = { section: section.type, field, value: plain, score };
+      }
+    }
+  }
+
+  return best
+    ? { section: best.section, field: best.field, value: best.value }
+    : null;
 }
 
 /**
@@ -62,76 +107,71 @@ export function extractQuotedPhrase(text: string): string | null {
 }
 
 /**
- * Detects “swap the whole section layout / component” intents.
- * e.g. “change the about section”, “different hero layout”, “use another menu”.
+ * Fuzzy-maps field words (incl. typos like suhadeing) to a content field key.
  */
-export function isCycleSectionComponentIntent(text: string): boolean {
-  const lower = text.toLowerCase();
-  // Explicit layout / component / design / variant wording
-  if (
-    /\b(layout|design|variant|component|style|template)\b/.test(lower) &&
-    /\b(change|switch|swap|different|another|next|use|try)\b/.test(lower) &&
-    /\b(hero|about|menu|gallery|moments|location|services|stats|testimonials|team|reservation|section)\b/.test(
-      lower,
-    )
-  ) {
-    return true;
-  }
-  // “change the about section” / “change entire about section” (not headline/text/image)
-  if (
-    /\b(?:change|switch|swap|update)\b(?:\s+the)?(?:\s+entire|\s+whole)?\s+(?:hero|about|menu|gallery|moments|location|services|stats|testimonials|team|reservation)(?:\s+section)?\b/.test(
-      lower,
-    ) &&
-    !/\b(headline|heading|title|subheading|caption|body|text|copy|image|photo|picture|price)\b/.test(
-      lower,
-    )
-  ) {
-    return true;
-  }
-  if (
-    /\b(?:different|another|next)\b(?:\s+\w+){0,2}\s+(?:hero|about|menu|gallery|moments|services|stats|testimonials|team|reservation)(?:\s+section)?\b/.test(
-      lower,
-    ) &&
-    !/\b(image|photo|picture|headline|heading)\b/.test(lower)
-  ) {
-    return true;
-  }
-  return false;
-}
+export function resolveCopyField(
+  section: SectionType,
+  instruction: string,
+): string {
+  const candidates = FIELD_ALIASES.map((entry) => ({
+    key: entry.alias,
+    value: entry.field,
+  }));
 
-/**
- * Detects vague “rewrite this for me” copy intents (no explicit replacement text).
- */
-export function isRewriteCopyIntent(text: string): boolean {
-  if (isCycleSectionComponentIntent(text)) return false;
+  const tokens = normalizeSearchText(instruction).split(" ").filter(Boolean);
+  let bestField: string | null = null;
+  let bestScore = 0;
 
-  const lower = text.toLowerCase();
-  if (
-    /\b(to|as)\s+[“"'][^”"']+[”"']/i.test(text) &&
-    !/\bsomething else\b|\baccording to you\b|\bbetter\b|\beye[- ]?catching\b/i.test(
-      lower,
-    )
-  ) {
-    // Has an explicit replacement string — not a free rewrite
-    if (
-      /\b(?:change|set|update|rewrite)\b.+\bto\s+[“"']/i.test(text) &&
-      !/\bto\s+something\b/i.test(lower)
-    ) {
-      return false;
+  for (const token of tokens) {
+    const hit = bestFuzzyMatch(token, candidates, 0.74);
+    if (hit && hit.score > bestScore) {
+      bestScore = hit.score;
+      bestField = hit.value;
     }
   }
 
-  return (
-    /\b(according to you|suggest|come up with|make (it |them )?better|eye[- ]?catching|something else|something good|rewrite|rephrase|improve)\b/i.test(
-      text,
-    ) ||
-    /\bchange\b.+\b(heading|headline|title|subheading|caption|line)\b.+\b(else|better|good|fit)\b/i.test(
-      text,
-    ) ||
-    /\b(heading|headline|title|subheading|caption)\b.+\b(something else|according to you|upto|up to)\b/i.test(
-      text,
-    )
-  );
+  for (const { key, value } of candidates) {
+    if (!key.includes(" ")) continue;
+    if (normalizeSearchText(instruction).includes(normalizeSearchText(key))) {
+      bestField = value;
+      bestScore = 1;
+    }
+  }
+
+  if (bestField) {
+    return remapFieldForSection(section, bestField, instruction);
+  }
+
+  return defaultCopyField(section, instruction);
+}
+
+/**
+ * Remaps generic field names to section-specific content keys.
+ */
+function remapFieldForSection(
+  section: SectionType,
+  field: string,
+  instruction: string,
+): string {
+  if (field === "subheading") {
+    if (section === "hero") return "subheading";
+    if (section === "gallery") return "caption";
+    return section === "menu" ? "sectionTitle" : "caption";
+  }
+  if (field === "headline") {
+    if (section === "menu") return "sectionTitle";
+    if (
+      section === "services" ||
+      section === "testimonials" ||
+      section === "team"
+    ) {
+      if (/\bintro\b/i.test(instruction)) return "introText";
+    }
+    return "headline";
+  }
+  if (field === "body" && section === "gallery") return "caption";
+  if (field === "introText" && section === "hero") return "subheading";
+  return field;
 }
 
 /**
@@ -142,13 +182,21 @@ export function defaultCopyField(
   instruction: string,
 ): string {
   const lower = instruction.toLowerCase();
+
+  if (/\b(headline|heading|title)\b/.test(lower)) {
+    if (section === "menu") return "sectionTitle";
+    return "headline";
+  }
   if (/\bsubheading\b|\bsubtitle\b|\btagline\b/.test(lower)) {
     return section === "hero" ? "subheading" : "caption";
   }
   if (/\bcaption\b|\bline\b/.test(lower)) {
     return section === "gallery" ? "headline" : "caption";
   }
-  if (/\bbody\b|\bstory\b/.test(lower)) return "body";
+  if (/\bbody\b/.test(lower)) return "body";
+  if (/\bstory\b/.test(lower) && !/\b(headline|heading|title)\b/.test(lower)) {
+    return "body";
+  }
   if (section === "menu") return "sectionTitle";
   if (section === "about" || section === "reservation") return "body";
   if (section === "gallery") return "headline";
@@ -173,4 +221,91 @@ export function extractMaxWords(text: string): number | null {
   if (!match?.[1]) return null;
   const n = Number(match[1]);
   return Number.isFinite(n) && n > 0 ? Math.min(30, n) : null;
+}
+
+/**
+ * Unified edit-target search: section + field + optional on-page copy match.
+ */
+export function resolveEditTarget(
+  instruction: string,
+  page?: Page,
+): ResolvedEditTarget {
+  const quoted = extractQuotedPhrase(instruction);
+  const copyHit =
+    quoted && page
+      ? findCopyTarget(page, quoted)
+      : page
+        ? findLeadingCopyTarget(page, instruction)
+        : null;
+
+  const sectionResolved = resolveSectionFromText(instruction, page);
+  const section: SectionType =
+    sectionResolved && sectionResolved.score >= 0.72
+      ? sectionResolved.section
+      : (copyHit?.section ?? inferEditSection(instruction, "hero"));
+
+  const preferSectionCue =
+    sectionResolved != null && sectionResolved.score >= 0.85;
+
+  const finalSection = preferSectionCue
+    ? sectionResolved!.section
+    : (copyHit?.section ?? section);
+
+  const field =
+    copyHit && !preferSectionCue
+      ? copyHit.field
+      : resolveCopyField(finalSection, instruction);
+
+  const confidence = Math.max(
+    sectionResolved?.score ?? 0,
+    copyHit ? 0.9 : 0,
+  );
+
+  return {
+    section: finalSection,
+    field,
+    copyMatch: copyHit?.value,
+    confidence,
+  };
+}
+
+/**
+ * Tries to match a leading unquoted phrase to on-page copy.
+ */
+function findLeadingCopyTarget(
+  page: Page,
+  instruction: string,
+): { section: SectionType; field: string; value: string } | null {
+  const leading = instruction.match(
+    /^([A-Za-z][^.]{6,80}?)\s+(?:change|rewrite|to something|make|color|colour)/i,
+  );
+  if (leading?.[1]) return findCopyTarget(page, leading[1]);
+
+  const words = instruction.split(/\s+/).filter((w) => w.length > 2);
+  if (words.length >= 4) {
+    for (let len = Math.min(8, words.length); len >= 4; len--) {
+      for (let i = 0; i + len <= words.length; i++) {
+        const phrase = words.slice(i, i + len).join(" ");
+        if (/^(change|make|set|update|color|colour|background)/i.test(phrase)) {
+          continue;
+        }
+        const hit = findCopyTarget(page, phrase);
+        if (hit) return hit;
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Fuzzy equality for menu item names (typo-tolerant).
+ */
+export function namesFuzzyMatch(a: string, b: string): boolean {
+  const left = a.trim();
+  const right = b.trim();
+  if (!left || !right) return false;
+  if (left.toLowerCase() === right.toLowerCase()) return true;
+  return (
+    similarity(left, right) >= 0.82 || tokenOverlapScore(left, right) >= 0.85
+  );
 }

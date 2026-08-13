@@ -7,13 +7,13 @@ import {
 } from "./stageDelay.js";
 
 describe("stageDelay", () => {
-  it("exposes inclusive 3–10s bands per stage", () => {
+  it("exposes inclusive 300–900ms bands per stage", () => {
     const planner = stageDelayRange("Section Planner");
     const copywriter = stageDelayRange("Copywriter");
-    expect(planner.min).toBeGreaterThanOrEqual(3000);
-    expect(planner.max).toBeLessThanOrEqual(10000);
-    expect(copywriter.min).toBeGreaterThanOrEqual(planner.min);
-    expect(copywriter.max).toBe(10000);
+    expect(planner.min).toBe(300);
+    expect(planner.max).toBe(900);
+    expect(copywriter.min).toBe(300);
+    expect(copywriter.max).toBe(900);
   });
 
   it("sleepRandomMs stays within bounds", async () => {

@@ -1,18 +1,19 @@
 import type { PipelineStageName } from "./pipelineStages.js";
 
-/** Inclusive delay band (ms) per stage — keeps UX in the ~3–10s range. */
+/** Inclusive delay band (ms) per stage — light pacing only (real work dominates). */
 const STAGE_DELAY_MS: Record<
   PipelineStageName,
   { min: number; max: number }
 > = {
-  "Brief Extractor": { min: 3000, max: 5500 },
-  "Section Planner": { min: 3000, max: 5000 },
-  "Component Picker": { min: 3500, max: 6500 },
-  Copywriter: { min: 6000, max: 10000 },
-  "Fact-Safety": { min: 4000, max: 7000 },
-  "Image Picker": { min: 5000, max: 8500 },
-  Assembler: { min: 6000, max: 10000 },
-  Renderer: { min: 4000, max: 7500 },
+  "Brief Extractor": { min: 300, max: 900 },
+  "Creative Director": { min: 300, max: 900 },
+  "Section Planner": { min: 300, max: 900 },
+  "Component Picker": { min: 300, max: 900 },
+  Copywriter: { min: 300, max: 900 },
+  "Fact-Safety": { min: 300, max: 900 },
+  "Image Picker": { min: 300, max: 900 },
+  Assembler: { min: 300, max: 900 },
+  Renderer: { min: 300, max: 900 },
 };
 
 /**
@@ -60,7 +61,7 @@ export async function sleepRandomMs(
 }
 
 /**
- * Pads elapsed work time so the stage feels like ~3–10s of agent work.
+ * Pads elapsed work time lightly so stages remain perceptible.
  * Returns total elapsed ms from `startedAt` (work + padding).
  */
 export async function ensureStageFeel(

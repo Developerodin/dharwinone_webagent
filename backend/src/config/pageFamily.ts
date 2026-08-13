@@ -4,7 +4,8 @@ export type PageFamily =
   | "elegant"
   | "minimal"
   | "rustic"
-  | "vibrant";
+  | "vibrant"
+  | "bold";
 
 const VALID_FAMILIES: PageFamily[] = [
   "premium",
@@ -12,6 +13,7 @@ const VALID_FAMILIES: PageFamily[] = [
   "minimal",
   "rustic",
   "vibrant",
+  "bold",
 ];
 
 /**

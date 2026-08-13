@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { askRouter } from "./routes/ask.js";
 import { buildRouter } from "./routes/build.js";
 import { editRouter } from "./routes/edit.js";
 import { healthRouter } from "./routes/health.js";
@@ -34,6 +35,7 @@ function createApp() {
   app.use("/api/intake", intakeRouter);
   app.use("/api/build", buildRouter);
   app.use("/api/edit", editRouter);
+  app.use("/api/ask", askRouter);
   app.use("/api/upload", uploadRouter);
 
   return app;

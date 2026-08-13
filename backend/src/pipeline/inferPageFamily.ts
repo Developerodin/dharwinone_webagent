@@ -31,8 +31,6 @@ const PREMIUM_PATTERNS: RegExp[] = [
   /\bexquisite\b/,
   /\bcasual\b/,
   /\bcaf[eé]\b/,
-  /\bfast[\s-]?food\b/,
-  /\bdiner\b/,
   /\bfood truck\b/,
   /\bquick\b/,
   /\bneighborhood\b/,
@@ -41,7 +39,6 @@ const PREMIUM_PATTERNS: RegExp[] = [
   /\bbrunch\b/,
   /\bbakery\b/,
   /\bcounter[\s-]?service\b/,
-  /\btakeout\b/,
   /\bgrab[\s-]?and[\s-]?go\b/,
   /\bbistro\b/,
   /\btrattoria\b/,
@@ -89,7 +86,6 @@ const RUSTIC_PATTERNS: RegExp[] = [
 /** Bold, colorful, energetic vibrant theme signals. */
 const VIBRANT_PATTERNS: RegExp[] = [
   /\bvibrant\b/,
-  /\bbold\b/,
   /\bcolorful\b/,
   /\bcolourful\b/,
   /\bbright\b/,
@@ -105,6 +101,23 @@ const VIBRANT_PATTERNS: RegExp[] = [
   /\btaco\b/,
   /\bpop\b/,
   /\byouthful\b/,
+];
+
+/** Casual burger / QSR bold theme signals (Grand Restaurant Demo 9 energy). */
+const BOLD_PATTERNS: RegExp[] = [
+  /\bbold\b/,
+  /\bburger\b/,
+  /\bfast[\s-]?food\b/,
+  /\bqsr\b/,
+  /\bgrill\b/,
+  /\bpatty\b/,
+  /\bdiner\b/,
+  /\btakeout\b/,
+  /\btake[\s-]?away\b/,
+  /\bdelivery\b/,
+  /\bfinger[\s-]?food\b/,
+  /\bstreet[\s-]?style\b/,
+  /\bgrand burger\b/,
 ];
 
 /**
@@ -123,6 +136,7 @@ const CUISINE_AFFINITY: Array<{ re: RegExp; family: PageFamily; weight: number }
     { re: /\bfarm[\s-]?to[\s-]?table\b/, family: "rustic", weight: 2 },
     { re: /\bstreet food\b|\blatin\b|\bcaribbean\b/, family: "vibrant", weight: 2 },
     { re: /\bmexican\b|\btaco\b/, family: "vibrant", weight: 1 },
+    { re: /\bburger\b|\bfast[\s-]?food\b|\bqsr\b/, family: "bold", weight: 3 },
     { re: /\bcaf[eé]\b|\bbrunch\b|\bbakery\b|\bpizza\b/, family: "premium", weight: 2 },
     { re: /\bchinese\b|\bindian\b|\bthai\b|\bwok\b/, family: "premium", weight: 1 },
   ];
@@ -173,6 +187,7 @@ const FAMILY_PATTERNS: Record<PageFamily, RegExp[]> = {
   minimal: MINIMAL_PATTERNS,
   rustic: RUSTIC_PATTERNS,
   vibrant: VIBRANT_PATTERNS,
+  bold: BOLD_PATTERNS,
 };
 
 const FAMILY_ORDER: PageFamily[] = [
@@ -180,6 +195,7 @@ const FAMILY_ORDER: PageFamily[] = [
   "minimal",
   "rustic",
   "vibrant",
+  "bold",
   "premium",
 ];
 
@@ -234,6 +250,7 @@ export function inferPageFamily(brief: Brief, chatText = ""): PageFamily {
     minimal: 0,
     rustic: 0,
     vibrant: 0,
+    bold: 0,
   };
 
   for (const family of FAMILY_ORDER) {

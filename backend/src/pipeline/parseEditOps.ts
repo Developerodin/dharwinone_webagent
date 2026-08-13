@@ -1,5 +1,5 @@
 import { zodResponseFormat } from "openai/helpers/zod";
-import { getOpenAIClient, getOpenAIModel } from "../lib/openai.js";
+import { getModelFor, getOpenAIClient } from "../lib/openai.js";
 import type { PageFamily } from "../config/pageFamily.js";
 import type { Brief } from "../schemas/brief.schema.js";
 import {
@@ -11,12 +11,12 @@ import type { Page, SectionType } from "../schemas/page.schema.js";
 import {
   defaultCopyField,
   extractMaxWords,
-  extractQuotedPhrase,
-  findCopyTarget,
   inferEditSection,
   isCycleSectionComponentIntent,
   isRewriteCopyIntent,
+  resolveEditTarget,
 } from "./resolveEditTarget.js";
+import { parseStyleLayoutFixture } from "./parseStyleFixtures.js";
 import { resolveThemeFamilyIntent } from "./resolveThemeIntent.js";
 
 /**
@@ -37,6 +37,8 @@ export function parseEditOpsFixture(
       family: themeFamily,
     });
   }
+
+  parseStyleLayoutFixture(text, ops);
 
   const galleryCountMatch =
     lower.match(
@@ -67,7 +69,11 @@ export function parseEditOpsFixture(
   const removeMatch = text.match(
     /\bremove\b(?:\s+menu(?:\s+item)?)?\s*[:\-]?\s*[“"']?([^”"'\n]+)[”"']?/i,
   );
-  if (removeMatch?.[1] && /\bmenu\b|\bremove\b/i.test(text)) {
+  if (
+    removeMatch?.[1] &&
+    /\bmenu\b/i.test(text) &&
+    !/\bsection\b/i.test(text)
+  ) {
     const name = removeMatch[1].replace(/\s+from\s+the\s+menu.*$/i, "").trim();
     if (name) ops.push({ op: "remove_menu_item", name });
   }
@@ -139,22 +145,11 @@ export function parseEditOpsFixture(
   }
 
   if (ops.length === 0 && isRewriteCopyIntent(text) && page) {
-    const quoted = extractQuotedPhrase(text);
-    const matched = quoted ? findCopyTarget(page, quoted) : null;
-    // Also try leading unquoted phrase before “change”
-    const leading = text.match(
-      /^([A-Za-z][^.]{6,80}?)\s+(?:change|rewrite|to something)/i,
-    );
-    const fromLeading =
-      !matched && leading?.[1] ? findCopyTarget(page, leading[1]) : null;
-    const target = matched ?? fromLeading;
-    const section: SectionType =
-      target?.section ?? inferEditSection(text, "hero");
-    const field = target?.field ?? defaultCopyField(section, text);
+    const target = resolveEditTarget(text, page);
     ops.push({
       op: "rewrite_copy",
-      section,
-      field,
+      section: target.section,
+      field: target.field ?? defaultCopyField(target.section, text),
       maxWords: extractMaxWords(text),
       hint: text,
     });
@@ -201,6 +196,38 @@ export function parseEditOpsFixture(
 }
 
 /**
+ * True when fixture already resolved a clear style/layout edit (skip LLM).
+ */
+function shouldPreferStyleLayoutFixture(ops: EditOp[]): boolean {
+  return ops.some(
+    (op) =>
+      op.op === "set_section_style" ||
+      op.op === "set_theme_tokens" ||
+      op.op === "set_text_style" ||
+      op.op === "remix_layout" ||
+      op.op === "cycle_section_component" ||
+      op.op === "set_section_spacing",
+  );
+}
+
+/**
+ * Builds a short summary for fixture-resolved section style ops.
+ */
+function summarizeSectionStyleFixture(ops: EditOp[]): string {
+  const style = ops.find((op) => op.op === "set_section_style");
+  if (!style || style.op !== "set_section_style") {
+    return `Parsed ${ops.length} edit${ops.length === 1 ? "" : "s"}.`;
+  }
+  const bits = [
+    style.background ? `background ${style.background}` : null,
+    style.text ? `text ${style.text}` : null,
+  ].filter(Boolean);
+  return bits.length
+    ? `Update ${style.section} style (${bits.join(", ")}).`
+    : `Update ${style.section} style.`;
+}
+
+/**
  * Uses OpenAI to parse a natural-language edit instruction into structured ops.
  */
 export async function parseEditOps(args: {
@@ -209,10 +236,21 @@ export async function parseEditOps(args: {
   brief: Brief;
   family: PageFamily;
 }): Promise<EditOpsResponse> {
+  const fixture = parseEditOpsFixture(args.instruction, args.page);
+  if (shouldPreferStyleLayoutFixture(fixture.ops)) {
+    return {
+      ...fixture,
+      summary:
+        fixture.ops.find((op) => op.op === "set_section_style") != null
+          ? summarizeSectionStyleFixture(fixture.ops)
+          : fixture.summary,
+    };
+  }
+
   const client = getOpenAIClient();
   const systemPrompt = `You convert restaurant page edit requests into structured ops.
 Allowed ops:
-- set_copy: section (hero|menu|about|gallery|location_map|services|stats|testimonials|team|reservation), field, value — when user gives the exact new text
+- set_copy: section (hero|menu|about|gallery|location_map|services|stats|testimonials|team|reservation|header|contact|footer), field, value — when user gives the exact new text
 - rewrite_copy: section, field, maxWords (nullable), hint (nullable) — invent better copy only (headline/body/caption), NOT whole-section layout swaps
 - cycle_section_component: section — swap to the OTHER layout variant for that section (“change the about section”, “different hero layout”, “switch menu design”, “entire section”)
 - set_menu_price: name, price
@@ -220,13 +258,22 @@ Allowed ops:
 - remove_menu_item: name
 - cycle_image: section, index (null = next image)
 - set_image: section, imagePath (only if exact /images/... path)
-- set_theme: family premium|elegant
+- set_theme: family premium|elegant|minimal|rustic|vibrant|bold
 - set_gallery_count: count 1-6
+- set_theme_tokens: accent/bg/bgAlt/ink/fontDisplay/fontBody (nullable strings; color names or #hex). Use for brand/button site-wide colors and fonts. NOT for named themes.
+- set_section_style: section + background/text/button/paddingY (nullable). Per-section colors/spacing.
+- set_text_style: section, field, match, color — color a substring (e.g. make "Bite!" red in hero.headline)
+- add_section / remove_section: section type (never remove header/footer)
+- set_section_spacing: section + paddingY tight|normal|roomy
+- remix_layout: salt nullable — ONLY for “surprise me” / “remix layout” / “different layouts” (global). Never for a single section.
+- cycle_section_component: section — including header|footer|contact|hero|about|… (“switch header layout”, “header not looking good”)
 
 Critical section rules:
 - “Moments” = gallery section (not hero).
+- “Our story” / “story section” / “storysection” = about (NEVER testimonials).
+- Section background/text color asks → set_section_style on that section (background + text), not set_text_style on unrelated copy.
 - If the user quotes existing on-page text, match that section+field from the page content dump.
-- Do NOT change hero when the user named gallery/moments/about/menu.
+- Do NOT change hero when the user named gallery/moments/about/menu/story.
 - “heading/headline/title” alone → hero ONLY if no other section cue and no quoted gallery/about text.
 - “change the about section” / “change entire menu section” / “different hero layout” → cycle_section_component (NOT rewrite_copy).
 
@@ -237,8 +284,8 @@ Rules:
 - For cycle_image always include index (null when next).
 - "dark to light" → premium; "light to dark" → elegant.
 - Theme switch MUST emit set_theme: "use Elegant", "change theme to elegant", typos elegent/elegan/premum, "fine dining" → elegant.
-- NEVER invent set_theme for custom brand colors (green/red/etc.).
-- NEVER return a theme-update summary with empty ops — if intent is a theme switch, include set_theme.
+- Custom brand colors (green/red/#hex) → set_theme_tokens or set_section_style / set_text_style — NEVER invent set_theme for those.
+- Nullable style fields: pass null when unused.
 - Menu names should match existing items when possible.
 - summary: short human sentence of intent.`;
 
@@ -255,7 +302,7 @@ Page sections: ${JSON.stringify(
 User request: ${args.instruction}`;
 
   const completion = await client.chat.completions.parse({
-    model: getOpenAIModel(),
+    model: getModelFor("editops"),
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
@@ -281,27 +328,20 @@ User request: ${args.instruction}`;
 
   // Safety net: if LLM returned nothing but this is clearly a rewrite, inject op
   if (parsed.ops.length === 0 && isRewriteCopyIntent(args.instruction)) {
-    const quoted = extractQuotedPhrase(args.instruction);
-    const matched = quoted
-      ? findCopyTarget(args.page, quoted)
-      : findCopyTarget(
-          args.page,
-          args.instruction.replace(/\bchange\b.*$/i, "").trim(),
-        );
-    const section =
-      matched?.section ?? inferEditSection(args.instruction, "hero");
-    const field = matched?.field ?? defaultCopyField(section, args.instruction);
+    const target = resolveEditTarget(args.instruction, args.page);
+    const field =
+      target.field ?? defaultCopyField(target.section, args.instruction);
     return {
       ops: [
         {
           op: "rewrite_copy",
-          section,
+          section: target.section,
           field,
           maxWords: extractMaxWords(args.instruction),
           hint: args.instruction,
         },
       ],
-      summary: `Rewrite ${section}.${field}.`,
+      summary: `Rewrite ${target.section}.${field}.`,
     };
   }
 

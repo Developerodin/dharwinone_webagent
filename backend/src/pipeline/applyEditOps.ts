@@ -1,15 +1,41 @@
 import type { PageFamily } from "../config/pageFamily.js";
 import type { Brief, MenuItem } from "../schemas/brief.schema.js";
+import type { CreativeDirection } from "../schemas/creativeDirection.schema.js";
 import type { EditOp } from "../schemas/editOps.schema.js";
 import type { Page, PageSection, SectionType } from "../schemas/page.schema.js";
-import { COMPONENT_VARIANTS, pickComponent } from "./pickComponent.js";
+import {
+  applyAddSectionOp,
+  applyRemoveSectionOp,
+  applyReorderSectionOp,
+} from "./applyLayoutOps.js";
+import {
+  applySectionSpacingOp,
+  applySectionStyleOp,
+  applyTextStyleOp,
+  applyThemeTokensOp,
+} from "./applyStyleOps.js";
+import {
+  applyCreativePalette,
+  buildCreativeSeed,
+  paletteFromBrandColors,
+} from "./creativeDirector.js";
+import {
+  COMPONENT_VARIANTS,
+  getVariantSuffix,
+  pickComponent,
+  stableHash,
+} from "./pickComponent.js";
 import {
   listCatalogImagePaths,
   orientationForSection,
   pickGalleryImages,
   pickImage,
 } from "./pickImage.js";
+import { themeOverridesForFamily } from "./horecaDesignSystem.js";
+import { applyRemixSectionOp } from "./remixSection.js";
+import { namesFuzzyMatch } from "./resolveEditTarget.js";
 import { rewriteSectionCopy } from "./rewriteCopy.js";
+import { textFieldToPlain } from "./textRuns.js";
 
 export type ApplyEditOpsResult = {
   page: Page;
@@ -17,7 +43,21 @@ export type ApplyEditOpsResult = {
   family: PageFamily;
   applied: EditOp[];
   notes: string[];
+  /** Creative seed/direction kept alive across edits. */
+  direction: CreativeDirection;
 };
+
+/**
+ * Resolves a creative seed for edit-time image picks.
+ */
+function resolveEditSeed(
+  brief: Brief,
+  family: PageFamily,
+  direction?: CreativeDirection | null,
+): string {
+  if (direction?.seed?.trim()) return direction.seed;
+  return buildCreativeSeed(brief, family);
+}
 
 type MenuContentItem = {
   name: string;
@@ -26,10 +66,10 @@ type MenuContentItem = {
 };
 
 /**
- * Case-insensitive name match helper.
+ * Case-insensitive / typo-tolerant menu name match.
  */
 function namesMatch(a: string, b: string): boolean {
-  return a.trim().toLowerCase() === b.trim().toLowerCase();
+  return namesFuzzyMatch(a, b);
 }
 
 /**
@@ -104,8 +144,9 @@ function buildGalleryAssets(
   count: number,
   preferred?: string | null,
   category?: string | null,
+  seed?: string | null,
 ): PageSection["assets"] {
-  const pool = pickGalleryImages(Math.max(count, 6), family, category);
+  const pool = pickGalleryImages(Math.max(count, 6), family, category, seed);
   const unique: string[] = [];
   if (preferred && !unique.includes(preferred)) unique.push(preferred);
   for (const path of pool) {
@@ -126,10 +167,17 @@ function setSectionImage(
   imagePath: string,
   family: PageFamily,
   category?: string | null,
+  seed?: string | null,
 ): void {
   if (section.type === "gallery") {
     const count = Math.max(section.assets.length || DEFAULT_GALLERY_COUNT, 1);
-    section.assets = buildGalleryAssets(family, count, imagePath, category);
+    section.assets = buildGalleryAssets(
+      family,
+      count,
+      imagePath,
+      category,
+      seed,
+    );
     return;
   }
 
@@ -137,11 +185,155 @@ function setSectionImage(
 }
 
 /**
- * Remaps all section components and images to a target family.
+ * Re-rolls section component variants within the same family; keeps themeOverrides.
  */
-function applyTheme(page: Page, family: PageFamily, brief: Brief): void {
+export function applyRemixLayout(
+  page: Page,
+  family: PageFamily,
+  brief: Brief,
+  salt: string,
+  seed?: string | null,
+): string {
+  const preserved = page.themeOverrides
+    ? structuredClone(page.themeOverrides)
+    : undefined;
+  let changed = 0;
+  const recentSuffixes: string[] = [];
+  const imageSeed = seed?.trim() || salt;
+
+  for (const section of page.sections) {
+    const variants = COMPONENT_VARIANTS[family][section.type];
+    if (!variants.length) continue;
+
+    const previous = section.componentId;
+    const idx =
+      stableHash(`${salt}:${section.type}:${brief.businessName}`) %
+      variants.length;
+    let nextId = variants[idx]!;
+
+    // Prefer a different suffix than current when possible
+    if (variants.length > 1 && nextId === previous) {
+      nextId = variants[(idx + 1) % variants.length]!;
+    }
+    // Light anti-stick vs recent
+    if (variants.length > 1 && recentSuffixes.length > 0) {
+      const last = recentSuffixes[recentSuffixes.length - 1];
+      if (getVariantSuffix(nextId) === last) {
+        nextId = variants[(idx + 1) % variants.length]!;
+      }
+    }
+
+    if (nextId !== previous) changed += 1;
+    section.componentId = nextId;
+    recentSuffixes.push(getVariantSuffix(nextId));
+    if (recentSuffixes.length > 4) recentSuffixes.shift();
+
+    if (
+      section.type === "menu" ||
+      section.type === "services" ||
+      section.type === "stats" ||
+      section.type === "testimonials" ||
+      section.type === "header" ||
+      section.type === "contact" ||
+      section.type === "footer" ||
+      section.type === "reservation"
+    ) {
+      continue;
+    }
+
+    if (section.type === "gallery") {
+      const count = Math.max(section.assets.length || DEFAULT_GALLERY_COUNT, 1);
+      section.assets = buildGalleryAssets(
+        family,
+        count,
+        null,
+        brief.category,
+        imageSeed,
+      );
+      continue;
+    }
+
+    if (section.type === "hero" && nextId.endsWith("-03")) {
+      const paths = listCatalogImagePaths({
+        sectionType: "hero",
+        family,
+        category: brief.category,
+        seed: imageSeed,
+      }).slice(0, 3);
+      section.assets = paths.map((imagePath, index) => ({
+        key: `slide-${index}`,
+        imagePath,
+      }));
+      continue;
+    }
+
+    if (
+      section.type === "hero" ||
+      section.type === "about" ||
+      section.type === "location_map" ||
+      section.type === "team"
+    ) {
+      if (section.type === "team") {
+        const paths = listCatalogImagePaths({
+          sectionType: "team",
+          family,
+          category: brief.category,
+          seed: imageSeed,
+        }).slice(0, 3);
+        section.assets = paths.map((imagePath, index) => ({
+          key: `team-${index}`,
+          imagePath,
+        }));
+        continue;
+      }
+      const imagePath = pickImage({
+        sectionType: section.type,
+        orientation: orientationForSection(section.type),
+        family,
+        category: brief.category,
+        seed: imageSeed,
+      });
+      section.assets = imagePath ? [{ key: "primary", imagePath }] : [];
+    }
+  }
+
+  page.themeOverrides = preserved;
+  return changed > 0
+    ? `Remixed layouts (${changed} section${changed === 1 ? "" : "s"} changed). Brand colors kept.`
+    : "Layouts already unique for this theme — try again for another mix.";
+}
+
+/**
+ * Clears stale theme/section color overrides so the new theme can paint cleanly.
+ */
+function clearThemeStyleState(page: Page): void {
+  page.themeOverrides = undefined;
+  for (const section of page.sections) {
+    section.styleOverrides = undefined;
+  }
+}
+
+/**
+ * Remaps all section components and images to a target family.
+ * Resets colors/fonts from the HoReCa catalog so prior section overrides
+ * cannot leave white text on light backgrounds. Client brand colors always win.
+ */
+function applyTheme(
+  page: Page,
+  family: PageFamily,
+  brief: Brief,
+  seed?: string | null,
+): void {
+  clearThemeStyleState(page);
+  page.themeOverrides = themeOverridesForFamily(family);
+
+  // Client brand always wins over family defaults.
+  const brand = paletteFromBrandColors(brief.brandColors);
+  if (brand) applyCreativePalette(page, brand);
+
   ensureShellSections(page, family, brief);
   const category = brief.category;
+  const imageSeed = seed?.trim() || buildCreativeSeed(brief, family);
 
   for (const section of page.sections) {
     section.componentId = pickComponent(section.type, family, {
@@ -163,7 +355,13 @@ function applyTheme(page: Page, family: PageFamily, brief: Brief): void {
 
     if (section.type === "gallery") {
       const count = Math.max(section.assets.length || DEFAULT_GALLERY_COUNT, 1);
-      section.assets = buildGalleryAssets(family, count, null, category);
+      section.assets = buildGalleryAssets(
+        family,
+        count,
+        null,
+        category,
+        imageSeed,
+      );
       continue;
     }
 
@@ -172,6 +370,7 @@ function applyTheme(page: Page, family: PageFamily, brief: Brief): void {
         sectionType: "team",
         family,
         category,
+        seed: imageSeed,
       }).slice(0, 3);
       section.assets = paths.map((imagePath, index) => ({
         key: `team-${index}`,
@@ -185,6 +384,7 @@ function applyTheme(page: Page, family: PageFamily, brief: Brief): void {
         sectionType: "hero",
         family,
         category,
+        seed: imageSeed,
       }).slice(0, 3);
       section.assets = paths.map((imagePath, index) => ({
         key: `slide-${index}`,
@@ -198,6 +398,7 @@ function applyTheme(page: Page, family: PageFamily, brief: Brief): void {
       orientation: orientationForSection(section.type),
       family,
       category,
+      seed: imageSeed,
     });
     section.assets = imagePath
       ? [{ key: "primary", imagePath }]
@@ -303,6 +504,7 @@ async function applyOneOp(
   brief: Brief,
   family: PageFamily,
   op: EditOp,
+  seed: string,
 ): Promise<{ family: PageFamily; note: string | null }> {
   switch (op.op) {
     case "set_copy": {
@@ -319,10 +521,7 @@ async function applyOneOp(
       if (!section) {
         return { family, note: `No ${op.section} section to rewrite.` };
       }
-      const current =
-        typeof section.content[op.field] === "string"
-          ? String(section.content[op.field])
-          : "";
+      const current = textFieldToPlain(section.content[op.field]);
       const value = await rewriteSectionCopy({
         brief,
         section: op.section,
@@ -374,6 +573,19 @@ async function applyOneOp(
       writeMenuItems(page, brief, next);
       return { family, note: `Removed “${op.name}” from the menu.` };
     }
+    case "add_menu_item": {
+      const items = readMenuItems(findSection(page.sections, "menu"));
+      if (items.some((item) => namesMatch(item.name, op.name))) {
+        return { family, note: `Menu already has “${op.name}”.` };
+      }
+      items.push({
+        name: op.name,
+        price: op.price,
+        description: op.description ?? undefined,
+      });
+      writeMenuItems(page, brief, items);
+      return { family, note: `Added “${op.name}” to the menu.` };
+    }
     case "cycle_image": {
       const section = findSection(page.sections, op.section);
       if (!section) {
@@ -394,6 +606,7 @@ async function applyOneOp(
         sectionType: section.type,
         family,
         category: brief.category,
+        seed,
       });
       if (paths.length === 0) {
         return { family, note: `No catalog images for ${section.type}.` };
@@ -406,7 +619,7 @@ async function applyOneOp(
           : (currentIndex + 1) % paths.length;
       const nextPath = paths[nextIndex] ?? paths[0];
       if (!nextPath) return { family, note: null };
-      setSectionImage(section, nextPath, family, brief.category);
+      setSectionImage(section, nextPath, family, brief.category, seed);
       return {
         family,
         note: `Updated ${section.type} image.`,
@@ -421,21 +634,23 @@ async function applyOneOp(
         sectionType: section.type,
         family,
         category: brief.category,
+        seed,
       });
-      if (!allowed.includes(op.imagePath)) {
+      // Allow uploaded (non-catalog) paths and catalog paths.
+      if (allowed.length > 0 && !allowed.includes(op.imagePath) && !op.imagePath.startsWith("/uploads/") && !op.imagePath.startsWith("http")) {
         return {
           family,
           note: `Image path not in catalog for ${section.type}.`,
         };
       }
-      setSectionImage(section, op.imagePath, family, brief.category);
+      setSectionImage(section, op.imagePath, family, brief.category, seed);
       return { family, note: `Set ${section.type} image.` };
     }
     case "set_theme": {
-      applyTheme(page, op.family, brief);
+      applyTheme(page, op.family, brief, seed);
       return {
         family: op.family,
-        note: `Switched theme to ${op.family.charAt(0).toUpperCase()}${op.family.slice(1)}.`,
+        note: `Switched theme to ${op.family.charAt(0).toUpperCase()}${op.family.slice(1)} — colors/fonts reset for contrast; brand colors kept when provided.`,
       };
     }
     case "set_gallery_count": {
@@ -443,7 +658,13 @@ async function applyOneOp(
       if (!section) {
         return { family, note: "No gallery section to update." };
       }
-      section.assets = buildGalleryAssets(family, op.count, null, brief.category);
+      section.assets = buildGalleryAssets(
+        family,
+        op.count,
+        null,
+        brief.category,
+        seed,
+      );
       return {
         family,
         note: `Gallery now shows ${op.count} image${op.count === 1 ? "" : "s"}.`,
@@ -471,6 +692,7 @@ async function applyOneOp(
           sectionType: "hero",
           family,
           category: brief.category,
+          seed,
         }).slice(0, 3);
         section.assets = paths.map((imagePath, index) => ({
           key: `slide-${index}`,
@@ -482,6 +704,7 @@ async function applyOneOp(
           orientation: orientationForSection("hero"),
           family,
           category: brief.category,
+          seed,
         });
         section.assets = imagePath ? [{ key: "primary", imagePath }] : [];
       }
@@ -489,6 +712,34 @@ async function applyOneOp(
       return {
         family,
         note: `Switched ${section.type} layout: ${previous} → ${nextId}.`,
+      };
+    }
+    case "set_theme_tokens":
+      return { family, note: applyThemeTokensOp(page, op) };
+    case "set_section_style":
+      return { family, note: applySectionStyleOp(page, op) };
+    case "set_text_style":
+      return { family, note: applyTextStyleOp(page, op) };
+    case "set_section_spacing":
+      return { family, note: applySectionSpacingOp(page, op) };
+    case "add_section":
+      return { family, note: applyAddSectionOp(page, brief, family, op) };
+    case "remove_section":
+      return { family, note: applyRemoveSectionOp(page, op) };
+    case "reorder_section":
+      return { family, note: applyReorderSectionOp(page, op) };
+    case "remix_layout": {
+      const salt = op.salt?.trim() || `${Date.now()}`;
+      return {
+        family,
+        note: applyRemixLayout(page, family, brief, salt, seed),
+      };
+    }
+    case "remix_section": {
+      const salt = op.salt?.trim() || `${Date.now()}`;
+      return {
+        family,
+        note: applyRemixSectionOp(page, op.section, salt),
       };
     }
     default: {
@@ -505,6 +756,7 @@ function ensureLocationAssets(
   page: Page,
   family: PageFamily,
   brief: Brief,
+  seed: string,
 ): void {
   const section = findSection(page.sections, "location_map");
   if (!section || section.assets.length > 0) return;
@@ -514,7 +766,7 @@ function ensureLocationAssets(
     orientation: orientationForSection("location_map"),
     family,
     category: brief.category,
-    seed: `${brief.businessName}:${brief.category}`,
+    seed,
   });
   if (!imagePath) return;
   section.assets = [{ key: "primary", imagePath }];
@@ -528,21 +780,36 @@ export async function applyEditOps(args: {
   brief: Brief;
   family: PageFamily;
   ops: EditOp[];
+  direction?: CreativeDirection | null;
 }): Promise<ApplyEditOpsResult> {
   const page = clonePage(args.page);
   const brief = structuredClone(args.brief);
   let family = args.family;
   const applied: EditOp[] = [];
   const notes: string[] = [];
+  const seed = resolveEditSeed(brief, family, args.direction);
+  const direction: CreativeDirection = args.direction
+    ? { ...args.direction, family, seed: args.direction.seed || seed }
+    : {
+        family,
+        seed,
+        palette: paletteFromBrandColors(brief.brandColors),
+        paletteSource: brief.brandColors?.length
+          ? "client_brand"
+          : "theme_default",
+        sectionVariantHints: {},
+        rationale: "Rebuilt from brief during edit (legacy project).",
+      };
 
   for (const op of args.ops) {
-    const result = await applyOneOp(page, brief, family, op);
+    const result = await applyOneOp(page, brief, family, op, seed);
     family = result.family;
     applied.push(op);
     if (result.note) notes.push(result.note);
   }
 
-  ensureLocationAssets(page, family, brief);
+  direction.family = family;
+  ensureLocationAssets(page, family, brief, seed);
 
-  return { page, brief, family, applied, notes };
+  return { page, brief, family, applied, notes, direction };
 }

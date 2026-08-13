@@ -1,0 +1,3825 @@
+{
+  "source": "HoReCa Typography & Colour System",
+  "version": 1,
+  "roles": {
+    "primary": "Brand / strong surfaces / dark section backgrounds",
+    "secondary": "Supporting wash / secondary CTAs / cards",
+    "accent": "Buttons, links, eyebrow, highlight rules",
+    "background": "Page canvas + light section backgrounds",
+    "text": "Headings and body ink on light surfaces"
+  },
+  "componentGuidance": {
+    "lightSection": {
+      "backgroundToken": "background",
+      "textToken": "text",
+      "mutedOpacity": 0.62,
+      "buttonToken": "accent",
+      "buttonText": "contrastOnAccent"
+    },
+    "darkSection": {
+      "backgroundToken": "primary",
+      "textToken": "onDark",
+      "onDarkFallback": "#F5F0E8",
+      "mutedOpacity": 0.78,
+      "buttonToken": "secondary",
+      "buttonTextToken": "text"
+    },
+    "bySection": {
+      "header": "lightSection",
+      "hero": "darkSection",
+      "about": "lightSection",
+      "menu": "lightSection",
+      "gallery": "lightSection",
+      "services": "lightSection",
+      "stats": "lightSection",
+      "testimonials": "lightSection",
+      "team": "lightSection",
+      "reservation": "darkSection",
+      "contact": "darkSection",
+      "location_map": "lightSection",
+      "footer": "darkSection"
+    }
+  },
+  "contrastRules": [
+    "If luminance(background) > 0.55, text/ink must be dark (text token).",
+    "If luminance(background) <= 0.55, text/ink must be light (onDark / background token when background is dark).",
+    "On theme family switch, clear themeOverrides and all section styleOverrides so components inherit the new theme.",
+    "Maintain >=4.5:1 contrast for body text on its section background.",
+    "Never keep previous section color overrides across a theme change."
+  ],
+  "familyDefaults": {
+    "elegant": {
+      "paletteId": "midnight-luxe",
+      "typePairId": "playfair-display-eb-garamond",
+      "surfaceMode": "dark"
+    },
+    "premium": {
+      "paletteId": "editorial-neutral",
+      "typePairId": "cormorant-garamond-karla",
+      "surfaceMode": "dark"
+    },
+    "minimal": {
+      "paletteId": "editorial-neutral",
+      "typePairId": "dm-sans-work-sans",
+      "surfaceMode": "light"
+    },
+    "rustic": {
+      "paletteId": "artisan-crust",
+      "typePairId": "lora-nunito-sans",
+      "surfaceMode": "light"
+    },
+    "vibrant": {
+      "paletteId": "fiesta-street",
+      "typePairId": "bebas-neue-bitter",
+      "surfaceMode": "light"
+    },
+    "bold": {
+      "paletteId": "burger-copper",
+      "typePairId": "pacifico-rubik",
+      "surfaceMode": "light"
+    }
+  },
+  "palettes": [
+    {
+      "id": "spice-route",
+      "name": "Spice Route",
+      "mood": "Warm heritage spice \u2014 maroon, turmeric, curry-leaf",
+      "primary": "#8B2E20",
+      "secondary": "#D9A441",
+      "accent": "#4C6444",
+      "background": "#FBF3E4",
+      "text": "#2B1B12"
+    },
+    {
+      "id": "modern-indian-jewel",
+      "name": "Modern Indian Jewel",
+      "mood": "Contemporary Indian \u2014 espresso, marigold, emerald",
+      "primary": "#2B1F1A",
+      "secondary": "#D98E3B",
+      "accent": "#0F5C4A",
+      "background": "#F6EFE3",
+      "text": "#211712"
+    },
+    {
+      "id": "sumi-zen",
+      "name": "Sumi Zen",
+      "mood": "Ink & restraint \u2014 sumi black, hinomaru red, sage",
+      "primary": "#1B1B1B",
+      "secondary": "#B23A2E",
+      "accent": "#7E8B7A",
+      "background": "#F4F1EA",
+      "text": "#1B1B1B"
+    },
+    {
+      "id": "lacquer-jewel",
+      "name": "Lacquer Jewel",
+      "mood": "Lacquer & gold \u2014 red lacquer, imperial gold, jade",
+      "primary": "#7A1F1F",
+      "secondary": "#C9A227",
+      "accent": "#1E3A34",
+      "background": "#FAF4EC",
+      "text": "#241412"
+    },
+    {
+      "id": "monsoon-coastal",
+      "name": "Monsoon Coastal",
+      "mood": "Tropical Southeast Asia \u2014 teal, chilli, lime-turmeric",
+      "primary": "#1E6E63",
+      "secondary": "#E1652F",
+      "accent": "#F2C245",
+      "background": "#F5F0DE",
+      "text": "#1D2A22"
+    },
+    {
+      "id": "trattoria-classic",
+      "name": "Trattoria Classic",
+      "mood": "Old-world European dining room \u2014 wine, straw-gold, olive",
+      "primary": "#6E1F1F",
+      "secondary": "#C9A26A",
+      "accent": "#4C6B4F",
+      "background": "#FBF6EC",
+      "text": "#2A2118"
+    },
+    {
+      "id": "riviera-fresh",
+      "name": "Riviera Fresh",
+      "mood": "Mediterranean coast \u2014 Aegean blue, sun gold, terracotta",
+      "primary": "#2A5C73",
+      "secondary": "#E8B23D",
+      "accent": "#C4472F",
+      "background": "#F6F1E3",
+      "text": "#223138"
+    },
+    {
+      "id": "souk-ornamental",
+      "name": "Souk Ornamental",
+      "mood": "Levant / Gulf souk \u2014 plum-maroon, brass, tile teal",
+      "primary": "#6B2E3C",
+      "secondary": "#B8863B",
+      "accent": "#2F5D62",
+      "background": "#F7EFE1",
+      "text": "#2A1E1C"
+    },
+    {
+      "id": "prairie-smoke",
+      "name": "Prairie Smoke",
+      "mood": "Smokehouse Americana \u2014 brick, amber char, charcoal",
+      "primary": "#7A2E1E",
+      "secondary": "#D98A2E",
+      "accent": "#2E2A26",
+      "background": "#F4ECE0",
+      "text": "#241C16"
+    },
+    {
+      "id": "fiesta-street",
+      "name": "Fiesta Street",
+      "mood": "Tex-Mex street energy \u2014 chilli red, marigold, cactus",
+      "primary": "#C4432B",
+      "secondary": "#E8A93B",
+      "accent": "#2E7D6B",
+      "background": "#FBF1DF",
+      "text": "#241813"
+    },
+    {
+      "id": "garden-fresh",
+      "name": "Garden Fresh",
+      "mood": "Plant-forward \u2014 forest green, sprout, citrus",
+      "primary": "#3E6B4A",
+      "secondary": "#A8C48A",
+      "accent": "#D98C3D",
+      "background": "#F5F6EE",
+      "text": "#22291F"
+    },
+    {
+      "id": "coastal-catch",
+      "name": "Coastal Catch",
+      "mood": "Seafood \u2014 deep sea, aqua, shell gold",
+      "primary": "#1E4E5F",
+      "secondary": "#4E8C8A",
+      "accent": "#E0A23A",
+      "background": "#F2F3EA",
+      "text": "#1B2A2E"
+    },
+    {
+      "id": "editorial-neutral",
+      "name": "Editorial Neutral",
+      "mood": "Flexible editorial neutral \u2014 ink, taupe-gold, rust",
+      "primary": "#2B2925",
+      "secondary": "#B49778",
+      "accent": "#8C3B2A",
+      "background": "#F7F3EA",
+      "text": "#241F1B"
+    },
+    {
+      "id": "roastery-warm",
+      "name": "Roastery Warm",
+      "mood": "Coffee roastery \u2014 roast brown, caramel, leaf",
+      "primary": "#4A2E1E",
+      "secondary": "#C98A4B",
+      "accent": "#7A9B76",
+      "background": "#F6EEE2",
+      "text": "#2A1B12"
+    },
+    {
+      "id": "ceremony-calm",
+      "name": "Ceremony Calm",
+      "mood": "Tea ceremony \u2014 tea green, gold, clay",
+      "primary": "#3E5C4C",
+      "secondary": "#C9A96A",
+      "accent": "#B65C4A",
+      "background": "#F4F1E6",
+      "text": "#232C24"
+    },
+    {
+      "id": "bakers-blush",
+      "name": "Bakers Blush",
+      "mood": "Patisserie blush \u2014 rose, butter, cocoa",
+      "primary": "#B5586A",
+      "secondary": "#E8C77E",
+      "accent": "#6E4B3A",
+      "background": "#FBF2EA",
+      "text": "#3A2620"
+    },
+    {
+      "id": "confection-playful",
+      "name": "Confection Playful",
+      "mood": "Playful confection \u2014 berry pink, mango, mint",
+      "primary": "#D9678A",
+      "secondary": "#F2C14E",
+      "accent": "#4A9B8E",
+      "background": "#FDF3F0",
+      "text": "#2E2024"
+    },
+    {
+      "id": "artisan-crust",
+      "name": "Artisan Crust",
+      "mood": "Artisan bread \u2014 crust brown, wheat, olive",
+      "primary": "#6B4A2E",
+      "secondary": "#B98A4E",
+      "accent": "#4C5A3E",
+      "background": "#F3ECDD",
+      "text": "#2A2016"
+    },
+    {
+      "id": "midnight-luxe",
+      "name": "Midnight Luxe",
+      "mood": "Dark cocktail luxe \u2014 midnight, brass gold, oxblood",
+      "primary": "#1B1620",
+      "secondary": "#B8974E",
+      "accent": "#6E2A2E",
+      "background": "#17141B",
+      "text": "#EDE6DA"
+    },
+    {
+      "id": "taproom-craft",
+      "name": "Taproom Craft",
+      "mood": "Craft beer taproom \u2014 amber ale, malt black, hops gold",
+      "primary": "#6B3A1E",
+      "secondary": "#2E2A22",
+      "accent": "#C9A227",
+      "background": "#F3ECDC",
+      "text": "#241C12"
+    },
+    {
+      "id": "botanical-gin",
+      "name": "Botanical Gin",
+      "mood": "Botanical gin \u2014 juniper green, linen, berry",
+      "primary": "#2F4D3A",
+      "secondary": "#D9C9A3",
+      "accent": "#B8574A",
+      "background": "#F4F2E8",
+      "text": "#223022"
+    },
+    {
+      "id": "tiki-tropic",
+      "name": "Tiki Tropic",
+      "mood": "Tropical tiki \u2014 palm, mango, hibiscus",
+      "primary": "#1E5C4E",
+      "secondary": "#E8A33D",
+      "accent": "#C4472F",
+      "background": "#F3EEDD",
+      "text": "#1D2A22"
+    },
+    {
+      "id": "velvet-rose",
+      "name": "Velvet Rose",
+      "mood": "Romantic wine lounge \u2014 bordeaux, gold, dusty rose",
+      "primary": "#4A1F2E",
+      "secondary": "#C9A46A",
+      "accent": "#8C5B6E",
+      "background": "#F5EDE7",
+      "text": "#2A1A20"
+    },
+    {
+      "id": "opulent-ember",
+      "name": "Opulent Ember",
+      "mood": "Opulent ember (dark) \u2014 ember-black, gold, ruby",
+      "primary": "#2E1A14",
+      "secondary": "#C9942F",
+      "accent": "#6E1F26",
+      "background": "#1F140F",
+      "text": "#F3E7D2"
+    },
+    {
+      "id": "skyline-rooftop",
+      "name": "Skyline Rooftop",
+      "mood": "Rooftop dusk \u2014 dusk blue, sunset gold, horizon coral",
+      "primary": "#24384A",
+      "secondary": "#E8A33D",
+      "accent": "#C4472F",
+      "background": "#F2EFE6",
+      "text": "#1E2A33"
+    },
+    {
+      "id": "members-quiet",
+      "name": "Members Quiet",
+      "mood": "Executive / members quiet \u2014 navy-slate, brass, steel-blue",
+      "primary": "#22303B",
+      "secondary": "#B49778",
+      "accent": "#4C6B78",
+      "background": "#F5F3EE",
+      "text": "#202A30"
+    },
+    {
+      "id": "diner-chrome",
+      "name": "Diner Chrome",
+      "mood": "1950s diner chrome \u2014 cherry red, turquoise, chrome black",
+      "primary": "#C4272E",
+      "secondary": "#2E8C9E",
+      "accent": "#2A2A2A",
+      "background": "#F7F0DE",
+      "text": "#221A16"
+    },
+    {
+      "id": "cocoa-noir",
+      "name": "Cocoa Noir",
+      "mood": "Dark chocolate noir \u2014 cocoa, gold foil, berry-ganache",
+      "primary": "#3A2418",
+      "secondary": "#C9A227",
+      "accent": "#8B3A4A",
+      "background": "#F3E9DD",
+      "text": "#2A1B12"
+    },
+    {
+      "id": "burger-copper",
+      "name": "Burger Copper",
+      "mood": "Casual burger QSR \u2014 copper accent, charcoal, cream field",
+      "primary": "#1C2123",
+      "secondary": "#E1E1E1",
+      "accent": "#DC9457",
+      "background": "#F9F9F9",
+      "text": "#1C2123"
+    }
+  ],
+  "typePairs": [
+    {
+      "id": "cormorant-garamond-karla",
+      "headingFont": "Cormorant Garamond",
+      "bodyFont": "Karla",
+      "label": "Cormorant Garamond",
+      "mood": "Elegant heritage \u2014 fine dining, traditional Indian"
+    },
+    {
+      "id": "fraunces-inter",
+      "headingFont": "Fraunces",
+      "bodyFont": "Inter",
+      "label": "Fraunces",
+      "mood": "Contemporary premium editorial \u2014 modern fusion"
+    },
+    {
+      "id": "dm-sans-work-sans",
+      "headingFont": "DM Sans",
+      "bodyFont": "Work Sans",
+      "label": "DM Sans",
+      "mood": "Minimal & crisp \u2014 health caf\u00e9s, co-working"
+    },
+    {
+      "id": "lora-nunito-sans",
+      "headingFont": "Lora",
+      "bodyFont": "Nunito Sans",
+      "label": "Lora",
+      "mood": "Warm & homely \u2014 bakery, rustic"
+    },
+    {
+      "id": "big-shoulders-display-space-grotesk",
+      "headingFont": "Big Shoulders Display",
+      "bodyFont": "Space Grotesk",
+      "label": "Big Shoulders Display",
+      "mood": "Industrial & loud \u2014 bars, breweries"
+    },
+    {
+      "id": "bodoni-moda-manrope",
+      "headingFont": "Bodoni Moda",
+      "bodyFont": "Manrope",
+      "label": "Bodoni Moda",
+      "mood": "Moody luxury \u2014 cocktail & wine lounges"
+    },
+    {
+      "id": "baloo-2-quicksand",
+      "headingFont": "Baloo 2",
+      "bodyFont": "Quicksand",
+      "label": "Baloo 2",
+      "mood": "Playful & rounded \u2014 dessert, bubble tea"
+    },
+    {
+      "id": "sora-inter",
+      "headingFont": "Sora",
+      "bodyFont": "Inter",
+      "label": "Sora",
+      "mood": "Structured modern sans \u2014 multi-cuisine, concept"
+    },
+    {
+      "id": "playfair-display-eb-garamond",
+      "headingFont": "Playfair Display",
+      "bodyFont": "EB Garamond",
+      "label": "Playfair Display",
+      "mood": "Classic trattoria \u2014 Italian, French, European"
+    },
+    {
+      "id": "fraunces-quicksand",
+      "headingFont": "Fraunces",
+      "bodyFont": "Quicksand",
+      "label": "Fraunces",
+      "mood": "Tropical escape \u2014 tiki, poolside"
+    },
+    {
+      "id": "marcellus-karla",
+      "headingFont": "Marcellus",
+      "bodyFont": "Karla",
+      "label": "Marcellus",
+      "mood": "Zen minimal \u2014 Japanese, Korean"
+    },
+    {
+      "id": "cinzel-mulish",
+      "headingFont": "Cinzel",
+      "bodyFont": "Mulish",
+      "label": "Cinzel",
+      "mood": "Souk ornamental \u2014 Middle Eastern"
+    },
+    {
+      "id": "poppins-nunito-sans",
+      "headingFont": "Poppins",
+      "bodyFont": "Nunito Sans",
+      "label": "Poppins",
+      "mood": "Street vibrant \u2014 Tex-Mex, casual American"
+    },
+    {
+      "id": "spectral-source-sans-3",
+      "headingFont": "Spectral",
+      "bodyFont": "Source Sans 3",
+      "label": "Spectral",
+      "mood": "Craft & academic \u2014 artisan, co-working"
+    },
+    {
+      "id": "yeseva-one-karla",
+      "headingFont": "Yeseva One",
+      "bodyFont": "Karla",
+      "label": "Yeseva One",
+      "mood": "Ornate patisserie \u2014 cake studio, celebration"
+    },
+    {
+      "id": "bebas-neue-bitter",
+      "headingFont": "Bebas Neue",
+      "bodyFont": "Bitter",
+      "label": "Bebas Neue",
+      "mood": "Smokehouse bold \u2014 BBQ, steakhouse, diner"
+    },
+    {
+      "id": "pacifico-rubik",
+      "headingFont": "Rubik",
+      "bodyFont": "Rubik",
+      "label": "Rubik + Pacifico",
+      "mood": "Playful burger QSR \u2014 script accents, bold sans headlines"
+    },
+    {
+      "id": "cormorant-urbanist",
+      "headingFont": "Cormorant",
+      "bodyFont": "Urbanist",
+      "label": "Cormorant",
+      "mood": "Coastal light \u2014 seafood, Mediterranean-light"
+    }
+  ],
+  "cuisines": [
+    {
+      "id": "indian",
+      "name": "Indian",
+      "kind": "PARENT GROUP",
+      "variants": [
+        {
+          "name": "Indian \u2014 Variant 1",
+          "headingFont": "Cormorant Garamond",
+          "bodyFont": "Karla",
+          "primary": "#8B2E20",
+          "secondary": "#D9A441",
+          "accent": "#4C6444",
+          "background": "#FBF3E4",
+          "text": "#2B1B12",
+          "note": "Maroon, turmeric & curry-leaf \u2014 classic thali-house warmth."
+        },
+        {
+          "name": "Indian \u2014 Variant 2",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B1F1A",
+          "secondary": "#D98E3B",
+          "accent": "#0F5C4A",
+          "background": "#F6EFE3",
+          "text": "#211712",
+          "note": "Espresso, marigold & emerald \u2014 modern Indian fine dining."
+        }
+      ],
+      "subs": [
+        {
+          "name": "North Indian",
+          "headingFont": "Cormorant Garamond",
+          "bodyFont": "Karla",
+          "primary": "#8B2E20",
+          "secondary": "#D9A441",
+          "accent": "#C97A2E",
+          "background": "#FBF3E4",
+          "text": "#2B1B12",
+          "fonts": "Cormorant Garamond + Karla",
+          "note": "Richer, more ornate \u2014 accent shifted to deep saffron."
+        },
+        {
+          "name": "South Indian",
+          "headingFont": "Cormorant",
+          "bodyFont": "Urbanist",
+          "primary": "#1E6E63",
+          "secondary": "#E1652F",
+          "accent": "#4C6B3E",
+          "background": "#F5F0DE",
+          "text": "#1D2A22",
+          "fonts": "Cormorant + Urbanist",
+          "note": "Lighter & coastal \u2014 banana-leaf green, coconut white."
+        },
+        {
+          "name": "Regional Indian",
+          "headingFont": "Cormorant Garamond",
+          "bodyFont": "Karla",
+          "primary": "#8B2E20",
+          "secondary": "#D9A441",
+          "accent": "#B5502E",
+          "background": "#FBF3E4",
+          "text": "#2B1B12",
+          "fonts": "Cormorant Garamond + Karla",
+          "note": "Terracotta accent for regional earthiness."
+        },
+        {
+          "name": "Mughlai",
+          "headingFont": "Cormorant Garamond",
+          "bodyFont": "Karla",
+          "primary": "#8B2E20",
+          "secondary": "#D9A441",
+          "accent": "#5B2A3D",
+          "background": "#FBF3E4",
+          "text": "#2B1B12",
+          "fonts": "Cormorant Garamond + Karla",
+          "note": "Mughal-court richness \u2014 deep plum-maroon accent, heavier weight."
+        },
+        {
+          "name": "Coastal Indian",
+          "headingFont": "Cormorant",
+          "bodyFont": "Urbanist",
+          "primary": "#1E6E63",
+          "secondary": "#E1652F",
+          "accent": "#E8B23D",
+          "background": "#F5F0DE",
+          "text": "#1D2A22",
+          "fonts": "Cormorant + Urbanist",
+          "note": "Turmeric-forward coastal variant."
+        },
+        {
+          "name": "Modern Indian",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B1F1A",
+          "secondary": "#D98E3B",
+          "accent": "#0F5C4A",
+          "background": "#F6EFE3",
+          "text": "#211712",
+          "fonts": "Fraunces + Inter",
+          "note": "Same as core Modern Indian variant."
+        },
+        {
+          "name": "Indian Fusion",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "fonts": "Fraunces + Inter",
+          "note": "Blends Spice Route warmth into a neutral editorial base."
+        }
+      ]
+    },
+    {
+      "id": "asian",
+      "name": "Asian",
+      "kind": "PARENT GROUP",
+      "variants": [
+        {
+          "name": "Asian \u2014 Variant 1",
+          "headingFont": "Marcellus",
+          "bodyFont": "Karla",
+          "primary": "#7A1F1F",
+          "secondary": "#C9A227",
+          "accent": "#1E3A34",
+          "background": "#FAF4EC",
+          "text": "#241412",
+          "note": "Lacquer red & imperial gold \u2014 restrained, not literal."
+        },
+        {
+          "name": "Asian \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#1E6E63",
+          "secondary": "#E1652F",
+          "accent": "#F2C245",
+          "background": "#F5F0DE",
+          "text": "#1D2A22",
+          "note": "Modern pan-Asian casual \u2014 teal, chilli, lime."
+        }
+      ],
+      "subs": [
+        {
+          "name": "Chinese",
+          "headingFont": "Marcellus",
+          "bodyFont": "Karla",
+          "primary": "#7A1F1F",
+          "secondary": "#C9A227",
+          "accent": "#1E3A34",
+          "background": "#FAF4EC",
+          "text": "#241412",
+          "fonts": "Marcellus + Karla",
+          "note": "Core lacquer red + gold, restrained jade accent."
+        },
+        {
+          "name": "Japanese",
+          "headingFont": "Marcellus",
+          "bodyFont": "Karla",
+          "primary": "#1B1B1B",
+          "secondary": "#B23A2E",
+          "accent": "#7E8B7A",
+          "background": "#F4F1EA",
+          "text": "#1B1B1B",
+          "fonts": "Marcellus + Karla",
+          "note": "Sumi ink, hinomaru red, sage \u2014 quiet precision."
+        },
+        {
+          "name": "Korean",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#1B1B1B",
+          "secondary": "#B23A2E",
+          "accent": "#C4472F",
+          "background": "#F4F1EA",
+          "text": "#1B1B1B",
+          "fonts": "Sora + Inter",
+          "note": "Charcoal base with modern chilli-orange energy."
+        },
+        {
+          "name": "Thai",
+          "headingFont": "Cormorant",
+          "bodyFont": "Urbanist",
+          "primary": "#1E6E63",
+          "secondary": "#E1652F",
+          "accent": "#F2C245",
+          "background": "#F5F0DE",
+          "text": "#1D2A22",
+          "fonts": "Cormorant + Urbanist",
+          "note": "Lime-turmeric accent for Thai brightness."
+        },
+        {
+          "name": "Vietnamese",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#1E6E63",
+          "secondary": "#E1652F",
+          "accent": "#4C6B4F",
+          "background": "#F5F0DE",
+          "text": "#1D2A22",
+          "fonts": "Sora + Inter",
+          "note": "Herb-green accent for Vietnamese freshness."
+        },
+        {
+          "name": "Southeast Asian",
+          "headingFont": "Cormorant",
+          "bodyFont": "Urbanist",
+          "primary": "#1E6E63",
+          "secondary": "#E1652F",
+          "accent": "#F2C245",
+          "background": "#F5F0DE",
+          "text": "#1D2A22",
+          "fonts": "Cormorant + Urbanist",
+          "note": "Core Monsoon Coastal, chilli-orange accent."
+        },
+        {
+          "name": "Pan-Asian",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#1E6E63",
+          "secondary": "#E1652F",
+          "accent": "#F2C245",
+          "background": "#F5F0DE",
+          "text": "#1D2A22",
+          "fonts": "Sora + Inter",
+          "note": "Same as core Modern Asian variant."
+        },
+        {
+          "name": "Asian Fusion",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "fonts": "Fraunces + Inter",
+          "note": "Lacquer red folded into a neutral editorial base."
+        }
+      ]
+    },
+    {
+      "id": "european",
+      "name": "European",
+      "kind": "PARENT GROUP",
+      "variants": [
+        {
+          "name": "European \u2014 Variant 1",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#6E1F1F",
+          "secondary": "#C9A26A",
+          "accent": "#4C6B4F",
+          "background": "#FBF6EC",
+          "text": "#2A2118",
+          "note": "Wine, straw-gold & olive \u2014 old-world dining room."
+        },
+        {
+          "name": "European \u2014 Variant 2",
+          "headingFont": "Cormorant",
+          "bodyFont": "Urbanist",
+          "primary": "#2A5C73",
+          "secondary": "#E8B23D",
+          "accent": "#C4472F",
+          "background": "#F6F1E3",
+          "text": "#223138",
+          "note": "Aegean blue, sun gold & terracotta \u2014 coastal freshness."
+        }
+      ],
+      "subs": [
+        {
+          "name": "Italian",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#6E1F1F",
+          "secondary": "#C9A26A",
+          "accent": "#4C6B4F",
+          "background": "#FBF6EC",
+          "text": "#2A2118",
+          "fonts": "Playfair Display + EB Garamond",
+          "note": "Core trattoria palette, olive accent."
+        },
+        {
+          "name": "French",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#6E1F1F",
+          "secondary": "#C9A26A",
+          "accent": "#5C6670",
+          "background": "#FBF6EC",
+          "text": "#2A2118",
+          "fonts": "Fraunces + Inter",
+          "note": "Parisian slate-grey accent added."
+        },
+        {
+          "name": "Spanish",
+          "headingFont": "Cormorant",
+          "bodyFont": "Urbanist",
+          "primary": "#2A5C73",
+          "secondary": "#E8B23D",
+          "accent": "#C4432B",
+          "background": "#F6F1E3",
+          "text": "#223138",
+          "fonts": "Cormorant + Urbanist",
+          "note": "Saffron-red accent for Spanish warmth."
+        },
+        {
+          "name": "Greek",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#1F4D63",
+          "secondary": "#E8B23D",
+          "accent": "#C4472F",
+          "background": "#F6F1E3",
+          "text": "#223138",
+          "fonts": "Playfair Display + EB Garamond",
+          "note": "Deepened Aegean blue, white-forward background."
+        },
+        {
+          "name": "Mediterranean",
+          "headingFont": "Cormorant",
+          "bodyFont": "Urbanist",
+          "primary": "#2A5C73",
+          "secondary": "#E8B23D",
+          "accent": "#4C6B4F",
+          "background": "#F6F1E3",
+          "text": "#223138",
+          "fonts": "Cormorant + Urbanist",
+          "note": "Core Riviera Fresh, olive accent."
+        },
+        {
+          "name": "Modern European",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "fonts": "Fraunces + Inter",
+          "note": "Rust-accented editorial neutral."
+        }
+      ]
+    },
+    {
+      "id": "middle-eastern",
+      "name": "Middle Eastern",
+      "kind": "PARENT GROUP",
+      "variants": [
+        {
+          "name": "Middle Eastern \u2014 Variant 1",
+          "headingFont": "Cinzel",
+          "bodyFont": "Mulish",
+          "primary": "#6B2E3C",
+          "secondary": "#B8863B",
+          "accent": "#2F5D62",
+          "background": "#F7EFE1",
+          "text": "#2A1E1C",
+          "note": "Plum-maroon, brass & tile teal \u2014 souk warmth."
+        },
+        {
+          "name": "Middle Eastern \u2014 Variant 2",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#2E1A14",
+          "secondary": "#C9942F",
+          "accent": "#6E1F26",
+          "background": "#1F140F",
+          "text": "#F3E7D2",
+          "note": "Ember-black, gold & ruby \u2014 dark luxury variant."
+        }
+      ],
+      "subs": [
+        {
+          "name": "Lebanese",
+          "headingFont": "Cinzel",
+          "bodyFont": "Mulish",
+          "primary": "#6B2E3C",
+          "secondary": "#B8863B",
+          "accent": "#2F5D62",
+          "background": "#F7EFE1",
+          "text": "#2A1E1C",
+          "fonts": "Cinzel + Mulish",
+          "note": "Core tile-teal accent."
+        },
+        {
+          "name": "Turkish",
+          "headingFont": "Cinzel",
+          "bodyFont": "Mulish",
+          "primary": "#6B2E3C",
+          "secondary": "#B8863B",
+          "accent": "#A63D2E",
+          "background": "#F7EFE1",
+          "text": "#2A1E1C",
+          "fonts": "Cinzel + Mulish",
+          "note": "\u0130znik tile-red accent."
+        },
+        {
+          "name": "Persian",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#6B2E3C",
+          "secondary": "#B8863B",
+          "accent": "#C97A6E",
+          "background": "#F7EFE1",
+          "text": "#2A1E1C",
+          "fonts": "Bodoni Moda + Manrope",
+          "note": "Saffron-rose accent for Persian poetry & miniature art."
+        },
+        {
+          "name": "Arabian",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#2E1A14",
+          "secondary": "#D9A441",
+          "accent": "#6E1F26",
+          "background": "#1F140F",
+          "text": "#F3E7D2",
+          "fonts": "Bodoni Moda + Manrope",
+          "note": "Intensified gold secondary."
+        },
+        {
+          "name": "Levantine",
+          "headingFont": "Cinzel",
+          "bodyFont": "Mulish",
+          "primary": "#6B2E3C",
+          "secondary": "#B8863B",
+          "accent": "#6B7B4A",
+          "background": "#F7EFE1",
+          "text": "#2A1E1C",
+          "fonts": "Cinzel + Mulish",
+          "note": "Olive accent for olive-oil heritage."
+        }
+      ]
+    },
+    {
+      "id": "american",
+      "name": "American",
+      "kind": "PARENT GROUP",
+      "variants": [
+        {
+          "name": "American \u2014 Variant 1",
+          "headingFont": "Bebas Neue",
+          "bodyFont": "Bitter",
+          "primary": "#7A2E1E",
+          "secondary": "#D98A2E",
+          "accent": "#2E2A26",
+          "background": "#F4ECE0",
+          "text": "#241C16",
+          "note": "Smoked brick, amber char & charcoal \u2014 BBQ/steak energy."
+        },
+        {
+          "name": "American \u2014 Variant 2",
+          "headingFont": "Poppins",
+          "bodyFont": "Nunito Sans",
+          "primary": "#C4272E",
+          "secondary": "#2E8C9E",
+          "accent": "#2A2A2A",
+          "background": "#F7F0DE",
+          "text": "#221A16",
+          "note": "Cherry red, turquoise & chrome \u2014 1950s diner."
+        }
+      ],
+      "subs": [
+        {
+          "name": "American Casual",
+          "headingFont": "Poppins",
+          "bodyFont": "Nunito Sans",
+          "primary": "#C4272E",
+          "secondary": "#2E8C9E",
+          "accent": "#2A2A2A",
+          "background": "#F7F0DE",
+          "text": "#221A16",
+          "fonts": "Poppins + Nunito Sans",
+          "note": "Core diner chrome, casual energy."
+        },
+        {
+          "name": "Diner",
+          "headingFont": "Poppins",
+          "bodyFont": "Nunito Sans",
+          "primary": "#C4272E",
+          "secondary": "#2E8C9E",
+          "accent": "#2A2A2A",
+          "background": "#F7F0DE",
+          "text": "#221A16",
+          "fonts": "Poppins + Nunito Sans",
+          "note": "Core diner chrome palette."
+        },
+        {
+          "name": "Barbecue",
+          "headingFont": "Bebas Neue",
+          "bodyFont": "Bitter",
+          "primary": "#7A2E1E",
+          "secondary": "#D98A2E",
+          "accent": "#2E2A26",
+          "background": "#F4ECE0",
+          "text": "#241C16",
+          "fonts": "Bebas Neue + Bitter",
+          "note": "Charcoal-black accent for smokehouse depth."
+        },
+        {
+          "name": "Steakhouse",
+          "headingFont": "Bebas Neue",
+          "bodyFont": "Bitter",
+          "primary": "#7A2E1E",
+          "secondary": "#D98A2E",
+          "accent": "#5B1F1F",
+          "background": "#F4ECE0",
+          "text": "#241C16",
+          "fonts": "Bebas Neue + Bitter",
+          "note": "Deep oxblood accent, heavier type weight for premium feel."
+        },
+        {
+          "name": "Tex-Mex",
+          "headingFont": "Poppins",
+          "bodyFont": "Nunito Sans",
+          "primary": "#C4432B",
+          "secondary": "#E8A93B",
+          "accent": "#2E7D6B",
+          "background": "#FBF1DF",
+          "text": "#241813",
+          "fonts": "Poppins + Nunito Sans",
+          "note": "Chilli red, marigold & cactus green \u2014 street-fiesta energy."
+        }
+      ]
+    },
+    {
+      "id": "continental",
+      "name": "Continental",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Continental \u2014 Variant 1",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Flexible pan-European neutral base."
+        },
+        {
+          "name": "Continental \u2014 Variant 2",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#6E1F1F",
+          "secondary": "#C9A26A",
+          "accent": "#4C6B4F",
+          "background": "#FBF6EC",
+          "text": "#2A2118",
+          "note": "Old-world dining-room alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "fusion",
+      "name": "Fusion",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Fusion \u2014 Variant 1",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Neutral base \u2014 recolour accent per the specific cuisines fused."
+        },
+        {
+          "name": "Fusion \u2014 Variant 2",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Editorial alternative for premium fusion concepts."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "multi-cuisine",
+      "name": "Multi-Cuisine",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Multi-Cuisine \u2014 Variant 1",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Versatile neutral base for broad menus."
+        },
+        {
+          "name": "Multi-Cuisine \u2014 Variant 2",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Crisper, more minimal alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "vegetarian",
+      "name": "Vegetarian",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Vegetarian \u2014 Variant 1",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Forest green & citrus \u2014 plant-forward clarity."
+        },
+        {
+          "name": "Vegetarian \u2014 Variant 2",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#D98C3D",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Warmer variant, golden-citrus led."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "vegan",
+      "name": "Vegan",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Vegan \u2014 Variant 1",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Cooler, greener plant-forward palette."
+        },
+        {
+          "name": "Vegan \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Modern plant-forward alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "seafood",
+      "name": "Seafood",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Seafood \u2014 Variant 1",
+          "headingFont": "Cormorant",
+          "bodyFont": "Urbanist",
+          "primary": "#1E4E5F",
+          "secondary": "#4E8C8A",
+          "accent": "#E0A23A",
+          "background": "#F2F3EA",
+          "text": "#1B2A2E",
+          "note": "Deep sea, aqua & shell gold."
+        },
+        {
+          "name": "Seafood \u2014 Variant 2",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#14374A",
+          "secondary": "#4E8C8A",
+          "accent": "#E0A23A",
+          "background": "#F2F3EA",
+          "text": "#1B2A2E",
+          "note": "Deeper navy, upscale seafood-house variant."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "health-focused",
+      "name": "Health-Focused",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Health-Focused \u2014 Variant 1",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Citrus-forward clean palette."
+        },
+        {
+          "name": "Health-Focused \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Modern wellness alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "speciality-cuisine",
+      "name": "Speciality Cuisine",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Speciality Cuisine \u2014 Variant 1",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Flexible base \u2014 let the specific speciality drive the accent hue."
+        },
+        {
+          "name": "Speciality Cuisine \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Modern alternative base."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "coffee-led",
+      "name": "Coffee-Led",
+      "kind": "PARENT GROUP",
+      "variants": [
+        {
+          "name": "Coffee-Led \u2014 Variant 1",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#4A2E1E",
+          "secondary": "#C98A4B",
+          "accent": "#7A9B76",
+          "background": "#F6EEE2",
+          "text": "#2A1B12",
+          "note": "Roast brown, caramel & leaf \u2014 classic roastery."
+        },
+        {
+          "name": "Coffee-Led \u2014 Variant 2",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#4A2E1E",
+          "secondary": "#C98A4B",
+          "accent": "#E0A9A0",
+          "background": "#FAF3EA",
+          "text": "#2A1B12",
+          "note": "Lighter oat-milk variant, soft latte-pink accent."
+        }
+      ],
+      "subs": [
+        {
+          "name": "Speciality Coffee",
+          "headingFont": "Spectral",
+          "bodyFont": "Source Sans 3",
+          "primary": "#4A2E1E",
+          "secondary": "#C98A4B",
+          "accent": "#7A9B76",
+          "background": "#F6EEE2",
+          "text": "#2A1B12",
+          "fonts": "Spectral + Source Sans 3",
+          "note": "Artisanal, craft-forward pairing."
+        },
+        {
+          "name": "Espresso Bar",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#4A2E1E",
+          "secondary": "#C98A4B",
+          "accent": "#6E2A22",
+          "background": "#F6EEE2",
+          "text": "#2A1B12",
+          "fonts": "DM Sans + Work Sans",
+          "note": "Deep espresso-red accent, crisp counter-service feel."
+        },
+        {
+          "name": "Third-Wave Coffee",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#4A2E1E",
+          "secondary": "#C98A4B",
+          "accent": "#7A9B76",
+          "background": "#F6EEE2",
+          "text": "#2A1B12",
+          "fonts": "Sora + Inter",
+          "note": "Lighter, modern third-wave variant."
+        },
+        {
+          "name": "Coffee Roastery Caf\u00e9",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#4A2E1E",
+          "secondary": "#C98A4B",
+          "accent": "#2E2A26",
+          "background": "#F6EEE2",
+          "text": "#2A1B12",
+          "fonts": "Lora + Nunito Sans",
+          "note": "Darkest, roastiest variant."
+        },
+        {
+          "name": "Cold Brew / Alternative Coffee",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#4A2E1E",
+          "secondary": "#C98A4B",
+          "accent": "#2E3A3E",
+          "background": "#F6EEE2",
+          "text": "#2A1B12",
+          "fonts": "DM Sans + Work Sans",
+          "note": "Cold-brew charcoal-blue accent."
+        }
+      ]
+    },
+    {
+      "id": "tea-led",
+      "name": "Tea-Led",
+      "kind": "PARENT GROUP",
+      "variants": [
+        {
+          "name": "Tea-Led \u2014 Variant 1",
+          "headingFont": "Marcellus",
+          "bodyFont": "Karla",
+          "primary": "#3E5C4C",
+          "secondary": "#C9A96A",
+          "accent": "#B65C4A",
+          "background": "#F4F1E6",
+          "text": "#232C24",
+          "note": "Tea green, gold & clay \u2014 ceremonial calm."
+        },
+        {
+          "name": "Tea-Led \u2014 Variant 2",
+          "headingFont": "Baloo 2",
+          "bodyFont": "Quicksand",
+          "primary": "#4E7A64",
+          "secondary": "#C9A96A",
+          "accent": "#B65C4A",
+          "background": "#F4F1E6",
+          "text": "#232C24",
+          "note": "Brighter, playful bubble-tea-leaning variant."
+        }
+      ],
+      "subs": [
+        {
+          "name": "Tea Caf\u00e9",
+          "headingFont": "Marcellus",
+          "bodyFont": "Karla",
+          "primary": "#3E5C4C",
+          "secondary": "#C9A96A",
+          "accent": "#B65C4A",
+          "background": "#F4F1E6",
+          "text": "#232C24",
+          "fonts": "Marcellus + Karla",
+          "note": "Core ceremony palette."
+        },
+        {
+          "name": "Tea House",
+          "headingFont": "Marcellus",
+          "bodyFont": "Karla",
+          "primary": "#3E5C4C",
+          "secondary": "#C9A96A",
+          "accent": "#2F4D3E",
+          "background": "#F4F1E6",
+          "text": "#232C24",
+          "fonts": "Marcellus + Karla",
+          "note": "Deeper jade accent, more formal."
+        },
+        {
+          "name": "Chai Caf\u00e9",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#3E5C4C",
+          "secondary": "#C9A96A",
+          "accent": "#8B5A2E",
+          "background": "#F4F1E6",
+          "text": "#232C24",
+          "fonts": "Lora + Nunito Sans",
+          "note": "Cardamom-brown accent blended with Spice Route warmth."
+        },
+        {
+          "name": "Bubble Tea",
+          "headingFont": "Baloo 2",
+          "bodyFont": "Quicksand",
+          "primary": "#D9678A",
+          "secondary": "#F2C14E",
+          "accent": "#4A9B8E",
+          "background": "#FDF3F0",
+          "text": "#2E2024",
+          "fonts": "Baloo 2 + Quicksand",
+          "note": "Berry, mango & mint \u2014 playful confection base."
+        },
+        {
+          "name": "Premium Tea Room",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#3E5C4C",
+          "secondary": "#C9A96A",
+          "accent": "#C9A96A",
+          "background": "#F4F1E6",
+          "text": "#232C24",
+          "fonts": "Bodoni Moda + Manrope",
+          "note": "Brass accent, elevated tea-room feel."
+        }
+      ]
+    },
+    {
+      "id": "bakery-caf",
+      "name": "Bakery Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Bakery Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#6E4B3A",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "note": "Rose, butter & cocoa \u2014 patisserie-caf\u00e9 warmth."
+        },
+        {
+          "name": "Bakery Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Baloo 2",
+          "bodyFont": "Quicksand",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#6E4B3A",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "note": "Playful alternative for casual bakery caf\u00e9s."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "dessert-caf",
+      "name": "Dessert Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Dessert Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Baloo 2",
+          "bodyFont": "Quicksand",
+          "primary": "#D9678A",
+          "secondary": "#F2C14E",
+          "accent": "#4A9B8E",
+          "background": "#FDF3F0",
+          "text": "#2E2024",
+          "note": "Berry pink, mango & mint \u2014 playful dessert bar."
+        },
+        {
+          "name": "Dessert Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Yeseva One",
+          "bodyFont": "Karla",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#6E4B3A",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "note": "Rose-forward, more refined dessert-parlour variant."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "brunch-caf",
+      "name": "Brunch Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Brunch Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#E8B23D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Citrus & egg-yolk yellow \u2014 bright brunch energy."
+        },
+        {
+          "name": "Brunch Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#4A2E1E",
+          "secondary": "#C98A4B",
+          "accent": "#7A9B76",
+          "background": "#F6EEE2",
+          "text": "#2A1B12",
+          "note": "Lighter roastery-warm alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "breakfast-caf",
+      "name": "Breakfast Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Breakfast Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Citrus-forward morning palette."
+        },
+        {
+          "name": "Breakfast Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#4A2E1E",
+          "secondary": "#C98A4B",
+          "accent": "#7A9B76",
+          "background": "#F6EEE2",
+          "text": "#2A1B12",
+          "note": "Roastery-warm alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "healthy-caf",
+      "name": "Healthy Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Healthy Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Forest green & citrus clarity."
+        },
+        {
+          "name": "Healthy Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#2F6B54",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Cooler mint-forward alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "vegan-caf",
+      "name": "Vegan Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Vegan Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Deep forest, less citrus \u2014 plant-forward."
+        },
+        {
+          "name": "Vegan Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Softer, brighter alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "continental-caf",
+      "name": "Continental Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Continental Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Pan-European neutral base."
+        },
+        {
+          "name": "Continental Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#6E1F1F",
+          "secondary": "#C9A26A",
+          "accent": "#4C6B4F",
+          "background": "#FBF6EC",
+          "text": "#2A2118",
+          "note": "Old-world alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "indian-caf",
+      "name": "Indian Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Indian Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Cormorant Garamond",
+          "bodyFont": "Karla",
+          "primary": "#8B2E20",
+          "secondary": "#D9A441",
+          "accent": "#4C6444",
+          "background": "#FCF6EC",
+          "text": "#2B1B12",
+          "note": "Caf\u00e9-lightened Spice Route."
+        },
+        {
+          "name": "Indian Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B1F1A",
+          "secondary": "#D98E3B",
+          "accent": "#0F5C4A",
+          "background": "#F6EFE3",
+          "text": "#211712",
+          "note": "Modern Indian caf\u00e9 alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "asian-caf",
+      "name": "Asian Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Asian Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Marcellus",
+          "bodyFont": "Karla",
+          "primary": "#7A1F1F",
+          "secondary": "#C9A227",
+          "accent": "#1E3A34",
+          "background": "#FCF7EF",
+          "text": "#241412",
+          "note": "Caf\u00e9-lightened lacquer & gold."
+        },
+        {
+          "name": "Asian Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#1E6E63",
+          "secondary": "#E1652F",
+          "accent": "#F2C245",
+          "background": "#F5F0DE",
+          "text": "#1D2A22",
+          "note": "Modern pan-Asian caf\u00e9 alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "european-caf",
+      "name": "European Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "European Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#6E1F1F",
+          "secondary": "#C9A26A",
+          "accent": "#4C6B4F",
+          "background": "#FCF8EF",
+          "text": "#2A2118",
+          "note": "Caf\u00e9-lightened old-world palette."
+        },
+        {
+          "name": "European Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Cormorant",
+          "bodyFont": "Urbanist",
+          "primary": "#2A5C73",
+          "secondary": "#E8B23D",
+          "accent": "#C4472F",
+          "background": "#F6F1E3",
+          "text": "#223138",
+          "note": "Coastal European alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "fusion-caf",
+      "name": "Fusion Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Fusion Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Flexible fusion base."
+        },
+        {
+          "name": "Fusion Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Modern alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "multi-cuisine-caf",
+      "name": "Multi-Cuisine Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Multi-Cuisine Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Versatile neutral base."
+        },
+        {
+          "name": "Multi-Cuisine Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Crisper alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "ice-cream-gelato-caf",
+      "name": "Ice-Cream / Gelato Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Ice-Cream / Gelato Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Baloo 2",
+          "bodyFont": "Quicksand",
+          "primary": "#D9678A",
+          "secondary": "#F2C14E",
+          "accent": "#4A9B8E",
+          "background": "#FDF3F0",
+          "text": "#2E2024",
+          "note": "Berry, mango & mint \u2014 playful parlour."
+        },
+        {
+          "name": "Ice-Cream / Gelato Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Yeseva One",
+          "bodyFont": "Karla",
+          "primary": "#D9678A",
+          "secondary": "#F7D8A0",
+          "accent": "#4A9B8E",
+          "background": "#FDF6F5",
+          "text": "#2E2024",
+          "note": "Pastel-lightened, mint/pink pastel background."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "chocolate-caf",
+      "name": "Chocolate Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Chocolate Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#3A2418",
+          "secondary": "#C9A227",
+          "accent": "#8B3A4A",
+          "background": "#F3E9DD",
+          "text": "#2A1B12",
+          "note": "Dark cocoa, gold foil & berry-ganache."
+        },
+        {
+          "name": "Chocolate Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Baloo 2",
+          "bodyFont": "Quicksand",
+          "primary": "#5C3A26",
+          "secondary": "#C9A227",
+          "accent": "#8B3A4A",
+          "background": "#F3E9DD",
+          "text": "#2A1B12",
+          "note": "Lighter milk-chocolate, playful variant."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "juice-smoothie-caf",
+      "name": "Juice / Smoothie Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Juice / Smoothie Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Baloo 2",
+          "bodyFont": "Quicksand",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Vivid tropical-citrus energy."
+        },
+        {
+          "name": "Juice / Smoothie Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#1E5C4E",
+          "secondary": "#E8A33D",
+          "accent": "#C4472F",
+          "background": "#F3EEDD",
+          "text": "#1D2A22",
+          "note": "Fresh-fruit tropical alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "salad-bowl-caf",
+      "name": "Salad / Bowl Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Salad / Bowl Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Forest green & citrus clarity."
+        },
+        {
+          "name": "Salad / Bowl Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Modern alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "co-working-caf",
+      "name": "Co-Working Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Co-Working Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Spectral",
+          "bodyFont": "Source Sans 3",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Cool, focused neutral base."
+        },
+        {
+          "name": "Co-Working Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Modern structured alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "concept-caf",
+      "name": "Concept Caf\u00e9",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Concept Caf\u00e9 \u2014 Variant 1",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Flexible base \u2014 re-theme accent per concept."
+        },
+        {
+          "name": "Concept Caf\u00e9 \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Modern structured alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "indian-bakery",
+      "name": "Indian Bakery",
+      "kind": "PARENT GROUP",
+      "variants": [
+        {
+          "name": "Indian Bakery \u2014 Variant 1",
+          "headingFont": "Cormorant Garamond",
+          "bodyFont": "Karla",
+          "primary": "#8B2E20",
+          "secondary": "#D9A441",
+          "accent": "#4C6444",
+          "background": "#FBF3E4",
+          "text": "#2B1B12",
+          "note": "Cardamom-warm Spice Route for mithai & bakery."
+        },
+        {
+          "name": "Indian Bakery \u2014 Variant 2",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#E3A857",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "note": "Blush base with marigold accent."
+        }
+      ],
+      "subs": [
+        {
+          "name": "Mithai & Bakery",
+          "headingFont": "Cormorant Garamond",
+          "bodyFont": "Karla",
+          "primary": "#8B2E20",
+          "secondary": "#D9A441",
+          "accent": "#E3A857",
+          "background": "#FBF3E4",
+          "text": "#2B1B12",
+          "fonts": "Cormorant Garamond + Karla",
+          "note": "Saffron-gold accent."
+        },
+        {
+          "name": "Traditional Indian Bakes",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#8B2E20",
+          "secondary": "#D9A441",
+          "accent": "#B5502E",
+          "background": "#FBF3E4",
+          "text": "#2B1B12",
+          "fonts": "Lora + Nunito Sans",
+          "note": "Terracotta accent."
+        },
+        {
+          "name": "Indian Celebration Products",
+          "headingFont": "Yeseva One",
+          "bodyFont": "Karla",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#C9A227",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "fonts": "Yeseva One + Karla",
+          "note": "Gold-accented celebration variant."
+        }
+      ]
+    },
+    {
+      "id": "european-bakery",
+      "name": "European Bakery",
+      "kind": "PARENT GROUP",
+      "variants": [
+        {
+          "name": "European Bakery \u2014 Variant 1",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#6E1F1F",
+          "secondary": "#C9A26A",
+          "accent": "#4C6B4F",
+          "background": "#FBF6EC",
+          "text": "#2A2118",
+          "note": "Old-world bakery variant."
+        },
+        {
+          "name": "European Bakery \u2014 Variant 2",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#6B4A2E",
+          "secondary": "#B98A4E",
+          "accent": "#4C5A3E",
+          "background": "#F3ECDD",
+          "text": "#2A2016",
+          "note": "Crust brown, wheat & olive \u2014 artisan variant."
+        }
+      ],
+      "subs": [
+        {
+          "name": "French Patisserie",
+          "headingFont": "Yeseva One",
+          "bodyFont": "Karla",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#6E4B3A",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "fonts": "Yeseva One + Karla",
+          "note": "Rose, butter & cocoa \u2014 refined patisserie."
+        },
+        {
+          "name": "Viennoiserie",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#6B4A2E",
+          "secondary": "#B98A4E",
+          "accent": "#E8C77E",
+          "background": "#F3ECDD",
+          "text": "#2A2016",
+          "fonts": "Lora + Nunito Sans",
+          "note": "Butter-gold accent."
+        },
+        {
+          "name": "Italian Bakery",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#6E1F1F",
+          "secondary": "#C9A26A",
+          "accent": "#4C6B4F",
+          "background": "#FBF6EC",
+          "text": "#2A2118",
+          "fonts": "Playfair Display + EB Garamond",
+          "note": "Core trattoria, olive accent."
+        },
+        {
+          "name": "European Artisan Bakery",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#6B4A2E",
+          "secondary": "#B98A4E",
+          "accent": "#4C5A3E",
+          "background": "#F3ECDD",
+          "text": "#2A2016",
+          "fonts": "Lora + Nunito Sans",
+          "note": "Core artisan crust palette."
+        }
+      ]
+    },
+    {
+      "id": "american-bakery",
+      "name": "American Bakery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "American Bakery \u2014 Variant 1",
+          "headingFont": "Bebas Neue",
+          "bodyFont": "Bitter",
+          "primary": "#C4272E",
+          "secondary": "#D9A441",
+          "accent": "#2A2A2A",
+          "background": "#F7F0DE",
+          "text": "#221A16",
+          "note": "Cherry-pie red, bakery-softened diner palette."
+        },
+        {
+          "name": "American Bakery \u2014 Variant 2",
+          "headingFont": "Baloo 2",
+          "bodyFont": "Quicksand",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#6E4B3A",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "note": "Diner-pie meets donut-shop variant."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "asian-bakery",
+      "name": "Asian Bakery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Asian Bakery \u2014 Variant 1",
+          "headingFont": "Marcellus",
+          "bodyFont": "Karla",
+          "primary": "#7A1F1F",
+          "secondary": "#C9A227",
+          "accent": "#1E3A34",
+          "background": "#FCF7EF",
+          "text": "#241412",
+          "note": "Bakery-lightened lacquer & gold."
+        },
+        {
+          "name": "Asian Bakery \u2014 Variant 2",
+          "headingFont": "Baloo 2",
+          "bodyFont": "Quicksand",
+          "primary": "#D9678A",
+          "secondary": "#F2C14E",
+          "accent": "#4A9B8E",
+          "background": "#FDF3F0",
+          "text": "#2E2024",
+          "note": "Mochi / milk-bun playful variant."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "middle-eastern-bakery",
+      "name": "Middle Eastern Bakery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Middle Eastern Bakery \u2014 Variant 1",
+          "headingFont": "Cinzel",
+          "bodyFont": "Mulish",
+          "primary": "#6B2E3C",
+          "secondary": "#B8863B",
+          "accent": "#2F5D62",
+          "background": "#F7EFE1",
+          "text": "#2A1E1C",
+          "note": "Plum, brass & tile teal."
+        },
+        {
+          "name": "Middle Eastern Bakery \u2014 Variant 2",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#2E1A14",
+          "secondary": "#C9942F",
+          "accent": "#6E1F26",
+          "background": "#1F140F",
+          "text": "#F3E7D2",
+          "note": "Dark luxury variant."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "artisan-bread-bakery",
+      "name": "Artisan Bread Bakery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Artisan Bread Bakery \u2014 Variant 1",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#6B4A2E",
+          "secondary": "#B98A4E",
+          "accent": "#4C5A3E",
+          "background": "#F3ECDD",
+          "text": "#2A2016",
+          "note": "Crust brown, wheat & olive."
+        },
+        {
+          "name": "Artisan Bread Bakery \u2014 Variant 2",
+          "headingFont": "Spectral",
+          "bodyFont": "Source Sans 3",
+          "primary": "#4E3520",
+          "secondary": "#B98A4E",
+          "accent": "#4C5A3E",
+          "background": "#F3ECDD",
+          "text": "#2A2016",
+          "note": "Darker rye variant."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "sourdough-bakery",
+      "name": "Sourdough Bakery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Sourdough Bakery \u2014 Variant 1",
+          "headingFont": "Spectral",
+          "bodyFont": "Source Sans 3",
+          "primary": "#6B4A2E",
+          "secondary": "#B98A4E",
+          "accent": "#4C5A3E",
+          "background": "#F6F0E3",
+          "text": "#2A2016",
+          "note": "Flour-forward, lighter background."
+        },
+        {
+          "name": "Sourdough Bakery \u2014 Variant 2",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#6B4A2E",
+          "secondary": "#B98A4E",
+          "accent": "#4C5A3E",
+          "background": "#F3ECDD",
+          "text": "#2A2016",
+          "note": "Core artisan crust palette."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "cake-studio",
+      "name": "Cake Studio",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Cake Studio \u2014 Variant 1",
+          "headingFont": "Yeseva One",
+          "bodyFont": "Karla",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#6E4B3A",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "note": "Rose, butter & cocoa \u2014 celebration cake studio."
+        },
+        {
+          "name": "Cake Studio \u2014 Variant 2",
+          "headingFont": "Yeseva One",
+          "bodyFont": "Karla",
+          "primary": "#D9678A",
+          "secondary": "#F2C14E",
+          "accent": "#4A9B8E",
+          "background": "#FDF3F0",
+          "text": "#2E2024",
+          "note": "Playful, colour-forward variant."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "dessert-bakery",
+      "name": "Dessert Bakery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Dessert Bakery \u2014 Variant 1",
+          "headingFont": "Baloo 2",
+          "bodyFont": "Quicksand",
+          "primary": "#D9678A",
+          "secondary": "#F2C14E",
+          "accent": "#4A9B8E",
+          "background": "#FDF3F0",
+          "text": "#2E2024",
+          "note": "Berry, mango & mint."
+        },
+        {
+          "name": "Dessert Bakery \u2014 Variant 2",
+          "headingFont": "Yeseva One",
+          "bodyFont": "Karla",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#6E4B3A",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "note": "Refined patisserie alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "pastry-shop",
+      "name": "Pastry Shop",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Pastry Shop \u2014 Variant 1",
+          "headingFont": "Yeseva One",
+          "bodyFont": "Karla",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#6E4B3A",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "note": "Rose, butter & cocoa."
+        },
+        {
+          "name": "Pastry Shop \u2014 Variant 2",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#6B4A2E",
+          "secondary": "#B98A4E",
+          "accent": "#4C5A3E",
+          "background": "#F3ECDD",
+          "text": "#2A2016",
+          "note": "Artisan alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "cookie-biscuit-bakery",
+      "name": "Cookie / Biscuit Bakery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Cookie / Biscuit Bakery \u2014 Variant 1",
+          "headingFont": "Baloo 2",
+          "bodyFont": "Quicksand",
+          "primary": "#8B5A2E",
+          "secondary": "#F2C14E",
+          "accent": "#4A9B8E",
+          "background": "#FDF3F0",
+          "text": "#2E2024",
+          "note": "Cookie-brown, butter & berry."
+        },
+        {
+          "name": "Cookie / Biscuit Bakery \u2014 Variant 2",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#6E4B3A",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "note": "Softer bakery alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "chocolate-confectionery",
+      "name": "Chocolate & Confectionery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Chocolate & Confectionery \u2014 Variant 1",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#3A2418",
+          "secondary": "#C9A227",
+          "accent": "#8B3A4A",
+          "background": "#F3E9DD",
+          "text": "#2A1B12",
+          "note": "Dark cocoa, gold foil & berry-ganache."
+        },
+        {
+          "name": "Chocolate & Confectionery \u2014 Variant 2",
+          "headingFont": "Yeseva One",
+          "bodyFont": "Karla",
+          "primary": "#3A2418",
+          "secondary": "#C9A227",
+          "accent": "#8B3A4A",
+          "background": "#F3E9DD",
+          "text": "#2A1B12",
+          "note": "Ornate patisserie alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "healthy-bakery",
+      "name": "Healthy Bakery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Healthy Bakery \u2014 Variant 1",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Forest green & citrus clarity."
+        },
+        {
+          "name": "Healthy Bakery \u2014 Variant 2",
+          "headingFont": "Spectral",
+          "bodyFont": "Source Sans 3",
+          "primary": "#6B4A2E",
+          "secondary": "#B98A4E",
+          "accent": "#4C5A3E",
+          "background": "#F3ECDD",
+          "text": "#2A2016",
+          "note": "Whole-grain artisan alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "vegan-bakery",
+      "name": "Vegan Bakery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Vegan Bakery \u2014 Variant 1",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Plant-forward palette."
+        },
+        {
+          "name": "Vegan Bakery \u2014 Variant 2",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#C77A6E",
+          "secondary": "#E8C77E",
+          "accent": "#6E4B3A",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "note": "Softened, oat-based alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "gluten-free-bakery",
+      "name": "Gluten-Free Bakery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Gluten-Free Bakery \u2014 Variant 1",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Clean, clinical-fresh palette."
+        },
+        {
+          "name": "Gluten-Free Bakery \u2014 Variant 2",
+          "headingFont": "Spectral",
+          "bodyFont": "Source Sans 3",
+          "primary": "#6B4A2E",
+          "secondary": "#B98A4E",
+          "accent": "#4C5A3E",
+          "background": "#F3ECDD",
+          "text": "#2A2016",
+          "note": "Ancient-grain alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "multi-product-bakery",
+      "name": "Multi-Product Bakery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Multi-Product Bakery \u2014 Variant 1",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Versatile neutral bakery base."
+        },
+        {
+          "name": "Multi-Product Bakery \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#6E4B3A",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "note": "Blush alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "fusion-bakery",
+      "name": "Fusion Bakery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Fusion Bakery \u2014 Variant 1",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Flexible fusion base."
+        },
+        {
+          "name": "Fusion Bakery \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#6E4B3A",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "note": "Blush alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "home-bakery",
+      "name": "Home Bakery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Home Bakery \u2014 Variant 1",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#6E4B3A",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "note": "Softest, most handmade variant."
+        },
+        {
+          "name": "Home Bakery \u2014 Variant 2",
+          "headingFont": "Baloo 2",
+          "bodyFont": "Quicksand",
+          "primary": "#D9678A",
+          "secondary": "#F2C14E",
+          "accent": "#4A9B8E",
+          "background": "#FDF3F0",
+          "text": "#2E2024",
+          "note": "Playful, colourful alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "celebration-bakery",
+      "name": "Celebration Bakery",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Celebration Bakery \u2014 Variant 1",
+          "headingFont": "Yeseva One",
+          "bodyFont": "Karla",
+          "primary": "#B5586A",
+          "secondary": "#E8C77E",
+          "accent": "#6E4B3A",
+          "background": "#FBF2EA",
+          "text": "#3A2620",
+          "note": "Rose, butter & cocoa \u2014 celebration-led."
+        },
+        {
+          "name": "Celebration Bakery \u2014 Variant 2",
+          "headingFont": "Yeseva One",
+          "bodyFont": "Karla",
+          "primary": "#D9678A",
+          "secondary": "#F2C14E",
+          "accent": "#4A9B8E",
+          "background": "#FDF3F0",
+          "text": "#2E2024",
+          "note": "Playful, colour-forward alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "cocktail-led",
+      "name": "Cocktail-Led",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Cocktail-Led \u2014 Variant 1",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#1B1620",
+          "secondary": "#B8974E",
+          "accent": "#6E2A2E",
+          "background": "#17141B",
+          "text": "#EDE6DA",
+          "note": "Midnight, brass gold & oxblood \u2014 classic cocktail den."
+        },
+        {
+          "name": "Cocktail-Led \u2014 Variant 2",
+          "headingFont": "Big Shoulders Display",
+          "bodyFont": "Space Grotesk",
+          "primary": "#1B1620",
+          "secondary": "#B8974E",
+          "accent": "#0F5C4A",
+          "background": "#17141B",
+          "text": "#EDE6DA",
+          "note": "Jewel-tone variant, emerald accent."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "wine-led",
+      "name": "Wine-Led",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Wine-Led \u2014 Variant 1",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#4A1F2E",
+          "secondary": "#C9A46A",
+          "accent": "#8C5B6E",
+          "background": "#F5EDE7",
+          "text": "#2A1A20",
+          "note": "Bordeaux, gold & dusty rose."
+        },
+        {
+          "name": "Wine-Led \u2014 Variant 2",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#6E1F1F",
+          "secondary": "#C9A26A",
+          "accent": "#4C6B4F",
+          "background": "#FBF6EC",
+          "text": "#2A2118",
+          "note": "Wine-cellar old-world alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "whisky-led",
+      "name": "Whisky-Led",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Whisky-Led \u2014 Variant 1",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#241C14",
+          "secondary": "#B8974E",
+          "accent": "#6E2A2E",
+          "background": "#17141B",
+          "text": "#EDE6DA",
+          "note": "Amber-forward, brass-dominant."
+        },
+        {
+          "name": "Whisky-Led \u2014 Variant 2",
+          "headingFont": "Bebas Neue",
+          "bodyFont": "Bitter",
+          "primary": "#6B3A1E",
+          "secondary": "#2E2A22",
+          "accent": "#C9A227",
+          "background": "#F3ECDC",
+          "text": "#241C12",
+          "note": "Oak-barrel taproom alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "craft-beer-led",
+      "name": "Craft Beer-Led",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Craft Beer-Led \u2014 Variant 1",
+          "headingFont": "Big Shoulders Display",
+          "bodyFont": "Space Grotesk",
+          "primary": "#6B3A1E",
+          "secondary": "#2E2A22",
+          "accent": "#C9A227",
+          "background": "#F3ECDC",
+          "text": "#241C12",
+          "note": "Amber ale, malt black & hops gold."
+        },
+        {
+          "name": "Craft Beer-Led \u2014 Variant 2",
+          "headingFont": "Poppins",
+          "bodyFont": "Nunito Sans",
+          "primary": "#6B3A1E",
+          "secondary": "#2E2A22",
+          "accent": "#E8B23D",
+          "background": "#F3ECDC",
+          "text": "#241C12",
+          "note": "Bright, hoppy citrus-accent variant."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "brewery-taproom",
+      "name": "Brewery / Taproom",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Brewery / Taproom \u2014 Variant 1",
+          "headingFont": "Big Shoulders Display",
+          "bodyFont": "Space Grotesk",
+          "primary": "#6B3A1E",
+          "secondary": "#2E2A22",
+          "accent": "#C9A227",
+          "background": "#F3ECDC",
+          "text": "#241C12",
+          "note": "Core taproom palette."
+        },
+        {
+          "name": "Brewery / Taproom \u2014 Variant 2",
+          "headingFont": "Spectral",
+          "bodyFont": "Source Sans 3",
+          "primary": "#4E2A14",
+          "secondary": "#2E2A22",
+          "accent": "#C9A227",
+          "background": "#F3ECDC",
+          "text": "#241C12",
+          "note": "Darker industrial alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "spirits-led",
+      "name": "Spirits-Led",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Spirits-Led \u2014 Variant 1",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#1B1620",
+          "secondary": "#B8974E",
+          "accent": "#6E2A2E",
+          "background": "#17141B",
+          "text": "#EDE6DA",
+          "note": "Core midnight luxe."
+        },
+        {
+          "name": "Spirits-Led \u2014 Variant 2",
+          "headingFont": "Big Shoulders Display",
+          "bodyFont": "Space Grotesk",
+          "primary": "#2F4D3A",
+          "secondary": "#D9C9A3",
+          "accent": "#B8574A",
+          "background": "#F4F2E8",
+          "text": "#223022",
+          "note": "Botanical alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "rum-led",
+      "name": "Rum-Led",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Rum-Led \u2014 Variant 1",
+          "headingFont": "Fraunces",
+          "bodyFont": "Quicksand",
+          "primary": "#1E5C4E",
+          "secondary": "#E8A33D",
+          "accent": "#C4472F",
+          "background": "#F3EEDD",
+          "text": "#1D2A22",
+          "note": "Palm, mango & hibiscus."
+        },
+        {
+          "name": "Rum-Led \u2014 Variant 2",
+          "headingFont": "Bebas Neue",
+          "bodyFont": "Bitter",
+          "primary": "#7A2E1E",
+          "secondary": "#D98A2E",
+          "accent": "#2E2A26",
+          "background": "#F4ECE0",
+          "text": "#241C16",
+          "note": "Dark rum & molasses alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "gin-led",
+      "name": "Gin-Led",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Gin-Led \u2014 Variant 1",
+          "headingFont": "Spectral",
+          "bodyFont": "Source Sans 3",
+          "primary": "#2F4D3A",
+          "secondary": "#D9C9A3",
+          "accent": "#B8574A",
+          "background": "#F4F2E8",
+          "text": "#223022",
+          "note": "Juniper green, linen & berry."
+        },
+        {
+          "name": "Gin-Led \u2014 Variant 2",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#2F4D3A",
+          "secondary": "#E8DCC0",
+          "accent": "#B8574A",
+          "background": "#F4F2E8",
+          "text": "#223022",
+          "note": "Brighter, more floral alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "mixed-bar",
+      "name": "Mixed Bar",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Mixed Bar \u2014 Variant 1",
+          "headingFont": "Big Shoulders Display",
+          "bodyFont": "Space Grotesk",
+          "primary": "#1B1620",
+          "secondary": "#B8974E",
+          "accent": "#6E2A2E",
+          "background": "#17141B",
+          "text": "#EDE6DA",
+          "note": "Generalist dark-bar base."
+        },
+        {
+          "name": "Mixed Bar \u2014 Variant 2",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Neutral editorial alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "mocktail-zero-alcohol",
+      "name": "Mocktail / Zero-Alcohol",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Mocktail / Zero-Alcohol \u2014 Variant 1",
+          "headingFont": "Baloo 2",
+          "bodyFont": "Quicksand",
+          "primary": "#3E6B4A",
+          "secondary": "#A8C48A",
+          "accent": "#D98C3D",
+          "background": "#F5F6EE",
+          "text": "#22291F",
+          "note": "Vivid mocktail-fruit palette."
+        },
+        {
+          "name": "Mocktail / Zero-Alcohol \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#1E5C4E",
+          "secondary": "#E8A33D",
+          "accent": "#C4472F",
+          "background": "#F3EEDD",
+          "text": "#1D2A22",
+          "note": "Tropical alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "gastro-bar",
+      "name": "Gastro Bar",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Gastro Bar \u2014 Variant 1",
+          "headingFont": "Big Shoulders Display",
+          "bodyFont": "Space Grotesk",
+          "primary": "#7A2E1E",
+          "secondary": "#D98A2E",
+          "accent": "#2E2A26",
+          "background": "#F4ECE0",
+          "text": "#241C16",
+          "note": "Smokehouse-leaning gastro base."
+        },
+        {
+          "name": "Gastro Bar \u2014 Variant 2",
+          "headingFont": "Spectral",
+          "bodyFont": "Source Sans 3",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Neutral editorial alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "food-led-bar",
+      "name": "Food-Led Bar",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Food-Led Bar \u2014 Variant 1",
+          "headingFont": "Poppins",
+          "bodyFont": "Nunito Sans",
+          "primary": "#7A2E1E",
+          "secondary": "#D98A2E",
+          "accent": "#2E2A26",
+          "background": "#F4ECE0",
+          "text": "#241C16",
+          "note": "Smoked, food-forward base."
+        },
+        {
+          "name": "Food-Led Bar \u2014 Variant 2",
+          "headingFont": "Poppins",
+          "bodyFont": "Nunito Sans",
+          "primary": "#C4432B",
+          "secondary": "#E8A93B",
+          "accent": "#2E7D6B",
+          "background": "#FBF1DF",
+          "text": "#241813",
+          "note": "Street-fiesta alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "asian-bar",
+      "name": "Asian Bar",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Asian Bar \u2014 Variant 1",
+          "headingFont": "Marcellus",
+          "bodyFont": "Karla",
+          "primary": "#7A1F1F",
+          "secondary": "#C9A227",
+          "accent": "#1E3A34",
+          "background": "#241412",
+          "text": "#F3EADD",
+          "note": "Bar-darkened lacquer & gold."
+        },
+        {
+          "name": "Asian Bar \u2014 Variant 2",
+          "headingFont": "Big Shoulders Display",
+          "bodyFont": "Space Grotesk",
+          "primary": "#1B1B1B",
+          "secondary": "#B23A2E",
+          "accent": "#7E8B7A",
+          "background": "#F4F1EA",
+          "text": "#1B1B1B",
+          "note": "Sumi ink alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "european-bar",
+      "name": "European Bar",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "European Bar \u2014 Variant 1",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#6E1F1F",
+          "secondary": "#C9A26A",
+          "accent": "#4C6B4F",
+          "background": "#241A14",
+          "text": "#F3EADD",
+          "note": "Bar-darkened old-world palette."
+        },
+        {
+          "name": "European Bar \u2014 Variant 2",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Neutral editorial alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "american-bar",
+      "name": "American Bar",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "American Bar \u2014 Variant 1",
+          "headingFont": "Bebas Neue",
+          "bodyFont": "Bitter",
+          "primary": "#C4272E",
+          "secondary": "#2E8C9E",
+          "accent": "#2A2A2A",
+          "background": "#221A16",
+          "text": "#F3EADD",
+          "note": "Bar-darkened diner chrome."
+        },
+        {
+          "name": "American Bar \u2014 Variant 2",
+          "headingFont": "Big Shoulders Display",
+          "bodyFont": "Space Grotesk",
+          "primary": "#7A2E1E",
+          "secondary": "#D98A2E",
+          "accent": "#2E2A26",
+          "background": "#F4ECE0",
+          "text": "#241C16",
+          "note": "Smokehouse alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "indian-bar",
+      "name": "Indian Bar",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Indian Bar \u2014 Variant 1",
+          "headingFont": "Cormorant Garamond",
+          "bodyFont": "Karla",
+          "primary": "#8B2E20",
+          "secondary": "#D9A441",
+          "accent": "#4C6444",
+          "background": "#241812",
+          "text": "#F3EADD",
+          "note": "Bar-darkened, moodier Spice Route."
+        },
+        {
+          "name": "Indian Bar \u2014 Variant 2",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#2B1F1A",
+          "secondary": "#D98E3B",
+          "accent": "#0F5C4A",
+          "background": "#F6EFE3",
+          "text": "#211712",
+          "note": "Modern Indian bar alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "fusion-bar",
+      "name": "Fusion Bar",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Fusion Bar \u2014 Variant 1",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Flexible fusion base."
+        },
+        {
+          "name": "Fusion Bar \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#1B1620",
+          "secondary": "#B8974E",
+          "accent": "#6E2A2E",
+          "background": "#17141B",
+          "text": "#EDE6DA",
+          "note": "Dark luxe alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "hotel-bar",
+      "name": "Hotel Bar",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Hotel Bar \u2014 Variant 1",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#22303B",
+          "secondary": "#B49778",
+          "accent": "#4C6B78",
+          "background": "#F5F3EE",
+          "text": "#202A30",
+          "note": "Navy-slate, brass & steel-blue."
+        },
+        {
+          "name": "Hotel Bar \u2014 Variant 2",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#1B1620",
+          "secondary": "#B8974E",
+          "accent": "#6E2A2E",
+          "background": "#17141B",
+          "text": "#EDE6DA",
+          "note": "Dark luxe alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "tiki-bar",
+      "name": "Tiki Bar",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Tiki Bar \u2014 Variant 1",
+          "headingFont": "Fraunces",
+          "bodyFont": "Quicksand",
+          "primary": "#1E5C4E",
+          "secondary": "#E8A33D",
+          "accent": "#C4472F",
+          "background": "#F3EEDD",
+          "text": "#1D2A22",
+          "note": "Palm, mango & hibiscus."
+        },
+        {
+          "name": "Tiki Bar \u2014 Variant 2",
+          "headingFont": "Big Shoulders Display",
+          "bodyFont": "Space Grotesk",
+          "primary": "#1E5C4E",
+          "secondary": "#E8A33D",
+          "accent": "#C4472F",
+          "background": "#16241E",
+          "text": "#F3EADD",
+          "note": "Deeper jungle-noir variant, dark background."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "speakeasy",
+      "name": "Speakeasy",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Speakeasy \u2014 Variant 1",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#1B1620",
+          "secondary": "#B8974E",
+          "accent": "#6E2A2E",
+          "background": "#17141B",
+          "text": "#EDE6DA",
+          "note": "Darkest, most restrained cocktail palette."
+        },
+        {
+          "name": "Speakeasy \u2014 Variant 2",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#2E1A14",
+          "secondary": "#C9942F",
+          "accent": "#6E1F26",
+          "background": "#1F140F",
+          "text": "#F3E7D2",
+          "note": "Opulent ember alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "sports-bar",
+      "name": "Sports Bar",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Sports Bar \u2014 Variant 1",
+          "headingFont": "Big Shoulders Display",
+          "bodyFont": "Space Grotesk",
+          "primary": "#C4272E",
+          "secondary": "#2E8C9E",
+          "accent": "#2A2A2A",
+          "background": "#F7F0DE",
+          "text": "#221A16",
+          "note": "Team-colour energetic diner-chrome base."
+        },
+        {
+          "name": "Sports Bar \u2014 Variant 2",
+          "headingFont": "Poppins",
+          "bodyFont": "Nunito Sans",
+          "primary": "#6B3A1E",
+          "secondary": "#2E2A22",
+          "accent": "#C9A227",
+          "background": "#F3ECDC",
+          "text": "#241C12",
+          "note": "Taproom alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "cocktail-lounge",
+      "name": "Cocktail Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Cocktail Lounge \u2014 Variant 1",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#1B1620",
+          "secondary": "#B8974E",
+          "accent": "#6E2A2E",
+          "background": "#17141B",
+          "text": "#EDE6DA",
+          "note": "Midnight, brass gold & oxblood."
+        },
+        {
+          "name": "Cocktail Lounge \u2014 Variant 2",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#4A1F2E",
+          "secondary": "#C9A46A",
+          "accent": "#8C5B6E",
+          "background": "#F5EDE7",
+          "text": "#2A1A20",
+          "note": "Bordeaux, gold & dusty rose alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "wine-lounge",
+      "name": "Wine Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Wine Lounge \u2014 Variant 1",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#4A1F2E",
+          "secondary": "#C9A46A",
+          "accent": "#8C5B6E",
+          "background": "#F5EDE7",
+          "text": "#2A1A20",
+          "note": "Bordeaux, gold & dusty rose."
+        },
+        {
+          "name": "Wine Lounge \u2014 Variant 2",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#6E1F1F",
+          "secondary": "#C9A26A",
+          "accent": "#4C6B4F",
+          "background": "#FBF6EC",
+          "text": "#2A2118",
+          "note": "Old-world wine-cellar alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "whisky-lounge",
+      "name": "Whisky Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Whisky Lounge \u2014 Variant 1",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#241C14",
+          "secondary": "#B8974E",
+          "accent": "#6E2A2E",
+          "background": "#17141B",
+          "text": "#EDE6DA",
+          "note": "Amber-forward midnight luxe."
+        },
+        {
+          "name": "Whisky Lounge \u2014 Variant 2",
+          "headingFont": "Bebas Neue",
+          "bodyFont": "Bitter",
+          "primary": "#22303B",
+          "secondary": "#B49778",
+          "accent": "#4C6B78",
+          "background": "#F5F3EE",
+          "text": "#202A30",
+          "note": "Executive smokehouse alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "shisha-lounge",
+      "name": "Shisha Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Shisha Lounge \u2014 Variant 1",
+          "headingFont": "Cinzel",
+          "bodyFont": "Mulish",
+          "primary": "#2E1A14",
+          "secondary": "#C9942F",
+          "accent": "#6E1F26",
+          "background": "#1F140F",
+          "text": "#F3E7D2",
+          "note": "Ember-black, gold & ruby \u2014 opulent."
+        },
+        {
+          "name": "Shisha Lounge \u2014 Variant 2",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#6B2E3C",
+          "secondary": "#B8863B",
+          "accent": "#2F5D62",
+          "background": "#241A16",
+          "text": "#F3EADD",
+          "note": "Souk palette, lounge-darkened."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "dessert-lounge",
+      "name": "Dessert Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Dessert Lounge \u2014 Variant 1",
+          "headingFont": "Yeseva One",
+          "bodyFont": "Karla",
+          "primary": "#D9678A",
+          "secondary": "#F2C14E",
+          "accent": "#4A9B8E",
+          "background": "#2A1820",
+          "text": "#F3EADD",
+          "note": "Lounge-darkened jewel-berry confection."
+        },
+        {
+          "name": "Dessert Lounge \u2014 Variant 2",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#3A2418",
+          "secondary": "#C9A227",
+          "accent": "#8B3A4A",
+          "background": "#F3E9DD",
+          "text": "#2A1B12",
+          "note": "Dark cocoa alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "tea-lounge",
+      "name": "Tea Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Tea Lounge \u2014 Variant 1",
+          "headingFont": "Marcellus",
+          "bodyFont": "Karla",
+          "primary": "#3E5C4C",
+          "secondary": "#C9A96A",
+          "accent": "#B65C4A",
+          "background": "#F4F1E6",
+          "text": "#232C24",
+          "note": "Lounge-elevated tea ceremony palette."
+        },
+        {
+          "name": "Tea Lounge \u2014 Variant 2",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#3E5C4C",
+          "secondary": "#C9A96A",
+          "accent": "#B65C4A",
+          "background": "#F4F1E6",
+          "text": "#232C24",
+          "note": "Moodier, more luxe alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "coffee-lounge",
+      "name": "Coffee Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Coffee Lounge \u2014 Variant 1",
+          "headingFont": "Lora",
+          "bodyFont": "Nunito Sans",
+          "primary": "#4A2E1E",
+          "secondary": "#C98A4B",
+          "accent": "#7A9B76",
+          "background": "#241812",
+          "text": "#F3EADD",
+          "note": "Lounge-darkened roastery warmth."
+        },
+        {
+          "name": "Coffee Lounge \u2014 Variant 2",
+          "headingFont": "Spectral",
+          "bodyFont": "Source Sans 3",
+          "primary": "#4A2E1E",
+          "secondary": "#C98A4B",
+          "accent": "#7A9B76",
+          "background": "#F6EEE2",
+          "text": "#2A1B12",
+          "note": "Craft alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "mixed-beverage-lounge",
+      "name": "Mixed Beverage Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Mixed Beverage Lounge \u2014 Variant 1",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#1B1620",
+          "secondary": "#B8974E",
+          "accent": "#6E2A2E",
+          "background": "#17141B",
+          "text": "#EDE6DA",
+          "note": "Generalist dark-lounge base."
+        },
+        {
+          "name": "Mixed Beverage Lounge \u2014 Variant 2",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Neutral editorial alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "food-led-lounge",
+      "name": "Food-Led Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Food-Led Lounge \u2014 Variant 1",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Neutral, food-forward base."
+        },
+        {
+          "name": "Food-Led Lounge \u2014 Variant 2",
+          "headingFont": "Big Shoulders Display",
+          "bodyFont": "Space Grotesk",
+          "primary": "#7A2E1E",
+          "secondary": "#D98A2E",
+          "accent": "#2E2A26",
+          "background": "#F4ECE0",
+          "text": "#241C16",
+          "note": "Smokehouse-leaning alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "asian-lounge",
+      "name": "Asian Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Asian Lounge \u2014 Variant 1",
+          "headingFont": "Marcellus",
+          "bodyFont": "Karla",
+          "primary": "#7A1F1F",
+          "secondary": "#C9A227",
+          "accent": "#1E3A34",
+          "background": "#241412",
+          "text": "#F3EADD",
+          "note": "Lounge-darkened lacquer & gold."
+        },
+        {
+          "name": "Asian Lounge \u2014 Variant 2",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#1B1B1B",
+          "secondary": "#B23A2E",
+          "accent": "#7E8B7A",
+          "background": "#F4F1EA",
+          "text": "#1B1B1B",
+          "note": "Sumi ink alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "middle-eastern-lounge",
+      "name": "Middle Eastern Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Middle Eastern Lounge \u2014 Variant 1",
+          "headingFont": "Cinzel",
+          "bodyFont": "Mulish",
+          "primary": "#6B2E3C",
+          "secondary": "#B8863B",
+          "accent": "#2F5D62",
+          "background": "#F7EFE1",
+          "text": "#2A1E1C",
+          "note": "Plum, brass & tile teal."
+        },
+        {
+          "name": "Middle Eastern Lounge \u2014 Variant 2",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#2E1A14",
+          "secondary": "#C9942F",
+          "accent": "#6E1F26",
+          "background": "#1F140F",
+          "text": "#F3E7D2",
+          "note": "Dark opulent alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "european-lounge",
+      "name": "European Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "European Lounge \u2014 Variant 1",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#6E1F1F",
+          "secondary": "#C9A26A",
+          "accent": "#4C6B4F",
+          "background": "#241A14",
+          "text": "#F3EADD",
+          "note": "Lounge-darkened old-world palette."
+        },
+        {
+          "name": "European Lounge \u2014 Variant 2",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#4A1F2E",
+          "secondary": "#C9A46A",
+          "accent": "#8C5B6E",
+          "background": "#F5EDE7",
+          "text": "#2A1A20",
+          "note": "Romantic alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "fusion-lounge",
+      "name": "Fusion Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Fusion Lounge \u2014 Variant 1",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#2B2925",
+          "secondary": "#B49778",
+          "accent": "#8C3B2A",
+          "background": "#F7F3EA",
+          "text": "#241F1B",
+          "note": "Flexible fusion base."
+        },
+        {
+          "name": "Fusion Lounge \u2014 Variant 2",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#1B1620",
+          "secondary": "#B8974E",
+          "accent": "#6E2A2E",
+          "background": "#17141B",
+          "text": "#EDE6DA",
+          "note": "Dark luxe alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "hotel-lounge",
+      "name": "Hotel Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Hotel Lounge \u2014 Variant 1",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#22303B",
+          "secondary": "#B49778",
+          "accent": "#4C6B78",
+          "background": "#F5F3EE",
+          "text": "#202A30",
+          "note": "Navy-slate, brass & steel-blue."
+        },
+        {
+          "name": "Hotel Lounge \u2014 Variant 2",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#1B1620",
+          "secondary": "#B8974E",
+          "accent": "#6E2A2E",
+          "background": "#17141B",
+          "text": "#EDE6DA",
+          "note": "Dark luxe alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "airport-lounge",
+      "name": "Airport Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Airport Lounge \u2014 Variant 1",
+          "headingFont": "Sora",
+          "bodyFont": "Inter",
+          "primary": "#22303B",
+          "secondary": "#B49778",
+          "accent": "#4C6B78",
+          "background": "#F5F3EE",
+          "text": "#202A30",
+          "note": "Crisp, efficient executive base."
+        },
+        {
+          "name": "Airport Lounge \u2014 Variant 2",
+          "headingFont": "DM Sans",
+          "bodyFont": "Work Sans",
+          "primary": "#22303B",
+          "secondary": "#B49778",
+          "accent": "#4C6B78",
+          "background": "#F5F3EE",
+          "text": "#202A30",
+          "note": "Minimal alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "rooftop-lounge",
+      "name": "Rooftop Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Rooftop Lounge \u2014 Variant 1",
+          "headingFont": "Fraunces",
+          "bodyFont": "Inter",
+          "primary": "#24384A",
+          "secondary": "#E8A33D",
+          "accent": "#C4472F",
+          "background": "#F2EFE6",
+          "text": "#1E2A33",
+          "note": "Dusk blue, sunset gold & horizon coral."
+        },
+        {
+          "name": "Rooftop Lounge \u2014 Variant 2",
+          "headingFont": "Fraunces",
+          "bodyFont": "Quicksand",
+          "primary": "#3A5468",
+          "secondary": "#E8A33D",
+          "accent": "#C4472F",
+          "background": "#F2EFE6",
+          "text": "#1E2A33",
+          "note": "Warmer, sunset-forward alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "poolside-lounge",
+      "name": "Poolside Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Poolside Lounge \u2014 Variant 1",
+          "headingFont": "Fraunces",
+          "bodyFont": "Quicksand",
+          "primary": "#1E5C4E",
+          "secondary": "#E8A33D",
+          "accent": "#C4472F",
+          "background": "#F3EEDD",
+          "text": "#1D2A22",
+          "note": "Palm, mango & hibiscus."
+        },
+        {
+          "name": "Poolside Lounge \u2014 Variant 2",
+          "headingFont": "Cormorant",
+          "bodyFont": "Urbanist",
+          "primary": "#24384A",
+          "secondary": "#E8A33D",
+          "accent": "#C4472F",
+          "background": "#F2EFE6",
+          "text": "#1E2A33",
+          "note": "Rooftop-adjacent alternative."
+        }
+      ],
+      "subs": []
+    },
+    {
+      "id": "members-lounge",
+      "name": "Members' Lounge",
+      "kind": "STANDALONE",
+      "variants": [
+        {
+          "name": "Members' Lounge \u2014 Variant 1",
+          "headingFont": "Playfair Display",
+          "bodyFont": "EB Garamond",
+          "primary": "#22303B",
+          "secondary": "#B49778",
+          "accent": "#4C6B78",
+          "background": "#F5F3EE",
+          "text": "#202A30",
+          "note": "Navy-slate, brass & steel-blue."
+        },
+        {
+          "name": "Members' Lounge \u2014 Variant 2",
+          "headingFont": "Bodoni Moda",
+          "bodyFont": "Manrope",
+          "primary": "#1B1620",
+          "secondary": "#B8974E",
+          "accent": "#6E2A2E",
+          "background": "#17141B",
+          "text": "#EDE6DA",
+          "note": "Dark luxe alternative."
+        }
+      ],
+      "subs": []
+    }
+  ],
+  "generationRules": [
+    "Alternate variants by seed; do not always pick variant 1.",
+    "Optional HSL jitter \u00b14\u20138% lightness and \u00b13\u20135\u00b0 hue; keep Background/Text contrast-safe.",
+    "Accent may be swapped from alternate variant if contrast against Background holds.",
+    "Optionally cross-pair Variant 1 palette with Variant 2 typography."
+  ]
+}

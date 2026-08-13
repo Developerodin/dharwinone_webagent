@@ -261,6 +261,7 @@ export const COMPONENT_MANIFESTS: Record<string, ComponentManifest> = {
   ...buildFamilyManifests("minimal"),
   ...buildFamilyManifests("rustic"),
   ...buildFamilyManifests("vibrant"),
+  ...buildFamilyManifests("bold"),
 };
 
 /**

@@ -87,6 +87,7 @@ export function verifyBriefAgainstSource(brief: Brief, chatText: string): Brief 
         : null,
     menuItems: brief.menuItems.filter((item) => menuItemInSource(item, chatText)),
     photos: [],
+    brandColors: brief.brandColors?.length ? brief.brandColors : null,
   };
 
   return verified;

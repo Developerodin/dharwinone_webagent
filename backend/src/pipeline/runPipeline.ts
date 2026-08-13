@@ -1,13 +1,14 @@
-import {
-  getDefaultPageFamily,
-  type PageFamily,
-} from "../config/pageFamily.js";
+import type { PageFamily } from "../config/pageFamily.js";
 import { FIXTURE_BRIEF } from "../data/fixtureBrief.js";
 import type { Brief } from "../schemas/brief.schema.js";
+import type { CreativeDirection } from "../schemas/creativeDirection.schema.js";
 import { getManifest } from "../schemas/manifest.schema.js";
 import type { Page, PageSection, SectionType } from "../schemas/page.schema.js";
 import { assemblePage } from "./assemblePage.js";
-import { inferPageFamily } from "./inferPageFamily.js";
+import {
+  applyCreativePalette,
+  runCreativeDirector,
+} from "./creativeDirector.js";
 import { extractBrief } from "./extractBrief.js";
 import { factCheck } from "./factCheck.js";
 import { pickComponent } from "./pickComponent.js";
@@ -26,10 +27,10 @@ import {
   type StageCallback,
 } from "./pipelineStages.js";
 import {
+  briefTeam,
+  briefTestimonials,
   defaultServices,
-  defaultStats,
-  defaultTeam,
-  defaultTestimonials,
+  realStats,
 } from "./sectionDefaults.js";
 import { ensureStageFeel } from "./stageDelay.js";
 import { verifyBriefAgainstSource } from "./verifyBrief.js";
@@ -53,7 +54,7 @@ export type PipelineInput = {
   useFixture?: boolean;
   /** Pre-confirmed brief from intake — skips extraction stage. */
   brief?: Brief;
-  /** Component family override (premium | elegant | minimal | rustic | vibrant). */
+  /** Component family override (premium | elegant | minimal | rustic | vibrant | bold). */
   family?: PageFamily;
   onStage?: StageCallback;
 };
@@ -64,16 +65,20 @@ export type PipelineResult = {
   family: PageFamily;
   droppedSections: SectionType[];
   stages: PipelineStageLog[];
+  direction: CreativeDirection;
 };
 
 type PlannedSection = {
   sectionType: SectionType;
   componentId: string;
   imagePath: string | null;
+  /** User-uploaded photo paths to prefer over catalog images. */
+  preferPaths?: string[];
 };
 
 /**
- * Builds section assets from catalog picks.
+ * Builds section assets, preferring user-uploaded paths then catalog picks.
+ * @param preferPaths - User-provided photo paths to use before catalog images.
  */
 function buildAssets(
   sectionType: SectionType,
@@ -82,9 +87,11 @@ function buildAssets(
   componentId: string,
   category?: string | null,
   seed?: string | null,
+  usedPaths?: Set<string>,
+  preferPaths?: string[],
 ): PageSection["assets"] {
   if (sectionType === "gallery") {
-    const paths = pickGalleryImages(4, family, category, seed);
+    const paths = pickGalleryImages(4, family, category, seed, usedPaths, preferPaths);
     if (paths.length === 0 && imagePath) {
       return [{ key: "gallery-0", imagePath }];
     }
@@ -95,7 +102,15 @@ function buildAssets(
   }
 
   if (sectionType === "hero" && componentId.endsWith("-03")) {
-    const paths = pickSectionImages("hero", 3, family, category, seed);
+    const paths = pickSectionImages(
+      "hero",
+      3,
+      family,
+      category,
+      seed,
+      usedPaths,
+      preferPaths,
+    );
     if (paths.length === 0 && imagePath) {
       return [{ key: "slide-0", imagePath }];
     }
@@ -106,7 +121,14 @@ function buildAssets(
   }
 
   if (sectionType === "team") {
-    const paths = pickSectionImages("team", 3, family, category, seed);
+    const paths = pickSectionImages(
+      "team",
+      3,
+      family,
+      category,
+      seed,
+      usedPaths,
+    );
     if (paths.length === 0 && imagePath) {
       return [{ key: "team-0", imagePath }];
     }
@@ -150,15 +172,15 @@ function enrichSectionContent(
   }
 
   if (sectionType === "stats") {
-    return { ...content, items: defaultStats(brief) };
+    return { ...content, items: realStats(brief) };
   }
 
   if (sectionType === "testimonials") {
-    return { ...content, items: defaultTestimonials(brief) };
+    return { ...content, items: briefTestimonials(brief) };
   }
 
   if (sectionType === "team") {
-    return { ...content, members: defaultTeam(brief) };
+    return { ...content, members: briefTeam(brief) };
   }
 
   if (sectionType === "reservation") {
@@ -291,67 +313,88 @@ async function generateCopy(
 
 /**
  * Picks components and filters sections that cannot be rendered.
- * Tracks recent suffixes to avoid all-*-02 pages.
+ * Honors Creative Director hints; tracks recent suffixes to avoid stickiness.
  */
 function planSectionComponents(
   sectionTypes: SectionType[],
   family: PageFamily,
   brief: Brief,
   chatText: string,
+  direction: CreativeDirection,
 ): {
   planned: PlannedSection[];
   droppedSections: SectionType[];
+  usedPaths: Set<string>;
 } {
   const planned: PlannedSection[] = [];
   const droppedSections: SectionType[] = [];
   const recentSuffixes: string[] = [];
+  const imageSeed = direction.seed;
+  const usedPaths = new Set<string>();
 
   for (const sectionType of sectionTypes) {
+    const preferComponentId = direction.sectionVariantHints[sectionType];
     const componentId = pickComponent(sectionType, family, {
       brief,
       chatText,
       recentSuffixes,
+      preferComponentId,
     });
     const manifest = getManifest(componentId);
-    const imageSeed = `${brief.businessName}:${brief.category}`;
+
+    /** Sections where user-uploaded photos are preferred over catalog images. */
+    const isPhotoSection =
+      sectionType === "hero" || sectionType === "about" || sectionType === "gallery";
+    const userPhotos = brief.photos.length > 0 && isPhotoSection ? brief.photos : undefined;
+
+    if (sectionType === "gallery") {
+      // Availability check only — final paths reserved in buildAssets with usedPaths.
+      const galleryAvailable = pickGalleryImages(
+        1,
+        family,
+        brief.category,
+        imageSeed,
+        undefined,
+        userPhotos,
+      );
+      if (galleryAvailable.length === 0 && !userPhotos?.length) {
+        droppedSections.push(sectionType);
+        continue;
+      }
+      const suffix = componentId.match(/-(\d+)$/)?.[1] ?? "01";
+      recentSuffixes.push(suffix);
+      if (recentSuffixes.length > 4) recentSuffixes.shift();
+      planned.push({ sectionType, componentId, imagePath: null, preferPaths: userPhotos });
+      continue;
+    }
+
     const imagePath = pickImage({
       sectionType,
       orientation: orientationForSection(sectionType),
       family,
       category: brief.category,
       seed: imageSeed,
+      usedPaths,
+      preferPaths: userPhotos,
     });
 
-    if (manifest.requiresImage && !imagePath && sectionType !== "gallery") {
+    if (manifest.requiresImage && !imagePath) {
       droppedSections.push(sectionType);
       continue;
-    }
-
-    if (sectionType === "gallery") {
-      const galleryPaths = pickGalleryImages(
-        4,
-        family,
-        brief.category,
-        imageSeed,
-      );
-      if (galleryPaths.length === 0) {
-        droppedSections.push(sectionType);
-        continue;
-      }
     }
 
     const suffix = componentId.match(/-(\d+)$/)?.[1] ?? "01";
     recentSuffixes.push(suffix);
     if (recentSuffixes.length > 4) recentSuffixes.shift();
 
-    planned.push({ sectionType, componentId, imagePath });
+    planned.push({ sectionType, componentId, imagePath, preferPaths: userPhotos });
   }
 
-  return { planned, droppedSections };
+  return { planned, droppedSections, usedPaths };
 }
 
 /**
- * Orchestrates the 8-stage pipeline in fixed order.
+ * Orchestrates the build pipeline in fixed order (Creative Director after brief).
  */
 export async function runPipeline(input: PipelineInput): Promise<PipelineResult> {
   const useFixture =
@@ -362,6 +405,7 @@ export async function runPipeline(input: PipelineInput): Promise<PipelineResult>
   let brief: Brief;
 
   if (input.brief) {
+    // Intake already verified; do not re-run verifyBriefAgainstSource.
     brief = input.brief;
     emitStage(stages, "Brief Extractor", "done", onStage, 0);
   } else {
@@ -376,24 +420,38 @@ export async function runPipeline(input: PipelineInput): Promise<PipelineResult>
     await completeStage(stages, "Brief Extractor", onStage, extractStart);
   }
 
-  const family =
-    input.family ?? inferPageFamily(brief, input.chatText) ?? getDefaultPageFamily();
+  const directionStart = Date.now();
+  emitStage(stages, "Creative Director", "running", onStage);
+  const direction = await runCreativeDirector({
+    brief,
+    chatText: input.chatText,
+    family: input.family,
+    useFixture,
+  });
+  const family = direction.family;
+  const directionMs = await ensureStageFeel("Creative Director", directionStart);
+  emitStage(stages, "Creative Director", "done", onStage, directionMs, {
+    message: "Direction locked in",
+    detail: direction.rationale,
+  });
 
   const planStart = Date.now();
   emitStage(stages, "Section Planner", "running", onStage);
   const sectionTypes = planSections({
     brief,
     chatText: input.chatText,
+    direction,
   });
   await completeStage(stages, "Section Planner", onStage, planStart);
 
   const pickStart = Date.now();
   emitStage(stages, "Component Picker", "running", onStage);
-  const { planned, droppedSections } = planSectionComponents(
+  const { planned, droppedSections, usedPaths } = planSectionComponents(
     sectionTypes,
     family,
     brief,
     input.chatText,
+    direction,
   );
   await completeStage(stages, "Component Picker", onStage, pickStart);
 
@@ -404,20 +462,32 @@ export async function runPipeline(input: PipelineInput): Promise<PipelineResult>
   emitStage(stages, "Copywriter", "running", onStage);
   emitStage(stages, "Fact-Safety", "running", onStage);
 
-  for (const { sectionType, componentId } of planned) {
-    const rawCopy = await generateCopy(
-      sectionType,
-      componentId,
-      brief,
-      useFixture,
-      family,
-    );
+  const { writeAllSectionCopy } = await import("./writeAllCopy.js");
+  const allCopy = await writeAllSectionCopy({
+    brief,
+    direction,
+    sections: planned.map((item) => ({
+      sectionType: item.sectionType,
+      componentId: item.componentId,
+    })),
+    useFixture,
+  });
 
+  for (const { sectionType, componentId } of planned) {
+    const planItem = direction.sectionPlan?.find((item) => item.type === sectionType);
     sections.push({
       type: sectionType,
       componentId,
-      content: rawCopy,
+      content: allCopy[sectionType] ?? {},
       assets: [],
+      layout: planItem
+        ? {
+            emphasis: planItem.emphasis,
+            intent: planItem.layoutIntent,
+            background: planItem.background,
+            spacing: planItem.spacing,
+          }
+        : undefined,
     });
   }
 
@@ -429,7 +499,7 @@ export async function runPipeline(input: PipelineInput): Promise<PipelineResult>
   emitStage(stages, "Image Picker", "running", onStage);
 
   for (let index = 0; index < planned.length; index += 1) {
-    const { sectionType, imagePath, componentId } = planned[index];
+    const { sectionType, imagePath, componentId, preferPaths } = planned[index];
     const section = sections[index];
     if (!section) continue;
 
@@ -446,7 +516,9 @@ export async function runPipeline(input: PipelineInput): Promise<PipelineResult>
       family,
       componentId,
       brief.category,
-      `${brief.businessName}:${brief.category}`,
+      direction.seed,
+      usedPaths,
+      preferPaths,
     );
   }
 
@@ -454,15 +526,27 @@ export async function runPipeline(input: PipelineInput): Promise<PipelineResult>
 
   const assembleStart = Date.now();
   emitStage(stages, "Assembler", "running", onStage);
-  const page = assemblePage(sections);
+  const page = assemblePage(sections, brief);
+  // Creative palette wins (client brand or invented); brief seed is fallback only.
+  if (direction.palette) {
+    applyCreativePalette(page, direction.palette);
+  }
   pruneNavToPresentSections(page);
+
+  // Assembled-page fact safety (names/hours/metrics absent from brief).
+  const { factCheckPage } = await import("./factCheckPage.js");
+  const pageFacts = factCheckPage({ page, brief });
+  if (!pageFacts.ok) {
+    console.warn("[runPipeline] factCheckPage flagged:", pageFacts.flaggedSpans);
+  }
+
   await completeStage(stages, "Assembler", onStage, assembleStart);
 
   const renderStart = Date.now();
   emitStage(stages, "Renderer", "running", onStage);
   await completeStage(stages, "Renderer", onStage, renderStart);
 
-  return { page, brief, family, droppedSections, stages };
+  return { page, brief, family, droppedSections, stages, direction };
 }
 
 /**
