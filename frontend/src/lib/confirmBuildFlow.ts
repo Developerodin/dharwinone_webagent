@@ -29,6 +29,10 @@ export type ConfirmBuildDeps = {
   setMessages: Dispatch<SetStateAction<ChatMessage[]>>;
   setPhase: (phase: ChatPhase) => void;
   setError: (error: string | null) => void;
+  /** Clears in-memory edit history on new build. */
+  clearHistory?: () => void;
+  /** Stores direction from the build response. */
+  setDirection?: (dir: unknown) => void;
 };
 
 /**
@@ -83,12 +87,17 @@ export async function runConfirmBuild(deps: ConfirmBuildDeps): Promise<void> {
 
     const result = await consumeBuildStream(response, updateStageMessage);
     setPage(result.page);
+    // Clear undo history on every new build.
+    deps.clearHistory?.();
 
     const family =
       typeof result.meta.family === "string"
         ? (result.meta.family as PageFamily)
         : (pageFamily ?? "premium");
     setPageFamily(family);
+    // Persist creative direction from build response when present.
+    const buildDirection = result.direction ?? result.meta.direction;
+    if (buildDirection !== undefined) deps.setDirection?.(buildDirection);
 
     const activeId = ensureProjectId(projectId);
     setProjectId(activeId);
@@ -128,6 +137,8 @@ export async function runConfirmBuild(deps: ConfirmBuildDeps): Promise<void> {
         nextPage: result.page,
         nextFamily: family,
         nextEnriched: enrichedChatText,
+        nextDirection: buildDirection,
+        nextHistory: [],
       });
       return nextMessages;
     });

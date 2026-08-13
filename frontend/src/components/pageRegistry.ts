@@ -1,4 +1,5 @@
 import type { SectionComponent } from "./premium/registry";
+import { boldRegistry } from "./bold/registry";
 import { elegantRegistry } from "./elegant/registry";
 import { minimalRegistry } from "./minimal/registry";
 import { componentRegistry as premiumRegistry } from "./premium/registry";
@@ -14,4 +15,5 @@ export const pageComponentRegistry: Record<string, SectionComponent> = {
   ...minimalRegistry,
   ...rusticRegistry,
   ...vibrantRegistry,
+  ...boldRegistry,
 };

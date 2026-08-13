@@ -22,7 +22,7 @@ export function PremiumFooter01({ content }: SectionComponentProps) {
   const address = getString(content, "address", "15 Copper Lane, Jaipur 302001");
   const phone = getString(content, "phone", "+91 98765 43210");
   const email = getString(content, "email", "reservations@maisoncopper.com");
-  const hours = getStringArray(content, "hours", ["Tue - Sun · 6:00 pm to 11:30 pm"]);
+  const hours = getStringArray(content, "hours", []);
   const navItems = getNavItems(content);
 
   return (
@@ -75,14 +75,16 @@ export function PremiumFooter01({ content }: SectionComponentProps) {
                 {email}
               </a>
             </div>
-            <div>
-              <p className={pm.inputLabel}>Hours</p>
-              <div className="mt-3 space-y-1 text-sm text-[var(--theme-ink)]">
-                {hours.map((entry) => (
-                  <p key={entry}>{entry}</p>
-                ))}
+            {hours.length > 0 ? (
+              <div>
+                <p className={pm.inputLabel}>Hours</p>
+                <div className="mt-3 space-y-1 text-sm text-[var(--theme-ink)]">
+                  {hours.map((entry) => (
+                    <p key={entry}>{entry}</p>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
 

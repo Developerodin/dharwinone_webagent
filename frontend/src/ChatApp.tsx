@@ -14,6 +14,10 @@ import {
 import { HomeDashboard } from "@/components/shell/HomeDashboard";
 import { MobileSidebarDrawer } from "@/components/shell/MobileSidebarDrawer";
 import { PromptComposer } from "@/components/shell/PromptComposer";
+import {
+  SectionActionPanel,
+  type EditOp,
+} from "@/components/shell/SectionActionPanel";
 import { handleChatAction, useChatFlow } from "@/hooks/useChatFlow";
 import {
   readAppViewFromHash,
@@ -68,6 +72,13 @@ export function ChatApp() {
     brief,
     projectId,
     restoreProject,
+    applyPendingEdit,
+    dismissPendingEdit,
+    selectedSectionType,
+    setSelectedSectionType,
+    applySectionOps,
+    undoEdit,
+    canUndo,
   } = useChatFlow({ useFixture: false });
 
   /**
@@ -233,6 +244,19 @@ export function ChatApp() {
   }, [refreshProjects, restoreProject, view]);
 
   /**
+   * Clears section selection when Esc is pressed.
+   */
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape" && selectedSectionType) {
+        setSelectedSectionType(null);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedSectionType, setSelectedSectionType]);
+
+  /**
    * Focuses the home prompt composer (used by sidebar Search).
    */
   function focusHomePrompt() {
@@ -297,6 +321,8 @@ export function ChatApp() {
         canOpenPreview={Boolean(page)}
         onPublish={openFullPreview}
         onGoHome={goHome}
+        canUndo={canUndo}
+        onUndo={undoEdit}
       />
 
       <div
@@ -344,12 +370,37 @@ export function ChatApp() {
                   sendSkip: () => {
                     void sendMessage("skip for now");
                   },
+                  applyPendingEdit: () => {
+                    void applyPendingEdit();
+                  },
+                  dismissPendingEdit: () => {
+                    dismissPendingEdit();
+                  },
                 });
               }}
             />
           </div>
 
           <div className="shrink-0 space-y-2 border-t border-[var(--lovable-border)] bg-[var(--lovable-panel)] px-3 py-3 sm:px-4">
+            {selectedSectionType ? (
+              <div
+                className="flex items-center gap-1.5 rounded-lg border border-blue-500/40 bg-blue-500/10 px-2.5 py-1.5"
+                role="status"
+                aria-live="polite"
+              >
+                <span className="text-[11px] font-medium text-blue-300">
+                  Editing: <span className="capitalize">{selectedSectionType}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedSectionType(null)}
+                  className="ml-auto inline-flex size-4 items-center justify-center rounded text-blue-300 hover:text-blue-100 transition"
+                  aria-label="Clear section selection"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : null}
             {error ? (
               <Alert
                 variant="destructive"
@@ -415,23 +466,42 @@ export function ChatApp() {
               : "hidden lg:flex lg:flex-col"
           }`}
         >
-          <LivePreviewPane
-            page={page}
-            pageFamily={pageFamily}
-            businessName={brief?.businessName}
-            phase={phase}
-            isBusy={isBusy}
-            deviceMode={deviceMode}
-            showCodePlaceholder={editorViewMode === "code"}
-            activeStageLabel={(() => {
-              const running = messages.find(
-                (msg) =>
-                  msg.role === "agent" && msg.stageStatus === "running",
-              );
-              if (!running) return null;
-              return running.stageDetail ?? running.stageName ?? null;
-            })()}
-          />
+          <div className="flex min-h-0 flex-1 flex-col">
+            {page && selectedSectionType ? (
+              <div className="shrink-0 border-b border-[var(--lovable-border)] p-2">
+                <SectionActionPanel
+                  sectionType={selectedSectionType}
+                  page={page}
+                  onApplyOps={(ops: EditOp[]) => {
+                    void applySectionOps(ops as Array<Record<string, unknown>>);
+                  }}
+                  onClose={() => setSelectedSectionType(null)}
+                />
+              </div>
+            ) : null}
+            <LivePreviewPane
+              page={page}
+              pageFamily={pageFamily}
+              businessName={brief?.businessName}
+              phase={phase}
+              isBusy={isBusy}
+              deviceMode={deviceMode}
+              showCodePlaceholder={editorViewMode === "code"}
+              selectable={Boolean(page)}
+              selectedSectionType={selectedSectionType}
+              onSelectSection={(type) =>
+                setSelectedSectionType(type as typeof selectedSectionType)
+              }
+              activeStageLabel={(() => {
+                const running = messages.find(
+                  (msg) =>
+                    msg.role === "agent" && msg.stageStatus === "running",
+                );
+                if (!running) return null;
+                return running.stageDetail ?? running.stageName ?? null;
+              })()}
+            />
+          </div>
         </div>
       </div>
     </div>

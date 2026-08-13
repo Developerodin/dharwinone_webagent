@@ -1,10 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import { createMessageId } from "@/lib/chatFormatters";
+import { performAsk, type AskResult } from "@/lib/performAsk";
 import { performPageEdit } from "@/lib/performPageEdit";
-import {
-  formatThemeSuggestions,
-  isThemeInquiryIntent,
-} from "@/lib/pageFamilyLabel";
 import {
   ensureProjectId,
   persistProjectState,
@@ -24,9 +21,28 @@ import {
 import type { PageFamily } from "@/lib/pageFamily";
 import type { ChatMessage, ChatPhase } from "@/types/chat";
 import type { Brief, PipelineStage } from "@/types/intake";
+import type { HistoryEntry } from "@/lib/projectStorage";
 import type { Page } from "@/types/page";
 
 type AppendMessage = (message: Omit<ChatMessage, "id" | "timestamp">) => void;
+
+type Specialist = NonNullable<AskResult["specialist"]>;
+
+/**
+ * Maps specialist to the agent card label shown during edits.
+ */
+function editorLabelFor(specialist?: Specialist | null): string {
+  switch (specialist) {
+    case "style":
+      return "Style";
+    case "layout":
+      return "Layout";
+    case "copy":
+      return "Copy";
+    default:
+      return "Editor";
+  }
+}
 
 export type RunEditFlowDeps = {
   instruction: string;
@@ -44,6 +60,24 @@ export type RunEditFlowDeps = {
   setProjectId: (id: string) => void;
   setMessages: Dispatch<SetStateAction<ChatMessage[]>>;
   setPhase: (phase: ChatPhase) => void;
+  /** Optional specialist label for the agent card. */
+  specialist?: Specialist | null;
+  /** When set, skip Ask and apply this instruction directly. */
+  skipAsk?: boolean;
+  /** Stores a pending edit proposal from Ask (for Apply with Editor). */
+  setPendingEditInstruction?: (instruction: string | null) => void;
+  /** Explicit ops array — bypasses the LLM editor (section panel). */
+  ops?: Array<Record<string, unknown>>;
+  /** Section type context for targeted edits. */
+  targetSection?: string;
+  /** Creative direction to forward and persist. */
+  direction?: unknown;
+  /** Current edit history — a snapshot is prepended before applying. */
+  history?: HistoryEntry[];
+  /** Setter to update in-memory history after prepending the snapshot. */
+  setHistory?: (fn: (prev: HistoryEntry[]) => HistoryEntry[]) => void;
+  /** Called with the updated direction after a successful edit. */
+  setDirection?: (dir: unknown) => void;
 };
 
 export type UploadImageFlowDeps = {
@@ -66,27 +100,109 @@ export type UploadImageFlowDeps = {
 };
 
 /**
- * Replies with the theme menu when the user asks about themes (no edit API).
+ * Ask agent path: answer / propose; may hand off to Editor on clear edits.
  */
-function replyWithThemeOptions(args: {
-  family: PageFamily;
-  appendMessage: AppendMessage;
-  setPhase: (phase: ChatPhase) => void;
-}): void {
-  args.appendMessage({
-    role: "assistant",
-    content: formatThemeSuggestions(args.family),
-    pageFamily: args.family,
+export async function runAskThenEditFlow(deps: RunEditFlowDeps): Promise<void> {
+  const {
+    instruction,
+    page,
+    brief,
+    pageFamily,
+    useFixture,
+    appendMessage,
+    setPhase,
+    setPendingEditInstruction,
+  } = deps;
+
+  const family = pageFamily ?? "premium";
+
+  if (deps.skipAsk) {
+    await runEditFlow(deps);
+    return;
+  }
+
+  setPhase("editing");
+  appendMessage({
+    role: "agent",
+    content: "**Ask** reviewing your request…",
+    stageName: "Ask",
+    stageStatus: "running",
+    stageDetail: "Checking whether to answer or apply an edit…",
   });
-  args.setPhase("editing");
+
+  const ask = await performAsk({
+    instruction,
+    page,
+    brief,
+    family,
+    useFixture,
+  });
+
+  if (ask.intent === "edit") {
+    // Mark Ask done, then Editor applies immediately.
+    deps.setMessages((current) =>
+      applyStageToMessages(current, {
+        name: "Ask",
+        status: "done",
+        message: "Handing off to Editor",
+        detail: ask.specialist
+          ? `${ask.specialist} change detected`
+          : "Clear edit intent",
+        ms: 0,
+      }),
+    );
+    await runEditFlow({
+      ...deps,
+      instruction: ask.proposedEdit?.trim() || instruction,
+      specialist: ask.specialist,
+      skipAsk: true,
+    });
+    return;
+  }
+
+  setPendingEditInstruction?.(ask.proposedEdit);
+  const askMessage: ChatMessage = {
+    id: createMessageId(),
+    role: "assistant",
+    content: ask.message || "How can I help with your page?",
+    timestamp: Date.now(),
+    pageFamily: family,
+    actions: ask.proposedEdit
+      ? [
+          { label: "Apply with Editor", action: "apply_edit", variant: "primary" },
+          { label: "Not now", action: "dismiss_edit", variant: "outline" },
+        ]
+      : undefined,
+  };
+
+  deps.setMessages((current) => {
+    const next = completeStageAndAppend(
+      current,
+      {
+        name: "Ask",
+        status: "done",
+        message: "Suggestion ready",
+        detail: ask.specialist ? `${ask.specialist} specialist` : "Answered",
+        ms: 0,
+      },
+      askMessage,
+    );
+    return next;
+  });
+  setPhase("editing");
 }
 
 /**
  * Runs a chat edit: show Editor working → apply → mark done → success CTAs.
+ * Pushes an undo history snapshot before applying the new page state.
  */
 export async function runEditFlow(deps: RunEditFlowDeps): Promise<void> {
   const {
     instruction,
+    ops,
+    targetSection,
+    direction,
+    history,
     page,
     brief,
     pageFamily,
@@ -94,27 +210,23 @@ export async function runEditFlow(deps: RunEditFlowDeps): Promise<void> {
     enrichedChatText,
     useFixture,
     appendMessage,
-    updateStageMessage,
     setPage,
     setBrief,
     setPageFamily,
     setProjectId,
     setMessages,
     setPhase,
+    specialist,
   } = deps;
 
   const family = pageFamily ?? "premium";
-
-  if (isThemeInquiryIntent(instruction)) {
-    replyWithThemeOptions({ family, appendMessage, setPhase });
-    return;
-  }
+  const agentName = editorLabelFor(specialist);
 
   setPhase("editing");
   appendMessage({
     role: "agent",
-    content: "**Editor** applying your changes…",
-    stageName: "Editor",
+    content: `**${agentName}** applying your changes…`,
+    stageName: agentName,
     stageStatus: "running",
     stageDetail: "Applying your edits to the live page…",
   });
@@ -122,15 +234,34 @@ export async function runEditFlow(deps: RunEditFlowDeps): Promise<void> {
   try {
     const result = await performPageEdit({
       instruction,
+      ops,
+      targetSection,
+      direction,
       page,
       brief,
       family,
       useFixture,
     });
 
+    // Build the next history (snapshot taken BEFORE applying new state).
+    const snapshot: HistoryEntry = {
+      page,
+      brief,
+      family,
+      direction,
+      summary: instruction || targetSection || "panel edit",
+      at: Date.now(),
+    };
+    const nextHistory = [...(history ?? []), snapshot].slice(-20);
+
     setPage(result.page);
     setBrief(result.brief);
     setPageFamily(result.family);
+    // Update in-memory history and direction.
+    deps.setHistory?.(() => nextHistory);
+    if (result.direction !== undefined) {
+      deps.setDirection?.(result.direction);
+    }
 
     const activeId = ensureProjectId(projectId);
     setProjectId(activeId);
@@ -157,7 +288,7 @@ export async function runEditFlow(deps: RunEditFlowDeps): Promise<void> {
       const nextMessages = completeStageAndAppend(
         current,
         {
-          name: "Editor",
+          name: agentName,
           status: "done",
           message: "Edits applied",
           detail: "Live preview updated",
@@ -173,13 +304,15 @@ export async function runEditFlow(deps: RunEditFlowDeps): Promise<void> {
         nextPage: result.page,
         nextFamily: result.family,
         nextEnriched: enrichedChatText,
+        nextDirection: result.direction,
+        nextHistory,
       });
       return nextMessages;
     });
     setPhase("editing");
   } catch (err) {
-    updateStageMessage({
-      name: "Editor",
+    deps.updateStageMessage({
+      name: agentName,
       status: "error",
       message: err instanceof Error ? err.message : "Edit failed",
       detail: "Could not apply that change",

@@ -26,10 +26,7 @@ export function PremiumContact02({ content, assets }: SectionComponentProps) {
   const address = getString(content, "address", "15 Copper Lane, Jaipur 302001");
   const phone = getString(content, "phone", "+91 98765 43210");
   const email = getString(content, "email", "concierge@maisoncopper.com");
-  const hours = getStringArray(content, "hours", [
-    "Dinner service · Tue - Sun",
-    "6:00 pm to 11:30 pm",
-  ]);
+  const hours = getStringArray(content, "hours", []);
   const submitLabel = getString(content, "ctaLabel", "Request Reservation");
   const imagePath = getPrimaryAsset(assets);
   const form = useContactForm();
@@ -282,17 +279,19 @@ export function PremiumContact02({ content, assets }: SectionComponentProps) {
               {phone}
             </a>
           </div>
-          <div className="bg-[var(--theme-card)]/88 px-5 py-5">
-            <p className={`flex items-center gap-2 ${pm.inputLabel}`}>
-              <Clock3 aria-hidden="true" className="size-4" />
-              Hours
-            </p>
-            <div className="mt-3 space-y-1 text-sm text-[var(--theme-ink)]">
-              {hours.map((entry) => (
-                <p key={entry}>{entry}</p>
-              ))}
+          {hours.length > 0 ? (
+            <div className="bg-[var(--theme-card)]/88 px-5 py-5">
+              <p className={`flex items-center gap-2 ${pm.inputLabel}`}>
+                <Clock3 aria-hidden="true" className="size-4" />
+                Hours
+              </p>
+              <div className="mt-3 space-y-1 text-sm text-[var(--theme-ink)]">
+                {hours.map((entry) => (
+                  <p key={entry}>{entry}</p>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </section>

@@ -15,6 +15,8 @@ export function handleChatAction(
     resetChat: () => void;
     previewPayload?: PreviewPayload | null;
     sendSkip?: () => void;
+    applyPendingEdit?: () => void;
+    dismissPendingEdit?: () => void;
   },
 ): void {
   if (action === "build") {
@@ -31,6 +33,14 @@ export function handleChatAction(
   }
   if (action === "skip") {
     handlers.sendSkip?.();
+    return;
+  }
+  if (action === "apply_edit") {
+    handlers.applyPendingEdit?.();
+    return;
+  }
+  if (action === "dismiss_edit") {
+    handlers.dismissPendingEdit?.();
     return;
   }
   handlers.resetChat();

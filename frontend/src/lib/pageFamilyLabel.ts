@@ -6,6 +6,7 @@ const LABELS: Record<PageFamily, string> = {
   minimal: "Minimal",
   rustic: "Rustic",
   vibrant: "Vibrant",
+  bold: "Bold",
 };
 
 const DESCRIPTIONS: Record<PageFamily, string> = {
@@ -14,6 +15,7 @@ const DESCRIPTIONS: Record<PageFamily, string> = {
   minimal: "Clean sparse modern layout — auto-selected from your brief",
   rustic: "Earthy farmhouse layout — auto-selected from your brief",
   vibrant: "Bold colorful layout — auto-selected from your brief",
+  bold: "Casual burger/QSR energy — copper accent, playful script",
 };
 
 /**
@@ -39,7 +41,7 @@ export function isThemeInquiryIntent(instruction: string): boolean {
   if (!text) return false;
 
   const namedFamily =
-    /\b(premium|premum|preimum|elegant|elegent|elegan|minimal|minimalist|minmal|rustic|rustik|farmhouse|vibrant|vibant|colorful|colourful|exquisite|fine[\s-]?dining)\b/.test(
+    /\b(premium|premum|preimum|elegant|elegent|elegan|minimal|minimalist|minmal|rustic|rustik|farmhouse|vibrant|vibant|colorful|colourful|bold|burger|exquisite|fine[\s-]?dining)\b/.test(
       text,
     );
 
@@ -74,6 +76,7 @@ export function formatThemeSuggestions(current: PageFamily): string {
     `• **Minimal** — clean modern — say “use minimal theme”`,
     `• **Rustic** — earthy farmhouse — say “use rustic theme”`,
     `• **Vibrant** — bold colorful — say “use vibrant theme”`,
+    `• **Bold** — casual burger/QSR energy — say “use bold theme”`,
     `Say which one you want (e.g. “use minimal theme”).`,
   ].join("\n");
 }

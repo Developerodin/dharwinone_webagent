@@ -27,5 +27,5 @@ export const pm = {
   input:
     "min-h-12 w-full rounded-2xl border border-white/12 bg-[var(--theme-card)] px-4 py-3 text-sm text-[var(--theme-ink)] outline-none transition duration-200 placeholder:text-[var(--theme-muted)]/70 focus:border-[var(--theme-accent)] focus:ring-2 focus:ring-[var(--theme-accent)]/20",
   inputLight:
-    "min-h-12 w-full rounded-2xl border border-[var(--theme-line-strong)]/35 bg-white px-4 py-3 text-sm text-[var(--theme-bg-dark)] outline-none transition duration-200 placeholder:text-[var(--theme-muted)] focus:border-[var(--theme-accent)] focus:ring-2 focus:ring-[var(--theme-accent)]/20",
+    "min-h-12 w-full rounded-2xl border border-[var(--theme-line-strong)]/35 bg-[var(--theme-card)] px-4 py-3 text-sm text-[var(--theme-ink)] outline-none transition duration-200 placeholder:text-[var(--theme-muted)] focus:border-[var(--theme-accent)] focus:ring-2 focus:ring-[var(--theme-accent)]/20",
 } as const;

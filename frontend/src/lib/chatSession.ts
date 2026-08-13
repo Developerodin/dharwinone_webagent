@@ -4,6 +4,7 @@ import {
   clearActiveProjectId,
   loadProject,
   setActiveProjectId,
+  type HistoryEntry,
   type StoredProject,
 } from "@/lib/projectStorage";
 import type { ChatMessage, ChatPhase } from "@/types/chat";
@@ -19,6 +20,8 @@ export type ChatSessionSnapshot = {
   pageFamily: PageFamily | null;
   enrichedChatText: string;
   projectId: string | null;
+  direction?: unknown;
+  history?: HistoryEntry[];
 };
 
 /**
@@ -34,6 +37,8 @@ export function createEmptyChatSession(): ChatSessionSnapshot {
     pageFamily: null,
     enrichedChatText: "",
     projectId: null,
+    direction: null,
+    history: [],
   };
 }
 
@@ -67,5 +72,7 @@ export function loadChatSession(id: string): ChatSessionSnapshot | null {
     pageFamily: project.pageFamily,
     enrichedChatText: project.enrichedChatText,
     projectId: project.id,
+    direction: project.direction,
+    history: project.history ?? [],
   };
 }

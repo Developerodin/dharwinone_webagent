@@ -1,5 +1,5 @@
 import type { ComponentType } from "react";
-import type { PageAsset } from "../../types/page";
+import type { PageAsset, SectionLayout } from "../../types/page";
 import { PremiumAbout01 } from "./about/PremiumAbout01";
 import { PremiumAbout02 } from "./about/PremiumAbout02";
 import { PremiumContact01 } from "./contact/PremiumContact01";
@@ -32,6 +32,8 @@ import { PremiumTestimonials02 } from "./testimonials/PremiumTestimonials02";
 export type SectionComponentProps = {
   content: Record<string, unknown>;
   assets: PageAsset[];
+  /** Parameterised layout from Creative Director (optional on legacy pages). */
+  layout?: SectionLayout;
 };
 
 export type SectionComponent = ComponentType<SectionComponentProps>;

@@ -7,6 +7,7 @@ import type {
   SectionComponent,
   SectionComponentProps,
 } from "@/components/premium/registry";
+import { SectionFrame } from "@/components/shared/SectionFrame";
 import {
   MediaPanel,
   SectionIntro,
@@ -39,16 +40,24 @@ function createAbout01(tokens: ThemeTokens): SectionComponent {
   /**
    * Story section with portrait media and left-aligned copy.
    */
-  function FamilyAbout01({ content, assets }: SectionComponentProps) {
+  function FamilyAbout01({ content, assets, layout }: SectionComponentProps) {
     const headline = getHeadline(content, "Built on good produce and steady hospitality.");
     const body = getBodyCopy(
       content,
       "Our kitchen is rooted in seasonality, clean technique, and the kind of service that feels polished without losing warmth.",
     );
     const imagePath = getLeadMedia(assets);
+    const eyebrow =
+      typeof content.eyebrow === "string" && content.eyebrow.trim()
+        ? content.eyebrow
+        : "About Us";
 
     return (
-      <section aria-label="About" className={`${tokens.sectionPad} ${tokens.section}`}>
+      <SectionFrame
+        aria-label="About"
+        layout={layout}
+        className={`${tokens.sectionPad} ${tokens.section}`}
+      >
         <div className="mx-auto grid max-w-6xl gap-8 @min-[768px]:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] @min-[768px]:items-center @min-[768px]:gap-14">
           <div className="min-w-0 overflow-hidden rounded-[2rem]">
             <MediaPanel
@@ -60,14 +69,14 @@ function createAbout01(tokens: ThemeTokens): SectionComponent {
           </div>
           <div className="min-w-0">
             <SectionIntro
-              eyebrow="About Us"
+              eyebrow={eyebrow}
               title={headline}
               body={body}
               tokens={tokens}
             />
           </div>
         </div>
-      </section>
+      </SectionFrame>
     );
   }
 

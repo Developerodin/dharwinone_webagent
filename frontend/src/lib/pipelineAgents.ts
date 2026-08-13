@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   CheckCircle2,
+  Clapperboard,
   FileSearch,
   ImageIcon,
   LayoutTemplate,
@@ -16,6 +17,7 @@ import type { PipelineStage, PipelineStageStatus } from "@/types/intake";
 /** Canonical build pipeline agent order (mirrors backend). */
 export const PIPELINE_AGENT_NAMES = [
   "Brief Extractor",
+  "Creative Director",
   "Section Planner",
   "Component Picker",
   "Copywriter",
@@ -36,6 +38,7 @@ export type AgentStepView = {
 
 const AGENT_ICONS: Record<string, LucideIcon> = {
   "Brief Extractor": FileSearch,
+  "Creative Director": Clapperboard,
   "Section Planner": LayoutTemplate,
   "Component Picker": Puzzle,
   Copywriter: PenLine,
@@ -44,6 +47,10 @@ const AGENT_ICONS: Record<string, LucideIcon> = {
   Assembler: Wrench,
   Renderer: Paintbrush,
   Editor: PenLine,
+  Ask: FileSearch,
+  Style: Paintbrush,
+  Layout: LayoutTemplate,
+  Copy: PenLine,
   "Media Uploader": Upload,
 };
 
@@ -53,6 +60,11 @@ const THINKING_COPY: Record<string, string[]> = {
     "Reading your brief…",
     "Extracting name, cuisine, and location…",
     "Structuring business details…",
+  ],
+  "Creative Director": [
+    "Setting visual direction…",
+    "Choosing theme and brand palette…",
+    "Seeding layout variants for your brand…",
   ],
   "Section Planner": [
     "Mapping page sections…",
@@ -93,6 +105,7 @@ const THINKING_COPY: Record<string, string[]> = {
 
 const DONE_COPY: Record<string, string> = {
   "Brief Extractor": "Brief locked in",
+  "Creative Director": "Direction locked in",
   "Section Planner": "Sections planned",
   "Component Picker": "Components chosen",
   Copywriter: "Copy drafted",

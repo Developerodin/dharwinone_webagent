@@ -1,5 +1,6 @@
 import type { SectionComponentProps } from "../registry";
-import { getPrimaryAsset, getString, isBookingCtaLabel } from "../contentHelpers";
+import { getPrimaryAsset, getString,
+  renderStyledText, isBookingCtaLabel } from "../contentHelpers";
 import { pm } from "../shared/premiumTokens";
 import { SectionMedia } from "@/components/shared/SectionMedia";
 import { createScrollHandler } from "@/lib/scrollToSection";
@@ -8,7 +9,7 @@ import { createScrollHandler } from "@/lib/scrollToSection";
  * Premium hero variant — split editorial: copy left, full-height image right.
  */
 export function PremiumHero02({ content, assets }: SectionComponentProps) {
-  const headline = getString(content, "headline", "Welcome");
+  const headline = renderStyledText(content.headline, "Welcome");
   const subheading = getString(content, "subheading");
   const ctaLabel = getString(content, "ctaLabel", "Explore Menu");
   const imagePath = getPrimaryAsset(assets);

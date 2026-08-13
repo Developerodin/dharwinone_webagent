@@ -2,7 +2,7 @@ import type { Page, SectionType } from "@/types/page";
 
 export type UploadableSection = Extract<
   SectionType,
-  "hero" | "about" | "gallery" | "team" | "reservation"
+  "hero" | "about" | "gallery" | "team" | "reservation" | "location_map"
 >;
 
 export type ImageUploadTarget = {
@@ -201,7 +201,8 @@ export function listImageUploadTargets(page: Page): ImageUploadTarget[] {
       section.type !== "about" &&
       section.type !== "gallery" &&
       section.type !== "team" &&
-      section.type !== "reservation"
+      section.type !== "reservation" &&
+      section.type !== "location_map"
     ) {
       continue;
     }
@@ -236,5 +237,6 @@ export function formatUploadTargetLabel(target: ImageUploadTarget): string {
   if (target.section === "hero") return "Hero media";
   if (target.section === "team") return "Team media";
   if (target.section === "reservation") return "Reservation media";
+  if (target.section === "location_map") return "Location map media";
   return "About media";
 }

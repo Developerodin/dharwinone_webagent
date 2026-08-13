@@ -8,6 +8,8 @@ export type PageEditResult = {
   page: Page;
   brief: Brief;
   family: PageFamily;
+  /** Creative direction returned by the pipeline (if any). */
+  direction?: unknown;
   message: string;
 };
 
@@ -15,10 +17,19 @@ export type PageEditResult = {
  * Runs a post-preview edit and returns updated page state + chat copy.
  */
 export async function performPageEdit(args: {
-  instruction: string;
+  /** Natural-language edit instruction. */
+  instruction?: string;
+  /** Explicit edit ops array (from section panel). */
+  ops?: Array<Record<string, unknown>>;
+  /** Section type context for targeted edits. */
+  targetSection?: string;
+  /** Field context for targeted edits. */
+  targetField?: string;
   page: Page;
   brief: Brief;
   family: PageFamily;
+  /** Creative direction to forward to the pipeline. */
+  direction?: unknown;
   useFixture: boolean;
 }): Promise<PageEditResult> {
   const result = await applyPageEdit(args);
@@ -26,6 +37,7 @@ export async function performPageEdit(args: {
     page: result.page,
     brief: result.brief,
     family: result.family,
+    direction: result.direction,
     message: formatEditResultMessage(result.summary),
   };
 }

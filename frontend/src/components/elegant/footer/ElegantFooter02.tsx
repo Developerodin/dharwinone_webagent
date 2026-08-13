@@ -21,10 +21,7 @@ export function ElegantFooter02({ content }: SectionComponentProps) {
   );
   const phone = getString(content, "phone", "+91 98111 22334");
   const email = getString(content, "email", "concierge@cavertahouse.com");
-  const hours = getStringArray(content, "hours", [
-    "Tue - Thu · 6:00 pm to 10:30 pm",
-    "Fri - Sun · 6:00 pm to 11:30 pm",
-  ]);
+  const hours = getStringArray(content, "hours", []);
   const navItems = getNavItems(content);
 
   return (
@@ -67,14 +64,16 @@ export function ElegantFooter02({ content }: SectionComponentProps) {
                   {email}
                 </a>
               </div>
-              <div className="bg-[#121212] px-5 py-5 @min-[640px]:col-span-2">
-                <p className={eg.inputLabel}>Hours</p>
-                <div className="mt-3 flex flex-col gap-1 text-sm text-[var(--eg-cream)] @min-[640px]:flex-row @min-[640px]:gap-4">
-                  {hours.map((entry) => (
-                    <p key={entry}>{entry}</p>
-                  ))}
+              {hours.length > 0 ? (
+                <div className="bg-[#121212] px-5 py-5 @min-[640px]:col-span-2">
+                  <p className={eg.inputLabel}>Hours</p>
+                  <div className="mt-3 flex flex-col gap-1 text-sm text-[var(--eg-cream)] @min-[640px]:flex-row @min-[640px]:gap-4">
+                    {hours.map((entry) => (
+                      <p key={entry}>{entry}</p>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : null}
             </div>
           </div>
 

@@ -1,13 +1,68 @@
+import type { ReactNode } from "react";
+import { createElement, Fragment } from "react";
+import type { TextRun } from "@/types/page";
+
 /**
- * Safely reads a string field from section content.
+ * Flattens a string or styled-runs field to plain text.
+ */
+export function textFieldToPlain(value: unknown): string {
+  if (typeof value === "string") return value;
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    Array.isArray((value as { runs?: unknown }).runs)
+  ) {
+    return (value as { runs: TextRun[] }).runs
+      .map((run) => (typeof run?.text === "string" ? run.text : ""))
+      .join("");
+  }
+  return "";
+}
+
+/**
+ * Safely reads a string field from section content (unwraps styled runs).
  */
 export function getString(
   content: Record<string, unknown>,
   key: string,
   fallback = "",
 ): string {
-  const value = content[key];
-  return typeof value === "string" ? value : fallback;
+  const plain = textFieldToPlain(content[key]);
+  return plain || fallback;
+}
+
+/**
+ * Renders a content field that may be plain text or colored runs.
+ */
+export function renderStyledText(
+  value: unknown,
+  fallback = "",
+): ReactNode {
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    Array.isArray((value as { runs?: unknown }).runs)
+  ) {
+    const runs = (value as { runs: TextRun[] }).runs.filter(
+      (run) => typeof run?.text === "string" && run.text.length > 0,
+    );
+    if (runs.length === 0) return fallback;
+    return createElement(
+      Fragment,
+      null,
+      ...runs.map((run, index) =>
+        run.color
+          ? createElement(
+              "span",
+              { key: index, style: { color: run.color } },
+              run.text,
+            )
+          : createElement(Fragment, { key: index }, run.text),
+      ),
+    );
+  }
+  if (typeof value === "string" && value) return value;
+  return fallback;
 }
 
 /**

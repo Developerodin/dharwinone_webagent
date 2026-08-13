@@ -6,6 +6,19 @@ import type { Page } from "@/types/page";
 const PROJECTS_KEY = "prowplus-projects";
 const ACTIVE_PROJECT_KEY = "prowplus-active-project";
 
+/** Maximum edit history entries retained per project. */
+const MAX_HISTORY = 20;
+
+/** A single undo-able page snapshot stored with each edit. */
+export type HistoryEntry = {
+  page: unknown;
+  brief: unknown;
+  family: string;
+  direction?: unknown;
+  summary: string;
+  at: number;
+};
+
 export type StoredProject = {
   id: string;
   businessName: string;
@@ -17,6 +30,10 @@ export type StoredProject = {
   enrichedChatText: string;
   createdAt: number;
   updatedAt: number;
+  /** Creative direction from build/edit pipeline. */
+  direction?: unknown;
+  /** Undo history — newest last, capped at MAX_HISTORY entries. */
+  history?: HistoryEntry[];
 };
 
 /**
@@ -95,6 +112,13 @@ export function clearActiveProjectId(): void {
 }
 
 /**
+ * Caps a history array to MAX_HISTORY, keeping the most recent entries.
+ */
+export function capHistory(entries: HistoryEntry[]): HistoryEntry[] {
+  return entries.length <= MAX_HISTORY ? entries : entries.slice(-MAX_HISTORY);
+}
+
+/**
  * Validates and normalizes a raw project payload from storage.
  */
 function normalizeProject(raw: unknown): StoredProject | null {
@@ -106,6 +130,10 @@ function normalizeProject(raw: unknown): StoredProject | null {
 
   const pageFamily = parsePageFamily(value.pageFamily) ?? "premium";
   if (!Array.isArray(value.messages)) return null;
+
+  const history = Array.isArray(value.history)
+    ? capHistory(value.history as HistoryEntry[])
+    : undefined;
 
   return {
     id: value.id,
@@ -119,5 +147,7 @@ function normalizeProject(raw: unknown): StoredProject | null {
       typeof value.enrichedChatText === "string" ? value.enrichedChatText : "",
     createdAt: typeof value.createdAt === "number" ? value.createdAt : Date.now(),
     updatedAt: typeof value.updatedAt === "number" ? value.updatedAt : Date.now(),
+    direction: value.direction,
+    history,
   };
 }

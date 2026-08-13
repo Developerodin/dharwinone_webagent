@@ -6,6 +6,25 @@ export type MenuItem = {
   description: string | null;
 };
 
+export type BriefHours = {
+  days: string;
+  open: string;
+  close: string;
+};
+
+export type BriefTestimonial = {
+  quote: string;
+  name: string;
+  source: string | null;
+  role?: string | null;
+};
+
+export type BriefTeamMember = {
+  name: string;
+  role: string;
+  bio: string | null;
+};
+
 export type Brief = {
   businessName: string;
   category: string;
@@ -13,6 +32,21 @@ export type Brief = {
   address: string | null;
   menuItems: MenuItem[];
   photos: string[];
+  brandColors: string[] | null;
+  usp?: string | null;
+  story?: string | null;
+  foundedYear?: number | null;
+  signatureDishes?: string[];
+  audience?: string | null;
+  priceBand?: "budget" | "mid" | "premium" | "fine_dining" | null;
+  vibe?: string[];
+  hours?: BriefHours[];
+  neighbourhood?: string | null;
+  awards?: string[];
+  testimonials?: BriefTestimonial[];
+  team?: BriefTeamMember[];
+  dietary?: string[];
+  socials?: { instagram: string | null; bookingUrl: string | null } | null;
 };
 
 export type IntakeResponse =

@@ -30,6 +30,12 @@ type LivePreviewPaneProps = {
   activeStageLabel?: string | null;
   deviceMode?: DeviceMode;
   showCodePlaceholder?: boolean;
+  /** When true, sections in the preview are click-selectable. */
+  selectable?: boolean;
+  /** The currently selected section type. */
+  selectedSectionType?: string | null;
+  /** Called when the user clicks a section in the preview. */
+  onSelectSection?: (type: string) => void;
 };
 
 /**
@@ -69,6 +75,9 @@ export function LivePreviewPane({
   activeStageLabel = null,
   deviceMode = "desktop",
   showCodePlaceholder = false,
+  selectable = false,
+  selectedSectionType = null,
+  onSelectSection,
 }: LivePreviewPaneProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const artboardRef = useRef<HTMLDivElement>(null);
@@ -204,7 +213,12 @@ export function LivePreviewPane({
                     ["--shell-header-h" as string]: "0px",
                   }}
                 >
-                  <PageRenderer page={page} />
+                  <PageRenderer
+                    page={page}
+                    selectable={selectable}
+                    selectedSectionType={selectedSectionType}
+                    onSelectSection={onSelectSection}
+                  />
                 </div>
                 </div>
               </div>
@@ -218,7 +232,12 @@ export function LivePreviewPane({
                     ["--shell-header-h" as string]: "0px",
                   }}
                 >
-                  <PageRenderer page={page} />
+                  <PageRenderer
+                    page={page}
+                    selectable={selectable}
+                    selectedSectionType={selectedSectionType}
+                    onSelectSection={onSelectSection}
+                  />
                 </div>
               </div>
             )}

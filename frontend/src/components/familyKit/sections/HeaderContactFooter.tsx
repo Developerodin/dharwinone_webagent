@@ -195,8 +195,10 @@ function createContact02(tokens: ThemeTokens): SectionComponent {
             {[
               { label: "Address", value: address },
               { label: "Phone", value: phone },
-              { label: "Hours", value: hours },
-            ].map((fact) => (
+              hours ? { label: "Hours", value: hours } : null,
+            ]
+              .filter((fact): fact is { label: string; value: string } => Boolean(fact))
+              .map((fact) => (
               <div
                 key={fact.label}
                 className="rounded-[1.25rem] border border-white/10 bg-white/5 p-5 text-center backdrop-blur-sm"

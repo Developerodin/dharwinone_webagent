@@ -17,8 +17,6 @@ import { getBrandName, getTagline } from "./shared";
 const FAMILY_MOBILE_TRIGGER =
   "border border-[var(--theme-line)] bg-[var(--theme-card)] text-[var(--theme-ink)] hover:bg-[color:color-mix(in_srgb,var(--theme-bg)_80%,white_20%)] focus-visible:outline-[var(--theme-accent)]";
 
-const FAMILY_MOBILE_PANEL = "mt-3 border-[var(--theme-line)]";
-
 /**
  * Builds chrome/drawer CTA classes for family headers (display gated separately).
  */
@@ -47,7 +45,7 @@ export function createFamilyHeaders(
 }
 
 /**
- * Brand left + CTA right; nav row under brand.
+ * Single-row header: brand left | nav center | CTA right.
  */
 function createHeader01(tokens: ThemeTokens): SectionComponent {
   const { chrome: headerCtaChrome, drawer: headerCtaDrawer } =
@@ -58,7 +56,6 @@ function createHeader01(tokens: ThemeTokens): SectionComponent {
    */
   function FamilyHeader01({ content }: SectionComponentProps) {
     const brandName = getBrandName(content);
-    const tagline = getTagline(content);
     const ctaLabel = getString(content, "ctaLabel", "Reserve a Table");
     const eyebrow = getString(content, "eyebrow", "");
     const navItems = getNavItems(content);
@@ -85,50 +82,28 @@ function createHeader01(tokens: ThemeTokens): SectionComponent {
         aria-label="Site header"
         className={`${tokens.section} sticky top-[var(--shell-header-h)] z-30 border-b border-[var(--theme-line)] bg-[color:color-mix(in_srgb,var(--theme-bg)_88%,transparent)]/95 shadow-[0_1px_0_rgba(17,17,17,0.04)] backdrop-blur-md`}
       >
-        <div className="mx-auto w-full min-w-0 max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[640px]/page:py-4 @min-[768px]/page:px-10">
-          <div className="flex w-full min-w-0 items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => handleNavigate("hero")}
-              className="min-w-0 flex-1 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-accent)]"
-              aria-label="Scroll to hero section"
+        <div className="mx-auto flex w-full min-w-0 max-w-7xl items-center gap-3 px-4 py-2.5 @min-[640px]/page:px-6 @min-[640px]/page:py-3 @min-[768px]/page:gap-6 @min-[768px]/page:px-10">
+          <button
+            type="button"
+            onClick={() => handleNavigate("hero")}
+            className="min-w-0 shrink-0 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-accent)]"
+            aria-label="Scroll to hero section"
+          >
+            <p
+              className={`truncate text-base text-[var(--theme-ink)] @min-[640px]/page:text-lg ${tokens.heading}`}
             >
-              {eyebrow ? (
-                <p className={`hidden @min-[1024px]/page:block ${tokens.eyebrow}`}>
-                  {eyebrow}
-                </p>
-              ) : null}
-              <p
-                className={`truncate text-lg text-[var(--theme-ink)] @min-[640px]/page:text-xl ${tokens.heading} ${eyebrow ? "@min-[1024px]/page:mt-1" : ""}`}
-              >
-                {brandName}
+              {brandName}
+            </p>
+            {eyebrow ? (
+              <p className={`hidden truncate text-[10px] @min-[1280px]/page:block ${tokens.eyebrow}`}>
+                {eyebrow}
               </p>
-              <p className={`mt-1 hidden text-sm @min-[1024px]/page:block ${tokens.body}`}>
-                {tagline}
-              </p>
-            </button>
-
-            <div className="flex shrink-0 items-center gap-2">
-              <button
-                type="button"
-                onClick={handleCta}
-                className={headerCtaChrome}
-                aria-label={ctaLabel}
-              >
-                {ctaLabel}
-              </button>
-              <MobileNavToggle
-                open={open}
-                menuId={menuId}
-                onToggle={toggle}
-                className={FAMILY_MOBILE_TRIGGER}
-              />
-            </div>
-          </div>
+            ) : null}
+          </button>
 
           <nav
             aria-label="Primary navigation"
-            className="mt-4 hidden flex-nowrap items-center gap-2 overflow-x-auto @min-[1024px]/page:flex"
+            className="hidden min-w-0 flex-1 flex-nowrap items-center justify-center gap-1 overflow-x-auto @min-[1024px]/page:flex"
           >
             {navItems.map((item) => (
               <button
@@ -143,12 +118,31 @@ function createHeader01(tokens: ThemeTokens): SectionComponent {
             ))}
           </nav>
 
+          <div className="ml-auto flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={handleCta}
+              className={headerCtaChrome}
+              aria-label={ctaLabel}
+            >
+              {ctaLabel}
+            </button>
+            <MobileNavToggle
+              open={open}
+              menuId={menuId}
+              onToggle={toggle}
+              className={FAMILY_MOBILE_TRIGGER}
+            />
+          </div>
+        </div>
+
+        <div className="mx-auto w-full min-w-0 max-w-7xl px-4 @min-[640px]/page:px-6 @min-[768px]/page:px-10">
           <MobileNavPanel
             open={open}
             menuId={menuId}
             navItems={navItems}
             onNavigate={handleNavigate}
-            panelClassName={FAMILY_MOBILE_PANEL}
+            panelClassName="mt-0 border-[var(--theme-line)] pb-3"
             linkClassName={tokens.navLink}
             ctaLabel={ctaLabel}
             onCta={handleCta}
@@ -163,7 +157,7 @@ function createHeader01(tokens: ThemeTokens): SectionComponent {
 }
 
 /**
- * Centered brand lockup with nav below and CTA top-right.
+ * Single-row header: brand+tagline left | nav center | CTA right.
  */
 function createHeader02(tokens: ThemeTokens): SectionComponent {
   const { chrome: headerCtaChrome, drawer: headerCtaDrawer } =
@@ -176,7 +170,6 @@ function createHeader02(tokens: ThemeTokens): SectionComponent {
     const brandName = getBrandName(content);
     const tagline = getTagline(content);
     const ctaLabel = getString(content, "ctaLabel", "Reserve a Table");
-    const eyebrow = getString(content, "eyebrow", "");
     const navItems = getNavItems(content);
     const { open, menuId, rootRef, toggle, close } = useMobileNav();
 
@@ -201,50 +194,28 @@ function createHeader02(tokens: ThemeTokens): SectionComponent {
         aria-label="Site header"
         className={`${tokens.section} sticky top-[var(--shell-header-h)] z-30 border-b border-[var(--theme-line)] bg-[color:color-mix(in_srgb,var(--theme-bg)_90%,transparent)]/95 backdrop-blur-md`}
       >
-        <div className="relative mx-auto w-full min-w-0 max-w-7xl px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10 @min-[768px]/page:py-5">
-          <div className="flex w-full min-w-0 items-center justify-between gap-3 @min-[1024px]/page:block">
-            <button
-              type="button"
-              onClick={() => handleNavigate("hero")}
-              className="min-w-0 flex-1 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-accent)] @min-[1024px]/page:mx-auto @min-[1024px]/page:max-w-2xl @min-[1024px]/page:flex-none @min-[1024px]/page:text-center"
-              aria-label="Scroll to hero section"
+        <div className="mx-auto flex w-full min-w-0 max-w-7xl items-center gap-3 px-4 py-2.5 @min-[640px]/page:px-6 @min-[640px]/page:py-3 @min-[768px]/page:gap-6 @min-[768px]/page:px-10">
+          <button
+            type="button"
+            onClick={() => handleNavigate("hero")}
+            className="min-w-0 shrink-0 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-accent)]"
+            aria-label="Scroll to hero section"
+          >
+            <p
+              className={`truncate text-base text-[var(--theme-ink)] @min-[640px]/page:text-lg ${tokens.heading}`}
             >
-              {eyebrow ? (
-                <p className={`hidden @min-[1024px]/page:block ${tokens.eyebrow}`}>
-                  {eyebrow}
-                </p>
-              ) : null}
-              <p
-                className={`truncate text-lg text-[var(--theme-ink)] @min-[640px]/page:text-xl @min-[768px]/page:text-2xl ${tokens.heading}`}
-              >
-                {brandName}
-              </p>
-              <p className={`mt-1 hidden text-sm @min-[1024px]/page:block ${tokens.body}`}>
+              {brandName}
+            </p>
+            {tagline ? (
+              <p className={`hidden truncate text-[11px] @min-[1024px]/page:block ${tokens.body}`}>
                 {tagline}
               </p>
-            </button>
-
-            <div className="flex shrink-0 items-center gap-2 @min-[1024px]/page:absolute @min-[1024px]/page:right-10 @min-[1024px]/page:top-5">
-              <button
-                type="button"
-                onClick={handleCta}
-                className={headerCtaChrome}
-                aria-label={ctaLabel}
-              >
-                {ctaLabel}
-              </button>
-              <MobileNavToggle
-                open={open}
-                menuId={menuId}
-                onToggle={toggle}
-                className={FAMILY_MOBILE_TRIGGER}
-              />
-            </div>
-          </div>
+            ) : null}
+          </button>
 
           <nav
             aria-label="Primary navigation"
-            className="mt-4 hidden flex-nowrap items-center justify-center gap-2 overflow-x-auto @min-[1024px]/page:flex"
+            className="hidden min-w-0 flex-1 flex-nowrap items-center justify-center gap-2 overflow-x-auto @min-[1024px]/page:flex"
           >
             {navItems.map((item) => (
               <button
@@ -259,12 +230,31 @@ function createHeader02(tokens: ThemeTokens): SectionComponent {
             ))}
           </nav>
 
+          <div className="ml-auto flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={handleCta}
+              className={headerCtaChrome}
+              aria-label={ctaLabel}
+            >
+              {ctaLabel}
+            </button>
+            <MobileNavToggle
+              open={open}
+              menuId={menuId}
+              onToggle={toggle}
+              className={FAMILY_MOBILE_TRIGGER}
+            />
+          </div>
+        </div>
+
+        <div className="mx-auto w-full min-w-0 max-w-7xl px-4 @min-[640px]/page:px-6 @min-[768px]/page:px-10">
           <MobileNavPanel
             open={open}
             menuId={menuId}
             navItems={navItems}
             onNavigate={handleNavigate}
-            panelClassName={FAMILY_MOBILE_PANEL}
+            panelClassName="mt-0 border-[var(--theme-line)] pb-3"
             linkClassName={tokens.navLink}
             ctaLabel={ctaLabel}
             onCta={handleCta}

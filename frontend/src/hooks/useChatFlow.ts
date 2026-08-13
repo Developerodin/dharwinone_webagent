@@ -7,6 +7,7 @@ import {
 } from "@/lib/chatFormatters";
 import { runConfirmBuild } from "@/lib/confirmBuildFlow";
 import {
+  runAskThenEditFlow,
   runEditFlow,
   runUploadImageFlow,
 } from "@/lib/editUploadFlows";
@@ -20,9 +21,10 @@ import {
 } from "@/lib/stageMessageUpdates";
 import type { ImageUploadTarget } from "@/lib/uploadSectionImage";
 import type { PageFamily } from "@/lib/pageFamily";
+import type { HistoryEntry } from "@/lib/projectStorage";
 import type { ChatMessage, ChatPhase } from "@/types/chat";
 import type { Brief, IntakeResponse, PipelineStage } from "@/types/intake";
-import type { Page } from "@/types/page";
+import type { Page, SectionType } from "@/types/page";
 
 export { handleChatAction } from "@/lib/chatActions";
 
@@ -48,6 +50,14 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
   const [pageFamily, setPageFamily] = useState<PageFamily | null>(null);
   const [page, setPage] = useState<Page | null>(null);
   const [projectId, setProjectId] = useState<string | null>(null);
+  /** Pending Ask → Editor proposal instruction. */
+  const [pendingEditInstruction, setPendingEditInstruction] = useState<
+    string | null
+  >(null);
+  const [selectedSectionType, setSelectedSectionType] =
+    useState<SectionType | null>(null);
+  const [direction, setDirection] = useState<unknown>(null);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
 
   /**
    * Appends a message to the chat thread.
@@ -176,14 +186,14 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
   );
 
   /**
-   * Applies a post-preview edit instruction against the current page.
+   * Routes post-build chat through Ask → (confirm) → Editor.
    */
   const runEdit = useCallback(
-    async (instruction: string) => {
+    async (instruction: string, options?: { skipAsk?: boolean }) => {
       if (!page || !brief) {
         throw new Error("No built page available to edit.");
       }
-      await runEditFlow({
+      const deps = {
         instruction,
         page,
         brief,
@@ -199,19 +209,135 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
         setProjectId,
         setMessages,
         setPhase,
-      });
+        setPendingEditInstruction,
+        skipAsk: options?.skipAsk,
+        targetSection: selectedSectionType ?? undefined,
+        direction,
+        history,
+        setHistory,
+        setDirection,
+      };
+      if (options?.skipAsk) {
+        await runEditFlow(deps);
+        return;
+      }
+      await runAskThenEditFlow(deps);
     },
     [
       appendMessage,
       brief,
+      direction,
       enrichedChatText,
+      history,
       page,
       pageFamily,
       projectId,
+      selectedSectionType,
       updateStageMessage,
       useFixture,
     ],
   );
+
+  /**
+   * Applies deterministic ops from the section action panel.
+   */
+  const applySectionOps = useCallback(
+    async (ops: Array<Record<string, unknown>>) => {
+      if (!page || !brief || ops.length === 0) return;
+      setIsBusy(true);
+      setError(null);
+      try {
+        await runEditFlow({
+          instruction: "",
+          ops,
+          targetSection: selectedSectionType ?? undefined,
+          direction,
+          history,
+          setHistory,
+          setDirection,
+          page,
+          brief,
+          pageFamily,
+          projectId,
+          enrichedChatText,
+          useFixture,
+          appendMessage,
+          updateStageMessage,
+          setPage,
+          setBrief,
+          setPageFamily,
+          setProjectId,
+          setMessages,
+          setPhase,
+          skipAsk: true,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Could not apply edit");
+      } finally {
+        setIsBusy(false);
+      }
+    },
+    [
+      appendMessage,
+      brief,
+      direction,
+      enrichedChatText,
+      history,
+      page,
+      pageFamily,
+      projectId,
+      selectedSectionType,
+      updateStageMessage,
+      useFixture,
+    ],
+  );
+
+  /**
+   * Restores the previous page snapshot from edit history.
+   */
+  const undoEdit = useCallback(() => {
+    if (history.length === 0) return;
+    const previous = history[history.length - 1];
+    if (!previous) return;
+    setHistory((current) => current.slice(0, -1));
+    setPage(previous.page as Page);
+    setBrief(previous.brief as Brief);
+    setPageFamily(previous.family as PageFamily);
+    if (previous.direction !== undefined) setDirection(previous.direction);
+    appendMessage({
+      role: "assistant",
+      content: `Undid: ${previous.summary}`,
+    });
+  }, [appendMessage, history]);
+
+  /**
+   * Applies a pending Ask proposal via the Editor.
+   */
+  const applyPendingEdit = useCallback(async () => {
+    const instruction = pendingEditInstruction?.trim();
+    if (!instruction) return;
+    setPendingEditInstruction(null);
+    setIsBusy(true);
+    setError(null);
+    try {
+      await runEdit(instruction, { skipAsk: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not apply edit");
+    } finally {
+      setIsBusy(false);
+    }
+  }, [pendingEditInstruction, runEdit]);
+
+  /**
+   * Dismisses a pending Ask proposal without editing.
+   */
+  const dismissPendingEdit = useCallback(() => {
+    setPendingEditInstruction(null);
+    appendMessage({
+      role: "assistant",
+      content: "Okay — no changes applied. Ask anytime or request a different edit.",
+    });
+  }, [appendMessage]);
 
   /**
    * Uploads a user image or video into a hero/about/gallery slot from chat input.
@@ -303,6 +429,17 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
 
       try {
         if (page && EDITABLE_PHASES.includes(phase)) {
+          // Confirm Ask proposal via typed "yes" / "switch it" (not re-parse confirm text)
+          const isConfirmUtterance =
+            /^(yes|yeah|yep|yup|confirm|do it|switch it|go ahead|apply|ok|okay)(\s|[!.]|$)/i.test(
+              trimmed,
+            );
+          if (isConfirmUtterance && pendingEditInstruction?.trim()) {
+            const pending = pendingEditInstruction.trim();
+            setPendingEditInstruction(null);
+            await runEdit(pending, { skipAsk: true });
+            return;
+          }
           await runEdit(trimmed);
           return;
         }
@@ -353,6 +490,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
       enrichedChatText,
       isBusy,
       page,
+      pendingEditInstruction,
       pendingQuestions,
       phase,
       runEdit,
@@ -385,6 +523,8 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
         setMessages,
         setPhase,
         setError,
+        clearHistory: () => setHistory([]),
+        setDirection,
       });
     } finally {
       setIsBusy(false);
@@ -416,6 +556,9 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
     setPageFamily(empty.pageFamily);
     setPage(empty.page);
     setProjectId(empty.projectId);
+    setHistory([]);
+    setDirection(null);
+    setSelectedSectionType(null);
   }, []);
 
   /**
@@ -432,6 +575,9 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
     setPage(session.page);
     setPageFamily(session.pageFamily);
     setEnrichedChatText(session.enrichedChatText);
+    setHistory(session.history ?? []);
+    setDirection(session.direction ?? null);
+    setSelectedSectionType(null);
     setError(null);
     setClarificationRound(0);
     setPendingQuestions([]);
@@ -456,5 +602,14 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
     brief,
     projectId,
     restoreProject,
+    applyPendingEdit,
+    dismissPendingEdit,
+    pendingEditInstruction,
+    selectedSectionType,
+    setSelectedSectionType,
+    applySectionOps,
+    undoEdit,
+    canUndo: history.length > 0,
+    direction,
   };
 }

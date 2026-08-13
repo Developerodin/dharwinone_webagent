@@ -3,6 +3,7 @@ import {
   getAssetPaths,
   getPrimaryAsset,
   getString,
+  renderStyledText,
   isBookingCtaLabel,
 } from "../contentHelpers";
 import { pm } from "../shared/premiumTokens";
@@ -14,7 +15,7 @@ import { createScrollHandler } from "@/lib/scrollToSection";
  * Premium hero with auto-advancing full-bleed image slider.
  */
 export function PremiumHero03({ content, assets }: SectionComponentProps) {
-  const headline = getString(content, "headline", "Welcome");
+  const headline = renderStyledText(content.headline, "Welcome");
   const subheading = getString(content, "subheading");
   const ctaLabel = getString(content, "ctaLabel", "Explore Menu");
   const primary = getPrimaryAsset(assets);

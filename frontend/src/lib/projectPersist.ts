@@ -1,6 +1,8 @@
 import {
+  capHistory,
   createProjectId,
   saveProject,
+  type HistoryEntry,
   type StoredProject,
 } from "@/lib/projectStorage";
 import { savePreviewPayload } from "@/lib/previewStorage";
@@ -18,6 +20,10 @@ export type PersistProjectArgs = {
   nextFamily: PageFamily | null;
   nextEnriched: string;
   createdAt?: number;
+  /** Creative direction from build/edit response. */
+  nextDirection?: unknown;
+  /** Edit history to persist (already capped). Pass [] to clear on new build. */
+  nextHistory?: HistoryEntry[];
 };
 
 /**
@@ -52,6 +58,10 @@ export function persistProjectState(args: PersistProjectArgs): void {
     enrichedChatText: args.nextEnriched,
     createdAt: args.createdAt ?? Date.now(),
     updatedAt: Date.now(),
+    direction: args.nextDirection,
+    history: args.nextHistory !== undefined
+      ? capHistory(args.nextHistory)
+      : undefined,
   };
   saveProject(project);
 }

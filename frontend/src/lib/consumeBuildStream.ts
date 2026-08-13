@@ -7,7 +7,7 @@ import type { Page } from "@/types/page";
 export async function consumeBuildStream(
   response: Response,
   onStage: (stage: PipelineStage) => void,
-): Promise<{ page: Page; meta: Record<string, unknown> }> {
+): Promise<{ page: Page; meta: Record<string, unknown>; direction?: unknown }> {
   const reader = response.body?.getReader();
   if (!reader) {
     throw new Error("Streaming body unavailable");
@@ -15,7 +15,11 @@ export async function consumeBuildStream(
 
   const decoder = new TextDecoder();
   let buffer = "";
-  let finalPayload: { page: Page; meta: Record<string, unknown> } | null = null;
+  let finalPayload: {
+    page: Page;
+    meta: Record<string, unknown>;
+    direction?: unknown;
+  } | null = null;
 
   while (true) {
     const { done, value } = await reader.read();
@@ -36,6 +40,7 @@ export async function consumeBuildStream(
         stage?: PipelineStage;
         page?: Page;
         meta?: Record<string, unknown>;
+        direction?: unknown;
         error?: string;
       };
 
@@ -47,6 +52,7 @@ export async function consumeBuildStream(
         finalPayload = {
           page: payload.page,
           meta: payload.meta ?? {},
+          direction: payload.direction,
         };
       }
 

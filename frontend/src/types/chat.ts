@@ -5,7 +5,7 @@ export type ChatMessageRole = "user" | "assistant" | "agent";
 
 export type ChatAction = {
   label: string;
-  action: "build" | "reset" | "preview" | "skip";
+  action: "build" | "reset" | "preview" | "skip" | "apply_edit" | "dismiss_edit";
   variant?: "primary" | "outline";
 };
 

@@ -26,10 +26,7 @@ export function ElegantContact02({ content, assets }: SectionComponentProps) {
   const address = getString(content, "address", "18 Heritage Court, New Delhi 110001");
   const phone = getString(content, "phone", "+91 98111 22334");
   const email = getString(content, "email", "concierge@cavertahouse.com");
-  const hours = getStringArray(content, "hours", [
-    "Dinner service · Tue - Sun",
-    "6:00 pm to 11:30 pm",
-  ]);
+  const hours = getStringArray(content, "hours", []);
   const submitLabel = getString(content, "ctaLabel", "Send Request");
   const imagePath = getPrimaryAsset(assets);
   const form = useContactForm();
@@ -287,17 +284,19 @@ export function ElegantContact02({ content, assets }: SectionComponentProps) {
               {phone}
             </a>
           </div>
-          <div className="bg-[#111111]/92 px-5 py-5">
-            <p className={`flex items-center gap-2 ${eg.inputLabel}`}>
-              <Clock3 aria-hidden="true" className="size-4" />
-              Hours
-            </p>
-            <div className="mt-3 space-y-1 text-sm text-[var(--eg-cream)]">
-              {hours.map((entry) => (
-                <p key={entry}>{entry}</p>
-              ))}
+          {hours.length > 0 ? (
+            <div className="bg-[#111111]/92 px-5 py-5">
+              <p className={`flex items-center gap-2 ${eg.inputLabel}`}>
+                <Clock3 aria-hidden="true" className="size-4" />
+                Hours
+              </p>
+              <div className="mt-3 space-y-1 text-sm text-[var(--eg-cream)]">
+                {hours.map((entry) => (
+                  <p key={entry}>{entry}</p>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </section>

@@ -70,17 +70,30 @@ export function PreviewInspector({
     setBusyKey(key);
     setError(null);
     try {
-      if (
-        section.type !== "hero" &&
-        section.type !== "about" &&
-        section.type !== "gallery"
-      ) {
+      const uploadable = new Set([
+        "hero",
+        "about",
+        "gallery",
+        "team",
+        "reservation",
+        "location_map",
+      ]);
+      if (!uploadable.has(section.type)) {
         throw new Error("This section does not support media uploads.");
       }
       const result = await uploadSectionImage({
         file,
         page,
-        target: { section: section.type, assetKey: asset.key },
+        target: {
+          section: section.type as
+            | "hero"
+            | "about"
+            | "gallery"
+            | "team"
+            | "reservation"
+            | "location_map",
+          assetKey: asset.key,
+        },
       });
       persistPage(result.page);
     } catch (err) {

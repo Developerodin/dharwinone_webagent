@@ -9,6 +9,7 @@ import {
   PanelLeft,
   Smartphone,
   Tablet,
+  Undo2,
   Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,8 @@ type EditorTopBarProps = {
   canOpenPreview?: boolean;
   onPublish?: () => void;
   onGoHome?: () => void;
+  canUndo?: boolean;
+  onUndo?: () => void;
 };
 
 /**
@@ -66,6 +69,8 @@ export function EditorTopBar({
   canOpenPreview = false,
   onPublish: _onPublish,
   onGoHome,
+  canUndo = false,
+  onUndo,
 }: EditorTopBarProps) {
   return (
     <header
@@ -207,6 +212,19 @@ export function EditorTopBar({
           {pageLabel}
           <ChevronDown className="size-3" aria-hidden="true" />
         </button>
+
+        {onUndo ? (
+          <button
+            type="button"
+            onClick={onUndo}
+            disabled={!canUndo}
+            className="inline-flex min-h-7 items-center gap-1 rounded-lg border border-[var(--lovable-border)] bg-[var(--lovable-bg)] px-2.5 text-[12px] text-[var(--lovable-text-muted)] transition hover:bg-[var(--lovable-hover)] hover:text-[var(--lovable-text)] disabled:opacity-35"
+            aria-label="Undo last edit"
+          >
+            <Undo2 className="size-3.5" aria-hidden="true" />
+            Undo
+          </button>
+        ) : null}
 
         {onOpenPreview ? (
           <button

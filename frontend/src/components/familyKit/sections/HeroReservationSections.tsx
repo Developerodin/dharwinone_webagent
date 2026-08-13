@@ -5,7 +5,14 @@ import type {
   SectionComponentProps,
 } from "@/components/premium/registry";
 import { scrollToSection } from "@/lib/scrollToSection";
-import { MediaPanel, SectionIntro, getBodyCopy, getHeadline, getLeadMedia } from "./shared";
+import {
+  MediaPanel,
+  SectionIntro,
+  getBodyCopy,
+  getHeadline,
+  getLeadMedia,
+  getStyledHeadline,
+} from "./shared";
 
 /**
  * Creates both hero variants for a family.
@@ -39,7 +46,14 @@ function createHero01(tokens: ThemeTokens): SectionComponent {
    * Full-bleed hero with atmospheric overlay and menu CTA.
    */
   function FamilyHero01({ content, assets }: SectionComponentProps) {
-    const headline = getHeadline(content, "A dining room built around generous flavor.");
+    const headlinePlain = getHeadline(
+      content,
+      "A dining room built around generous flavor.",
+    );
+    const headline = getStyledHeadline(
+      content,
+      "A dining room built around generous flavor.",
+    );
     const body = getBodyCopy(
       content,
       "Seasonal plates, precise cocktails, and a room that moves from bright lunches to slow late-night dinners.",
@@ -54,7 +68,7 @@ function createHero01(tokens: ThemeTokens): SectionComponent {
       >
         <MediaPanel
           src={imagePath}
-          alt={headline}
+          alt={headlinePlain}
           className="absolute inset-0 z-0 h-full w-full object-cover"
           fallbackClassName="absolute inset-0 z-0 bg-[linear-gradient(135deg,var(--theme-bg-dark),var(--theme-bg-alt))]"
         />
@@ -96,7 +110,14 @@ function createHero02(tokens: ThemeTokens): SectionComponent {
    * Two-column hero that pairs story copy with a framed lead image.
    */
   function FamilyHero02({ content, assets }: SectionComponentProps) {
-    const headline = getHeadline(content, "Gather around a table that feels intentional.");
+    const headlinePlain = getHeadline(
+      content,
+      "Gather around a table that feels intentional.",
+    );
+    const headline = getStyledHeadline(
+      content,
+      "Gather around a table that feels intentional.",
+    );
     const body = getBodyCopy(
       content,
       "Thoughtful hospitality, expressive ingredients, and a rhythm that makes every booking feel like an occasion.",
@@ -140,7 +161,7 @@ function createHero02(tokens: ThemeTokens): SectionComponent {
             <div className="relative min-h-0 overflow-hidden rounded-[2rem]">
               <MediaPanel
                 src={imagePath}
-                alt={headline}
+                alt={headlinePlain}
                 className="relative aspect-[4/5] w-full object-cover shadow-[0_30px_60px_rgba(0,0,0,0.12)]"
                 fallbackClassName="relative aspect-[4/5] w-full bg-[var(--theme-bg-alt)]"
               />

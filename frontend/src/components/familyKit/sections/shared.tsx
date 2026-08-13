@@ -1,15 +1,17 @@
+import type { ReactNode } from "react";
 import { SectionMedia } from "@/components/shared/SectionMedia";
 import type { ThemeTokens } from "@/components/shared/themeTokens";
 import {
   getAssetPaths,
   getPrimaryAsset,
   getString,
+  renderStyledText,
 } from "@/components/premium/contentHelpers";
 import type { PageAsset } from "@/types/page";
 
 type SectionIntroProps = {
   eyebrow: string;
-  title: string;
+  title: ReactNode;
   body?: string;
   tokens: ThemeTokens;
   align?: "left" | "center";
@@ -97,13 +99,23 @@ export function getTagline(content: Record<string, unknown>): string {
 }
 
 /**
- * Reads a section headline with a sensible default.
+ * Reads a section headline with a sensible default (plain text).
  */
 export function getHeadline(
   content: Record<string, unknown>,
   fallback: string,
 ): string {
   return getString(content, "headline", fallback);
+}
+
+/**
+ * Reads a section headline preserving styled color runs.
+ */
+export function getStyledHeadline(
+  content: Record<string, unknown>,
+  fallback: string,
+): ReactNode {
+  return renderStyledText(content.headline, fallback);
 }
 
 /**
@@ -158,7 +170,7 @@ export function getHoursText(content: Record<string, unknown>): string {
   const lines = getStringList(content, "hours");
   if (lines.length > 0) return lines.join(" | ");
 
-  return "Mon-Sun | 12:00 PM - 10:30 PM";
+  return "";
 }
 
 /**

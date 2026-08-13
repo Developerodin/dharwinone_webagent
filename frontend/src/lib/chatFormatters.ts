@@ -7,7 +7,7 @@ export { formatStageContent };
 
 /** Shared edit tips shown after build (no theme promo — themes only on explicit ask). */
 export const EDIT_HINTS =
-  "Try: change about section · rewrite gallery headline · attach Media in chat · different about image";
+  "Try: surprise me · make Bite! red · accent green · add testimonials · rewrite gallery headline";
 
 /**
  * Builds the post-build assistant message without dumping theme options.
@@ -54,7 +54,7 @@ export function createMessageId(): string {
 
 /** Default first assistant message for a new chat. */
 export const WELCOME_MESSAGE =
-  "Tell me about your restaurant — name, cuisine, location, menu items, vibe. I'll extract a brief, ask follow-ups if needed, then build your page.";
+  "Tell me about your restaurant — name, cuisine, location, menu items, vibe, and optional brand colors (name or #hex). I'll extract a brief, ask follow-ups if needed, then build your page.";
 
 /**
  * Builds the initial welcome chat message.
@@ -91,9 +91,14 @@ export function formatBriefSummary(brief: Brief, family: PageFamily): string {
           .join("\n")
       : "No menu items yet";
 
+  const brandLine = brief.brandColors?.length
+    ? `Brand colors: ${brief.brandColors.join(", ")} (client brand)`
+    : "Brand colors: creative pick at build (or skip for theme defaults)";
+
   return [
     `**${brief.businessName}** · ${brief.category}`,
-    `Visual theme: ${getPageFamilyLabel(family)} (auto-detected)`,
+    `Visual theme: ${getPageFamilyLabel(family)} (Creative Director)`,
+    brandLine,
     brief.phone ? `Phone: ${brief.phone}` : "",
     brief.address ? `Address: ${brief.address}` : "",
     "",

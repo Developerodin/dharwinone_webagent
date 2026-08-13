@@ -156,3 +156,152 @@
   background-color: var(--theme-bg);
   color: var(--theme-ink);
 }
+
+.bold-theme {
+  /* Grand Restaurant Demo 9 — crimson sunburst hero + light body, Rubik + Pacifico. */
+  --bold-font-script: "Pacifico", "Instrument Serif", cursive;
+  --bold-hero-red: #b91c1c;
+  --theme-bg: #f9f9f9;
+  --theme-bg-alt: #ffffff;
+  --theme-bg-dark: #7a1018;
+  --theme-card: #ffffff;
+  --theme-ink: #1c2123;
+  --theme-on-dark: #ffffff;
+  --theme-muted: #444444;
+  --theme-muted-on-dark: rgba(255, 255, 255, 0.78);
+  --theme-line: #e1e1e1;
+  --theme-line-strong: #b91c1c;
+  --theme-accent: #dc9457;
+  --theme-accent-on-dark: #f0b87a;
+  --theme-accent-contrast: #ffffff;
+  --theme-font-display: "Rubik", "DM Sans", system-ui, sans-serif;
+  --theme-font-body: "Rubik", "DM Sans", system-ui, sans-serif;
+  --font-display: var(--theme-font-display);
+  --font-body: var(--theme-font-body);
+  --ink: var(--theme-ink);
+  --muted: var(--theme-muted);
+  --accent: var(--theme-accent);
+  --line: var(--theme-line);
+  --surface: var(--theme-card);
+  --paper: var(--theme-bg);
+  --accent-soft: color-mix(in srgb, var(--theme-accent) 18%, transparent);
+  background-color: var(--theme-bg);
+  color: var(--theme-ink);
+}
+
+/* Demo9 hero motion — sunburst, floats, title entrance */
+@keyframes bold-sunburst-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bold-float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes bold-float-y-slow {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(10px) rotate(-4deg);
+  }
+}
+
+@keyframes bold-hero-title-in {
+  from {
+    opacity: 0;
+    transform: translateY(36px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bold-hero-burger-in {
+  from {
+    opacity: 0;
+    transform: translateY(48px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bold-hero-footer-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bold-hero-sunburst {
+  background:
+    repeating-conic-gradient(
+      from 0deg at 50% 50%,
+      rgba(255, 255, 255, 0.08) 0deg 7deg,
+      transparent 7deg 14deg
+    ),
+    radial-gradient(circle at 50% 50%, #d42a3a 0%, var(--bold-hero-red) 52%, #7a1018 100%);
+  animation: bold-sunburst-spin 80s linear infinite;
+}
+
+.bold-hero-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+.bold-hero-title {
+  animation: bold-hero-title-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.bold-hero-burger {
+  animation:
+    bold-hero-burger-in 1s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both,
+    bold-float-y 5.5s ease-in-out 1.2s infinite;
+}
+
+.bold-hero-float-a {
+  animation: bold-float-y 4.8s ease-in-out 0.4s infinite;
+}
+
+.bold-hero-float-b {
+  animation: bold-float-y-slow 5.2s ease-in-out 0.8s infinite;
+}
+
+.bold-hero-float-c {
+  animation: bold-float-y 6s ease-in-out 0.2s infinite;
+}
+
+.bold-hero-footer {
+  animation: bold-hero-footer-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bold-hero-sunburst,
+  .bold-hero-title,
+  .bold-hero-burger,
+  .bold-hero-float-a,
+  .bold-hero-float-b,
+  .bold-hero-float-c,
+  .bold-hero-footer {
+    animation: none !important;
+  }
+}

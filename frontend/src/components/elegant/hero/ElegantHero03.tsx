@@ -3,6 +3,7 @@ import {
   getAssetPaths,
   getPrimaryAsset,
   getString,
+  renderStyledText,
   isBookingCtaLabel,
 } from "../../premium/contentHelpers";
 import { eg } from "../shared/elegantTokens";
@@ -14,7 +15,7 @@ import { createScrollHandler } from "@/lib/scrollToSection";
  * Caverta-style full-bleed hero with image slider and gold accents.
  */
 export function ElegantHero03({ content, assets }: SectionComponentProps) {
-  const headline = getString(content, "headline", "Welcome");
+  const headline = renderStyledText(content.headline, "Welcome");
   const subheading = getString(content, "subheading");
   const ctaLabel = getString(content, "ctaLabel", "Reserve a Table");
   const paths = getAssetPaths(assets);

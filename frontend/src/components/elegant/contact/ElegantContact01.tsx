@@ -24,10 +24,7 @@ export function ElegantContact01({ content }: SectionComponentProps) {
   const address = getString(content, "address", "18 Heritage Court, New Delhi 110001");
   const phone = getString(content, "phone", "+91 98111 22334");
   const email = getString(content, "email", "reservations@cavertahouse.com");
-  const hours = getStringArray(content, "hours", [
-    "Tue - Thu · 6:00 pm to 10:30 pm",
-    "Fri - Sun · 6:00 pm to 11:30 pm",
-  ]);
+  const hours = getStringArray(content, "hours", []);
   const submitLabel = getString(content, "ctaLabel", "Request Reservation");
   const form = useContactForm();
 
@@ -74,17 +71,19 @@ export function ElegantContact01({ content }: SectionComponentProps) {
                 </a>
               </dd>
             </div>
-            <div className="rounded-[1.5rem] border border-[var(--eg-gold)]/18 bg-black/15 p-5">
-              <dt className={`flex items-center gap-2 ${eg.inputLabel}`}>
-                <Clock3 aria-hidden="true" className="size-4" />
-                Hours
-              </dt>
-              <dd className="mt-3 space-y-2 text-sm text-[var(--eg-cream)]">
-                {hours.map((entry) => (
-                  <p key={entry}>{entry}</p>
-                ))}
-              </dd>
-            </div>
+            {hours.length > 0 ? (
+              <div className="rounded-[1.5rem] border border-[var(--eg-gold)]/18 bg-black/15 p-5">
+                <dt className={`flex items-center gap-2 ${eg.inputLabel}`}>
+                  <Clock3 aria-hidden="true" className="size-4" />
+                  Hours
+                </dt>
+                <dd className="mt-3 space-y-2 text-sm text-[var(--eg-cream)]">
+                  {hours.map((entry) => (
+                    <p key={entry}>{entry}</p>
+                  ))}
+                </dd>
+              </div>
+            ) : null}
           </dl>
         </div>
 
