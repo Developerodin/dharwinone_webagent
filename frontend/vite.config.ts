@@ -18,6 +18,7 @@ export default defineConfig({
       input: {
         main: path.resolve(__dirname, "index.html"),
         preview: path.resolve(__dirname, "preview.html"),
+        gallery: path.resolve(__dirname, "gallery.html"),
       },
     },
   },

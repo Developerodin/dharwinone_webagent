@@ -7,7 +7,8 @@ export type PageFamily =
   | "vibrant"
   | "bold";
 
-const VALID_FAMILIES: PageFamily[] = [
+/** Canonical family order for catalogs, filters, and pickers. */
+export const PAGE_FAMILIES: readonly PageFamily[] = [
   "premium",
   "elegant",
   "minimal",
@@ -15,6 +16,8 @@ const VALID_FAMILIES: PageFamily[] = [
   "vibrant",
   "bold",
 ];
+
+const VALID_FAMILIES: PageFamily[] = [...PAGE_FAMILIES];
 
 /**
  * Parses a page family from a query string or raw value.

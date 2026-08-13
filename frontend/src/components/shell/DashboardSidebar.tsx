@@ -12,6 +12,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import type { AppView } from "@/lib/appView";
 import type { StoredProject } from "@/lib/projectStorage";
 import { cn } from "@/lib/utils";
 
@@ -21,13 +22,15 @@ export type ProjectFilter =
   | "owned"
   | "shared";
 
-type DashboardSidebarProps = {
+export type DashboardSidebarProps = {
   projects: StoredProject[];
   activeFilter: ProjectFilter;
   onFilterChange: (filter: ProjectFilter) => void;
   onSelectProject: (projectId: string) => void;
   /** Soft-return to the home dashboard (keeps in-memory session). */
   onGoDashboard?: () => void;
+  /** Highlights Dashboard when the hidden gallery route is not active. */
+  activeView?: Extract<AppView, "home" | "gallery">;
   onSearch?: () => void;
   activeProjectId?: string | null;
   /** Optional class overrides (e.g. full-width inside a mobile drawer). */
@@ -66,6 +69,7 @@ export function DashboardSidebar({
   onFilterChange,
   onSelectProject,
   onGoDashboard,
+  activeView = "home",
   onSearch,
   activeProjectId = null,
   className,
@@ -76,7 +80,7 @@ export function DashboardSidebar({
       id: "dashboard",
       label: "Dashboard",
       icon: LayoutDashboard,
-      active: true,
+      active: activeView === "home",
       onClick: onGoDashboard,
     },
     {

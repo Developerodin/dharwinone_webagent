@@ -1,13 +1,15 @@
-export type AppView = "home" | "builder";
+export type AppView = "home" | "builder" | "gallery";
+
+const APP_VIEWS: readonly AppView[] = ["home", "builder", "gallery"];
 
 /**
- * Reads the app view from the URL hash (`#home` | `#builder`).
+ * Reads the app view from the URL hash (`#home` | `#builder` | `#gallery`).
  * Defaults to home when hash is missing or unknown.
  */
 export function readAppViewFromHash(): AppView {
   if (typeof window === "undefined") return "home";
   const hash = window.location.hash.replace(/^#/, "").toLowerCase();
-  return hash === "builder" ? "builder" : "home";
+  return APP_VIEWS.includes(hash as AppView) ? (hash as AppView) : "home";
 }
 
 /**

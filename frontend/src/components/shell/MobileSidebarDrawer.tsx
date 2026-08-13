@@ -3,6 +3,7 @@ import {
   DashboardSidebar,
   type ProjectFilter,
 } from "@/components/shell/DashboardSidebar";
+import type { AppView } from "@/lib/appView";
 import type { StoredProject } from "@/lib/projectStorage";
 
 type MobileSidebarDrawerProps = {
@@ -13,6 +14,7 @@ type MobileSidebarDrawerProps = {
   onFilterChange: (filter: ProjectFilter) => void;
   onSelectProject: (projectId: string) => void;
   onGoDashboard?: () => void;
+  activeView?: Extract<AppView, "home" | "gallery">;
   onSearch?: () => void;
   activeProjectId?: string | null;
 };
@@ -28,6 +30,7 @@ export function MobileSidebarDrawer({
   onFilterChange,
   onSelectProject,
   onGoDashboard,
+  activeView = "home",
   onSearch,
   activeProjectId = null,
 }: MobileSidebarDrawerProps) {
@@ -98,6 +101,7 @@ export function MobileSidebarDrawer({
           onFilterChange={onFilterChange}
           onSelectProject={handleSelectProject}
           onGoDashboard={handleGoDashboard}
+          activeView={activeView}
           onSearch={handleSearch}
           activeProjectId={activeProjectId}
           onCloseMobile={onClose}

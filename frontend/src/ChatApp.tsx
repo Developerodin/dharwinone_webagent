@@ -1,31 +1,25 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ChatInput } from "@/components/ChatInput";
 import { ChatThread } from "@/components/ChatThread";
 import { LivePreviewPane } from "@/components/LivePreviewPane";
-import {
-  DashboardSidebar,
-  type ProjectFilter,
-} from "@/components/shell/DashboardSidebar";
+import { DashboardLayout } from "@/components/shell/DashboardLayout";
+import { type ProjectFilter } from "@/components/shell/DashboardSidebar";
 import {
   EditorTopBar,
   formatLastSaved,
 } from "@/components/shell/EditorTopBar";
 import { HomeDashboard } from "@/components/shell/HomeDashboard";
-import { MobileSidebarDrawer } from "@/components/shell/MobileSidebarDrawer";
 import { PromptComposer } from "@/components/shell/PromptComposer";
 import {
   SectionActionPanel,
   type EditOp,
 } from "@/components/shell/SectionActionPanel";
 import { handleChatAction, useChatFlow } from "@/hooks/useChatFlow";
-import {
-  readAppViewFromHash,
-  writeAppViewHash,
-  type AppView,
-} from "@/lib/appView";
+import { useAppViewSync } from "@/hooks/useAppViewSync";
 import { saveAndOpenPreview } from "@/lib/previewStorage";
-import { getActiveProjectId, listProjects } from "@/lib/projectStorage";
+import { listProjects } from "@/lib/projectStorage";
+import { ComponentGalleryPage } from "@/pages/ComponentGalleryPage";
 
 type MobilePane = "chat" | "preview";
 type DeviceMode = "desktop" | "tablet" | "mobile";
@@ -44,7 +38,6 @@ function isDevMode(): boolean {
  */
 export function ChatApp() {
   const showDevTools = isDevMode();
-  const [view, setView] = useState<AppView>(() => readAppViewFromHash());
   const [projects, setProjects] = useState(() => listProjects());
   const [projectFilter, setProjectFilter] = useState<ProjectFilter>("all");
   const [mobilePane, setMobilePane] = useState<MobilePane>("chat");
@@ -82,20 +75,17 @@ export function ChatApp() {
   } = useChatFlow({ useFixture: false });
 
   /**
-   * Switches the active shell view and keeps the URL hash in sync.
-   */
-  const navigateView = useCallback((next: AppView) => {
-    setView(next);
-    writeAppViewHash(next);
-  }, []);
-
-  /**
    * Refreshes the project list from localStorage.
    */
   const refreshProjects = useCallback(() => {
     setProjects(listProjects());
     setSavedAt(Date.now());
   }, []);
+
+  const { view, navigateView } = useAppViewSync({
+    restoreProject,
+    refreshProjects,
+  });
 
   /**
    * Opens the full-size preview in a new browser tab.
@@ -132,7 +122,6 @@ export function ChatApp() {
           : "Ask ProwPlus…";
 
   const projectTitle = brief?.businessName ?? "New project";
-  const didBootstrapRef = useRef(false);
 
   /**
    * Soft-return to the dashboard without wiping the in-memory project session.
@@ -189,61 +178,6 @@ export function ChatApp() {
   );
 
   /**
-   * Boot once: `#builder` restores the active project; otherwise stay on home.
-   */
-  useEffect(() => {
-    if (didBootstrapRef.current) return;
-    didBootstrapRef.current = true;
-
-    const desired = readAppViewFromHash();
-    if (desired !== "builder") {
-      writeAppViewHash("home");
-      setView("home");
-      return;
-    }
-
-    const activeId = getActiveProjectId();
-    if (activeId && restoreProject(activeId)) {
-      setView("builder");
-      writeAppViewHash("builder");
-      refreshProjects();
-      return;
-    }
-
-    writeAppViewHash("home");
-    setView("home");
-  }, [refreshProjects, restoreProject]);
-
-  /**
-   * Keeps view in sync when the user uses browser back/forward on the hash.
-   */
-  useEffect(() => {
-    /**
-     * Handles hash changes for home ↔ builder without remounting the app.
-     */
-    function onHashChange() {
-      const next = readAppViewFromHash();
-      if (next === "builder") {
-        const activeId = getActiveProjectId();
-        if (activeId && restoreProject(activeId)) {
-          setView("builder");
-          refreshProjects();
-          return;
-        }
-        // Mid-build new session (no persisted id yet) — keep builder if already there.
-        if (view === "builder") return;
-        writeAppViewHash("home");
-        setView("home");
-        return;
-      }
-      setView("home");
-    }
-
-    window.addEventListener("hashchange", onHashChange);
-    return () => window.removeEventListener("hashchange", onHashChange);
-  }, [refreshProjects, restoreProject, view]);
-
-  /**
    * Clears section selection when Esc is pressed.
    */
   useEffect(() => {
@@ -260,6 +194,15 @@ export function ChatApp() {
    * Focuses the home prompt composer (used by sidebar Search).
    */
   function focusHomePrompt() {
+    if (view !== "home") {
+      navigateView("home");
+      window.setTimeout(() => {
+        document
+          .querySelector<HTMLTextAreaElement>("#prompt textarea")
+          ?.focus();
+      }, 0);
+      return;
+    }
     const field = document.querySelector<HTMLTextAreaElement>(
       "#prompt textarea",
     );
@@ -269,37 +212,38 @@ export function ChatApp() {
   const sidebarProjects =
     projectFilter === "starred" || projectFilter === "shared" ? [] : projects;
 
-  if (view === "home") {
+  const workspaceNav = {
+    projects: sidebarProjects,
+    activeFilter: projectFilter,
+    onFilterChange: setProjectFilter,
+    onSelectProject: openProject,
+    onGoDashboard: goHome,
+    activeView: (view === "gallery" ? "gallery" : "home") as
+      | "home"
+      | "gallery",
+    activeProjectId: projectId,
+    onSearch: focusHomePrompt,
+  };
+
+  if (view === "home" || view === "gallery") {
     return (
-      <div className="builder-shell flex h-svh min-w-0 overflow-hidden font-sans">
-        <div className="hidden h-full shrink-0 md:flex">
-          <DashboardSidebar
-            projects={sidebarProjects}
-            activeFilter={projectFilter}
-            onFilterChange={setProjectFilter}
-            onSelectProject={openProject}
-            onGoDashboard={goHome}
-            activeProjectId={projectId}
-            onSearch={focusHomePrompt}
+      <DashboardLayout
+        mobileNavOpen={mobileNavOpen}
+        onCloseMobile={() => setMobileNavOpen(false)}
+        {...workspaceNav}
+      >
+        {view === "gallery" ? (
+          <ComponentGalleryPage
+            onOpenMenu={() => setMobileNavOpen(true)}
           />
-        </div>
-        <HomeDashboard
-          onStartBuild={startFromHome}
-          disabled={isBusy}
-          onOpenMenu={() => setMobileNavOpen(true)}
-        />
-        <MobileSidebarDrawer
-          open={mobileNavOpen}
-          onClose={() => setMobileNavOpen(false)}
-          projects={sidebarProjects}
-          activeFilter={projectFilter}
-          onFilterChange={setProjectFilter}
-          onSelectProject={openProject}
-          onGoDashboard={goHome}
-          activeProjectId={projectId}
-          onSearch={focusHomePrompt}
-        />
-      </div>
+        ) : (
+          <HomeDashboard
+            onStartBuild={startFromHome}
+            disabled={isBusy}
+            onOpenMenu={() => setMobileNavOpen(true)}
+          />
+        )}
+      </DashboardLayout>
     );
   }
 
