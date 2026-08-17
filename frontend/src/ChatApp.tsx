@@ -118,8 +118,8 @@ export function ChatApp() {
       : phase === "confirm"
         ? "Or type changes to update the brief…"
         : page
-          ? "Ask ProwPlus to edit the page…"
-          : "Ask ProwPlus…";
+          ? "Ask Dharwin to edit the page…"
+          : "Ask Dharwin…";
 
   const projectTitle = brief?.businessName ?? "New project";
 

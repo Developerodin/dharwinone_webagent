@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { BrandMark } from "@/components/BrandMark";
 import { PageRenderer } from "@/render/PageRenderer";
 import { PreviewInspector } from "@/components/PreviewInspector";
 import { loadPreviewPayload } from "@/lib/previewStorage";
@@ -60,12 +61,7 @@ export function PreviewPage() {
   if (!preview || !page) {
     return (
       <div className="builder-shell flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
-        <div
-          className="flex size-12 items-center justify-center rounded-xl bg-[var(--ink)] text-sm font-semibold text-white"
-          aria-hidden="true"
-        >
-          P+
-        </div>
+        <BrandMark className="size-12" labelled />
         <h1
           className="text-3xl text-[var(--ink)]"
           style={{ fontFamily: "var(--font-display)" }}
@@ -100,12 +96,7 @@ export function PreviewPage() {
         role="banner"
       >
         <div className="flex min-w-0 items-center gap-2">
-          <span
-            className="flex size-6 shrink-0 items-center justify-center rounded-md bg-[var(--ink)] text-[9px] font-semibold text-white"
-            aria-hidden="true"
-          >
-            P+
-          </span>
+          <BrandMark className="size-6" />
           <span className="truncate text-[var(--muted)]">
             Preview · {getPageFamilyLabel(preview.pageFamily)}
             {preview.businessName ? ` · ${preview.businessName}` : ""}

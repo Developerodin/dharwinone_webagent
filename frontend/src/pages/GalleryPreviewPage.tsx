@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { BrandMark } from "@/components/BrandMark";
 import { pageComponentRegistry } from "@/components/pageRegistry";
 import { parseGalleryComponentId } from "@/lib/galleryCatalog";
 import { buildGalleryPage } from "@/lib/galleryFixtures";
@@ -38,12 +39,7 @@ export function GalleryPreviewPage() {
   if (!componentId || !parsed || !registered || !page) {
     return (
       <div className="builder-shell flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
-        <div
-          className="flex size-12 items-center justify-center rounded-xl bg-[var(--ink)] text-sm font-semibold text-white"
-          aria-hidden="true"
-        >
-          P+
-        </div>
+        <BrandMark className="size-12" labelled />
         <h1
           className="text-3xl text-[var(--ink)]"
           style={{ fontFamily: "var(--font-display)" }}
@@ -80,12 +76,7 @@ export function GalleryPreviewPage() {
         role="banner"
       >
         <div className="flex min-w-0 items-center gap-2">
-          <span
-            className="flex size-6 shrink-0 items-center justify-center rounded-md bg-[var(--ink)] text-[9px] font-semibold text-white"
-            aria-hidden="true"
-          >
-            P+
-          </span>
+          <BrandMark className="size-6" />
           <span className="truncate text-[var(--muted)]">
             Gallery · {familyLabel} · {parsed.label}
           </span>

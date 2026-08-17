@@ -13,8 +13,10 @@ import {
   X,
 } from "lucide-react";
 import type { AppView } from "@/lib/appView";
+import { BRAND_WORKSPACE } from "@/lib/brand";
 import type { StoredProject } from "@/lib/projectStorage";
 import { cn } from "@/lib/utils";
+import { BrandMark } from "@/components/BrandMark";
 
 export type ProjectFilter =
   | "all"
@@ -126,26 +128,15 @@ export function DashboardSidebar({
       aria-label="Workspace navigation"
     >
       <div className="flex items-center gap-2.5 px-3 pt-3.5 pb-2">
-        <div
-          className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 via-violet-500 to-blue-500 text-[10px] font-bold text-white shadow-sm"
-          aria-hidden="true"
-        >
-          P+
-        </div>
+        <BrandMark className="size-7" />
         <button
           type="button"
           className="flex min-w-0 flex-1 items-center gap-2 rounded-lg px-1.5 py-1.5 text-left transition hover:bg-[var(--lovable-hover)]"
           aria-label="Workspace switcher"
           aria-haspopup="listbox"
         >
-          <span
-            className="flex size-5 shrink-0 items-center justify-center rounded bg-sky-500/90 text-[9px] font-bold text-white"
-            aria-hidden="true"
-          >
-            M
-          </span>
           <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-[var(--lovable-text)]">
-            My ProwPlus
+            {BRAND_WORKSPACE}
           </span>
           <ChevronDown
             className="size-3.5 shrink-0 text-[var(--lovable-text-faint)]"

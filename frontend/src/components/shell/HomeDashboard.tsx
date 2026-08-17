@@ -9,6 +9,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { PromptComposer } from "@/components/shell/PromptComposer";
+import { BrandMark } from "@/components/BrandMark";
+import { BRAND_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
 type QuickChip = {
@@ -113,14 +115,9 @@ export function HomeDashboard({
               </button>
             ) : null}
             <div className="flex min-w-0 items-center gap-2">
-              <div
-                className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500 via-violet-500 to-blue-500 text-[10px] font-bold text-white"
-                aria-hidden="true"
-              >
-                P+
-              </div>
+              <BrandMark className="size-7" />
               <span className="truncate text-[13px] font-medium text-white/90">
-                ProwPlus
+                {BRAND_NAME}
               </span>
             </div>
           </div>
@@ -158,7 +155,7 @@ export function HomeDashboard({
             onValueChange={setPrompt}
             onSubmit={onStartBuild}
             disabled={disabled}
-            placeholder="Ask ProwPlus to create a restaurant website…"
+            placeholder="Ask Dharwin to create a restaurant website…"
             submitLabel="Build"
           />
         </div>

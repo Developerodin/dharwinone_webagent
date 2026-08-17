@@ -22,7 +22,7 @@ type PromptComposerProps = {
 export function PromptComposer({
   onSubmit,
   disabled = false,
-  placeholder = "Ask ProwPlus to create a restaurant site…",
+  placeholder = "Ask Dharwin to create a restaurant site…",
   variant = "home",
   value: controlledValue,
   onValueChange,
