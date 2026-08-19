@@ -7,6 +7,7 @@ import {
   MessageSquare,
   Monitor,
   PanelLeft,
+  Pencil,
   Smartphone,
   Tablet,
   Undo2,
@@ -36,6 +37,10 @@ type EditorTopBarProps = {
   onGoHome?: () => void;
   canUndo?: boolean;
   onUndo?: () => void;
+  /** When true, preview section clicks open the section action panel. */
+  editMode?: boolean;
+  /** Toggles manual section-edit mode. */
+  onEditModeChange?: (on: boolean) => void;
 };
 
 /**
@@ -71,6 +76,8 @@ export function EditorTopBar({
   onGoHome,
   canUndo = false,
   onUndo,
+  editMode = false,
+  onEditModeChange,
 }: EditorTopBarProps) {
   return (
     <header
@@ -212,6 +219,28 @@ export function EditorTopBar({
           {pageLabel}
           <ChevronDown className="size-3" aria-hidden="true" />
         </button>
+
+        {onEditModeChange ? (
+          <button
+            type="button"
+            onClick={() => onEditModeChange(!editMode)}
+            className={cn(
+              "inline-flex min-h-7 items-center gap-1 rounded-lg border px-2.5 text-[12px] font-medium transition",
+              editMode
+                ? "border-blue-500/50 bg-blue-500/15 text-blue-300"
+                : "border-[var(--lovable-border)] bg-[var(--lovable-bg)] text-[var(--lovable-text-muted)] hover:bg-[var(--lovable-hover)] hover:text-[var(--lovable-text)]",
+            )}
+            aria-label={
+              editMode
+                ? "Turn off section edit mode"
+                : "Turn on section edit mode"
+            }
+            aria-pressed={editMode}
+          >
+            <Pencil className="size-3.5" aria-hidden="true" />
+            Edit
+          </button>
+        ) : null}
 
         {onUndo ? (
           <button

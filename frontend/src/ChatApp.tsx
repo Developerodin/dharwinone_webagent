@@ -47,6 +47,7 @@ export function ChatApp() {
   const [editorViewMode, setEditorViewMode] =
     useState<EditorViewMode>("preview");
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [sectionEditMode, setSectionEditMode] = useState(false);
 
   const {
     messages,
@@ -137,6 +138,7 @@ export function ChatApp() {
    */
   const startFreshHome = useCallback(() => {
     resetChat();
+    setSectionEditMode(false);
     refreshProjects();
     navigateView("home");
     setChatCollapsed(false);
@@ -150,6 +152,7 @@ export function ChatApp() {
       const trimmed = text.trim();
       if (!trimmed) return;
       resetChat();
+      setSectionEditMode(false);
       navigateView("builder");
       setMobilePane("chat");
       setChatCollapsed(false);
@@ -178,17 +181,34 @@ export function ChatApp() {
   );
 
   /**
-   * Clears section selection when Esc is pressed.
+   * Turns manual section-edit mode on or off. Off clears any selected section
+   * so scrolling the preview cannot reopen the action panel.
+   */
+  const setSectionEditModeOn = useCallback(
+    (on: boolean) => {
+      setSectionEditMode(on);
+      if (!on) setSelectedSectionType(null);
+    },
+    [setSelectedSectionType],
+  );
+
+  /**
+   * Clears section selection when Esc is pressed. Second Esc exits edit mode.
    */
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape" && selectedSectionType) {
+      if (e.key !== "Escape") return;
+      if (selectedSectionType) {
         setSelectedSectionType(null);
+        return;
+      }
+      if (sectionEditMode) {
+        setSectionEditMode(false);
       }
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selectedSectionType, setSelectedSectionType]);
+  }, [sectionEditMode, selectedSectionType, setSelectedSectionType]);
 
   /**
    * Focuses the home prompt composer (used by sidebar Search).
@@ -267,6 +287,8 @@ export function ChatApp() {
         onGoHome={goHome}
         canUndo={canUndo}
         onUndo={undoEdit}
+        editMode={sectionEditMode}
+        onEditModeChange={setSectionEditModeOn}
       />
 
       <div
@@ -326,7 +348,7 @@ export function ChatApp() {
           </div>
 
           <div className="shrink-0 space-y-2 border-t border-[var(--lovable-border)] bg-[var(--lovable-panel)] px-3 py-3 sm:px-4">
-            {selectedSectionType ? (
+            {selectedSectionType && sectionEditMode ? (
               <div
                 className="flex items-center gap-1.5 rounded-lg border border-blue-500/40 bg-blue-500/10 px-2.5 py-1.5"
                 role="status"
@@ -411,7 +433,7 @@ export function ChatApp() {
           }`}
         >
           <div className="flex min-h-0 flex-1 flex-col">
-            {page && selectedSectionType ? (
+            {page && selectedSectionType && sectionEditMode ? (
               <div className="shrink-0 border-b border-[var(--lovable-border)] p-2">
                 <SectionActionPanel
                   sectionType={selectedSectionType}
@@ -431,11 +453,13 @@ export function ChatApp() {
               isBusy={isBusy}
               deviceMode={deviceMode}
               showCodePlaceholder={editorViewMode === "code"}
-              selectable={Boolean(page)}
+              selectable={Boolean(page) && sectionEditMode}
               selectedSectionType={selectedSectionType}
               onSelectSection={(type) =>
                 setSelectedSectionType(type as typeof selectedSectionType)
               }
+              editMode={sectionEditMode}
+              onEditModeChange={setSectionEditModeOn}
               activeStageLabel={(() => {
                 const running = messages.find(
                   (msg) =>

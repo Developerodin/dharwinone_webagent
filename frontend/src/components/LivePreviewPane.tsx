@@ -1,15 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-// import {
-//   Expand,
-//   MessageCircle,
-//   Pencil,
-//   Search,
-//   Type,
-// } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { ThinkingIndicator } from "@/components/ThinkingIndicator";
 import { BrandMark } from "@/components/BrandMark";
 import { PageRenderer } from "@/render/PageRenderer";
 import { getPageFamilyLabel } from "@/lib/pageFamilyLabel";
+import { cn } from "@/lib/utils";
 import type { PageFamily } from "@/lib/pageFamily";
 import type { ChatPhase } from "@/types/chat";
 import type { Page } from "@/types/page";
@@ -37,6 +32,10 @@ type LivePreviewPaneProps = {
   selectedSectionType?: string | null;
   /** Called when the user clicks a section in the preview. */
   onSelectSection?: (type: string) => void;
+  /** Manual section-edit mode. Off = browse/scroll without selecting. */
+  editMode?: boolean;
+  /** Toggles manual section-edit mode. */
+  onEditModeChange?: (on: boolean) => void;
 };
 
 /**
@@ -79,6 +78,8 @@ export function LivePreviewPane({
   selectable = false,
   selectedSectionType = null,
   onSelectSection,
+  editMode = false,
+  onEditModeChange,
 }: LivePreviewPaneProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const artboardRef = useRef<HTMLDivElement>(null);
@@ -167,6 +168,27 @@ export function LivePreviewPane({
               ? "Assembling"
               : "Live preview"}
         </p>
+        {page && onEditModeChange ? (
+          <button
+            type="button"
+            onClick={() => onEditModeChange(!editMode)}
+            className={cn(
+              "inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium transition md:hidden",
+              editMode
+                ? "border-blue-500/50 bg-blue-500/15 text-blue-300"
+                : "border-[var(--lovable-border)] bg-[var(--lovable-bg)] text-[var(--lovable-text-muted)] hover:bg-[var(--lovable-hover)] hover:text-[var(--lovable-text)]",
+            )}
+            aria-label={
+              editMode
+                ? "Turn off section edit mode"
+                : "Turn on section edit mode"
+            }
+            aria-pressed={editMode}
+          >
+            <Pencil className="size-3.5" aria-hidden="true" />
+            Edit
+          </button>
+        ) : null}
       </div>
 
       <div
