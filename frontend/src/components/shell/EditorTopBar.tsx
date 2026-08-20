@@ -37,9 +37,9 @@ type EditorTopBarProps = {
   onGoHome?: () => void;
   canUndo?: boolean;
   onUndo?: () => void;
-  /** When true, preview section clicks open the section action panel. */
+  /** When true, preview element clicks attach a chat edit target. */
   editMode?: boolean;
-  /** Toggles manual section-edit mode. */
+  /** Toggles Cursor-style element pick mode. */
   onEditModeChange?: (on: boolean) => void;
 };
 
@@ -232,8 +232,8 @@ export function EditorTopBar({
             )}
             aria-label={
               editMode
-                ? "Turn off section edit mode"
-                : "Turn on section edit mode"
+                ? "Turn off element pick mode"
+                : "Turn on element pick mode"
             }
             aria-pressed={editMode}
           >

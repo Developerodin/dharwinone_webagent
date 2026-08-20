@@ -1,7 +1,10 @@
-import { MapPin, Phone } from "lucide-react";
 import type { SectionComponentProps } from "../registry";
 import { getString } from "../../premium/contentHelpers";
 import { eg } from "../shared/elegantTokens";
+import { AddressActions } from "@/components/shared/AddressActions";
+import { LocationMapEmbed } from "@/components/shared/LocationMapEmbed";
+import { readCoord } from "@/lib/googleMapsLinks";
+import { scrollToSection } from "@/lib/scrollToSection";
 
 /**
  * Elegant location variant — centered invite with gold contact strip.
@@ -12,6 +15,11 @@ export function ElegantLocation02({ content }: SectionComponentProps) {
   const address =
     typeof content.address === "string" ? content.address : null;
   const phone = typeof content.phone === "string" ? content.phone : null;
+  const point = {
+    address,
+    lat: readCoord(content.lat),
+    lng: readCoord(content.lng),
+  };
 
   return (
     <section
@@ -20,16 +28,7 @@ export function ElegantLocation02({ content }: SectionComponentProps) {
     >
       <div className="mx-auto max-w-4xl min-w-0 text-center">
         <div className="animate-section-enter">
-          <p className={eg.eyebrow}>Join Us</p>
-          <div className="mx-auto mt-4 flex items-center justify-center gap-3 @min-[640px]:mt-5">
-            <span aria-hidden="true" className={`${eg.goldRule} w-8`} />
-            <span
-              aria-hidden="true"
-              className="size-1.5 rotate-45 bg-[var(--eg-gold)]"
-            />
-            <span aria-hidden="true" className={`${eg.goldRule} w-8`} />
-          </div>
-          <h2 className={`mt-5 @min-[640px]:mt-6 ${eg.heading} ${eg.headingSection}`}>
+          <h2 className={`${eg.heading} ${eg.headingSection}`}>
             {headline}
           </h2>
           {directionsNote ? (
@@ -40,7 +39,11 @@ export function ElegantLocation02({ content }: SectionComponentProps) {
             </p>
           ) : null}
           <div className="mt-8 flex justify-center @min-[640px]:mt-10">
-            <button type="button" className={eg.goldButton}>
+            <button
+              type="button"
+              className={eg.goldButton}
+              onClick={() => scrollToSection("reservation")}
+            >
               Book a Table
             </button>
           </div>
@@ -50,17 +53,18 @@ export function ElegantLocation02({ content }: SectionComponentProps) {
           <dl className="grid gap-8 @min-[640px]:grid-cols-2 @min-[640px]:gap-10">
             {address ? (
               <div className="min-w-0 @min-[640px]:text-left">
-                <dt className="flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[var(--eg-gold)] @min-[640px]:justify-start @min-[640px]:text-xs">
-                  <MapPin aria-hidden="true" className="size-3.5" />
+                <dt className="text-sm text-[var(--eg-muted)] @min-[640px]:text-left">
                   Address
                 </dt>
-                <dd className={`mt-3 break-words ${eg.body}`}>{address}</dd>
+                <dd className={`mt-3 break-words ${eg.body}`}>
+                  {address}
+                  <AddressActions point={point} />
+                </dd>
               </div>
             ) : null}
             {phone ? (
               <div className="min-w-0 @min-[640px]:text-left">
-                <dt className="flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[var(--eg-gold)] @min-[640px]:justify-start @min-[640px]:text-xs">
-                  <Phone aria-hidden="true" className="size-3.5" />
+                <dt className="text-sm text-[var(--eg-muted)] @min-[640px]:text-left">
                   Phone
                 </dt>
                 <dd className="mt-3">
@@ -79,6 +83,9 @@ export function ElegantLocation02({ content }: SectionComponentProps) {
               </p>
             ) : null}
           </dl>
+          <div className="mt-8 overflow-hidden border border-[var(--eg-gold)]/25">
+            <LocationMapEmbed point={point} label="Restaurant location map" />
+          </div>
         </div>
       </div>
     </section>

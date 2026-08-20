@@ -19,7 +19,6 @@ export function ElegantTestimonials01({ content }: SectionComponentProps) {
   return (
     <section aria-label="Testimonials" className={`${eg.sectionPad} ${eg.sectionAlt}`}>
       <div className="mx-auto max-w-3xl min-w-0 text-center">
-        <p className={eg.eyebrow}>Testimonials</p>
         <span aria-hidden="true" className={`mx-auto mt-3 block @min-[640px]:mt-4 ${eg.goldRule}`} />
         <h2 className={`mt-4 @min-[640px]:mt-6 ${eg.heading} ${eg.headingSection}`}>{headline}</h2>
         {introText ? (
@@ -40,7 +39,7 @@ export function ElegantTestimonials01({ content }: SectionComponentProps) {
             </blockquote>
             <figcaption className="mt-8">
               <p className={`text-sm @min-[640px]:text-base ${eg.heading}`}>{current.name}</p>
-              <p className={`mt-1 text-xs uppercase tracking-[0.18em] text-[var(--eg-gold)] @min-[640px]:text-sm`}>
+              <p className={`mt-1 text-sm ${eg.body}`}>
                 {current.role}
               </p>
             </figcaption>

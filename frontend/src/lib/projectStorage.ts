@@ -3,6 +3,13 @@ import type { Brief } from "@/types/intake";
 import type { ChatMessage, ChatPhase } from "@/types/chat";
 import type { Page } from "@/types/page";
 
+/**
+ * Local project cache.
+ *
+ * The server owns projects now; this is a read-through cache that makes the
+ * dashboard render instantly and keeps a project openable when the network is
+ * down. Anything written here is expected to already be saved server-side.
+ */
 const PROJECTS_KEY = "prowplus-projects";
 const ACTIVE_PROJECT_KEY = "prowplus-active-project";
 
@@ -34,6 +41,13 @@ export type StoredProject = {
   direction?: unknown;
   /** Undo history — newest last, capped at MAX_HISTORY entries. */
   history?: HistoryEntry[];
+  /**
+   * Version this cached copy corresponds to on the server.
+   *
+   * Sent as `expectedVersion` on the next edit, which is what lets the server
+   * reject a stale write from another tab instead of silently overwriting it.
+   */
+  serverVersion?: number;
 };
 
 /**
@@ -77,6 +91,16 @@ export function saveProject(project: StoredProject): void {
   projects.unshift({ ...project, updatedAt: Date.now() });
   localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects.slice(0, 30)));
   localStorage.setItem(ACTIVE_PROJECT_KEY, project.id);
+}
+
+/**
+ * Replaces the entire cache with the server's view.
+ *
+ * Used after a sync: the server is authoritative, so anything cached that it
+ * does not know about was either deleted elsewhere or already imported.
+ */
+export function replaceProjects(projects: StoredProject[]): void {
+  localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects.slice(0, 50)));
 }
 
 /**
@@ -149,5 +173,7 @@ function normalizeProject(raw: unknown): StoredProject | null {
     updatedAt: typeof value.updatedAt === "number" ? value.updatedAt : Date.now(),
     direction: value.direction,
     history,
+    serverVersion:
+      typeof value.serverVersion === "number" ? value.serverVersion : undefined,
   };
 }

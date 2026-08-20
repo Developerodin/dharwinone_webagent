@@ -8,6 +8,8 @@ import {
 import { pm } from "../shared/premiumTokens";
 import { getNavItems } from "@/components/shared/contentExtras";
 import { scrollToSection } from "@/lib/scrollToSection";
+import { AddressActions } from "@/components/shared/AddressActions";
+import { readCoord } from "@/lib/googleMapsLinks";
 
 /**
  * Premium footer with refined brand summary, nav, and reservation details.
@@ -24,27 +26,23 @@ export function PremiumFooter01({ content }: SectionComponentProps) {
   const email = getString(content, "email", "reservations@maisoncopper.com");
   const hours = getStringArray(content, "hours", []);
   const navItems = getNavItems(content);
+  const point = {
+    address,
+    lat: readCoord(content.lat),
+    lng: readCoord(content.lng),
+  };
 
   return (
     <footer className="border-t border-white/10 bg-[var(--theme-bg-dark)]" aria-label="Footer">
       <div className="mx-auto max-w-7xl px-4 py-12 @min-[640px]:px-6 @min-[768px]:px-10 @min-[768px]:py-16">
         <div className="grid gap-10 @min-[768px]:grid-cols-[1.2fr_0.8fr_0.9fr]">
           <div>
-            <p className={pm.eyebrow}>Premium Collection</p>
-            <h2 className={`mt-4 text-[2rem] ${pm.heading}`}>{brandName}</h2>
+            <h2 className={`text-[2rem] ${pm.heading}`}>{brandName}</h2>
             <p className={`mt-4 max-w-md text-sm @min-[640px]:text-base ${pm.body}`}>{body}</p>
-            <button
-              type="button"
-              onClick={() => scrollToSection("reservation")}
-              className={`mt-6 ${pm.primaryButton}`}
-            >
-              Reserve an Evening
-            </button>
           </div>
 
           <div>
-            <p className={pm.inputLabel}>Navigate</p>
-            <nav aria-label="Footer navigation" className="mt-4 flex flex-col gap-3">
+            <nav aria-label="Footer navigation" className="flex flex-col gap-3">
               {navItems.map((item) => (
                 <button
                   key={`${item.target}-${item.label}`}
@@ -61,7 +59,10 @@ export function PremiumFooter01({ content }: SectionComponentProps) {
           <div className="space-y-5">
             <div>
               <p className={pm.inputLabel}>Address</p>
-              <p className="mt-3 text-sm leading-6 text-[var(--theme-ink)]">{address}</p>
+              <p className="mt-3 text-sm leading-6 text-[var(--theme-ink)]">
+                {address}
+                <AddressActions point={point} />
+              </p>
             </div>
             <div>
               <p className={pm.inputLabel}>Phone</p>
@@ -88,8 +89,8 @@ export function PremiumFooter01({ content }: SectionComponentProps) {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-5 text-xs uppercase tracking-[0.18em] text-[var(--theme-muted)] @min-[640px]:flex-row @min-[640px]:items-center @min-[640px]:justify-between">
-          <p>Crafted for memorable nights.</p>
+        <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-5 text-sm text-[var(--theme-muted)] @min-[640px]:flex-row @min-[640px]:items-center @min-[640px]:justify-between">
+          <p>{getString(content, "copyright", brandName)}</p>
           <button
             type="button"
             onClick={() => scrollToSection("hero")}

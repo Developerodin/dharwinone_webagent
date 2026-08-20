@@ -11,14 +11,14 @@ import {
 } from "@/components/shell/EditorTopBar";
 import { HomeDashboard } from "@/components/shell/HomeDashboard";
 import { PromptComposer } from "@/components/shell/PromptComposer";
-import {
-  SectionActionPanel,
-  type EditOp,
-} from "@/components/shell/SectionActionPanel";
+import { ComposerTargetChip } from "@/components/shell/ComposerTargetChip";
 import { handleChatAction, useChatFlow } from "@/hooks/useChatFlow";
 import { useAppViewSync } from "@/hooks/useAppViewSync";
+import { composerPlaceholderForPick } from "@/lib/resolvePreviewPick";
 import { saveAndOpenPreview } from "@/lib/previewStorage";
 import { listProjects } from "@/lib/projectStorage";
+import { hydrateProject, syncProjectsWithServer } from "@/lib/projectSync";
+import { BuilderLocationPicker } from "@/components/BuilderLocationPicker";
 import { ComponentGalleryPage } from "@/pages/ComponentGalleryPage";
 
 type MobilePane = "chat" | "preview";
@@ -49,6 +49,23 @@ export function ChatApp() {
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [sectionEditMode, setSectionEditMode] = useState(false);
 
+  // Reconcile with the server once the shell mounts: hand over anything this
+  // browser built before sign-in, then replace the cache with what the server
+  // actually holds. The cached list renders immediately in the meantime, so
+  // there is no empty-dashboard flash while this runs.
+  useEffect(() => {
+    let cancelled = false;
+
+    void syncProjectsWithServer().then((result) => {
+      if (cancelled) return;
+      setProjects(result.projects);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const {
     messages,
     phase,
@@ -69,10 +86,15 @@ export function ChatApp() {
     applyPendingEdit,
     dismissPendingEdit,
     selectedSectionType,
+    selectedPick,
     setSelectedSectionType,
-    applySectionOps,
+    setSelectedPick,
     undoEdit,
     canUndo,
+    locationPicker,
+    confirmPickedLocation,
+    closeLocationPicker,
+    openLocationPicker,
   } = useChatFlow({ useFixture: false });
 
   /**
@@ -113,14 +135,20 @@ export function ChatApp() {
 
   const inputDisabled = isBusy || phase === "building";
   const canUploadImage = Boolean(page);
+  const pickPlaceholder = composerPlaceholderForPick(
+    selectedPick,
+    sectionEditMode && Boolean(page),
+  );
   const placeholder =
     phase === "clarifying"
       ? "Answer the questions above…"
       : phase === "confirm"
         ? "Or type changes to update the brief…"
-        : page
-          ? "Ask Dharwin to edit the page…"
-          : "Ask Dharwin…";
+        : pickPlaceholder
+          ? pickPlaceholder
+          : page
+            ? "Ask Dharwin to edit the page…"
+            : "Ask Dharwin…";
 
   const projectTitle = brief?.businessName ?? "New project";
 
@@ -163,15 +191,30 @@ export function ChatApp() {
   );
 
   /**
-   * Restores a saved project into the builder workspace.
+   * Opens a project in the builder.
+   *
+   * The dashboard list carries no page or chat history — deliberately, so the
+   * list query stays cheap — so both are fetched here before restoring. The
+   * cached copy is used first when there is one, which makes reopening a
+   * project you were just in feel instant.
    */
   const openProject = useCallback(
-    (id: string) => {
-      const restored = restoreProject(id);
-      if (!restored) {
+    async (id: string) => {
+      if (restoreProject(id)) {
+        navigateView("builder");
+        setMobilePane("chat");
+        setChatCollapsed(false);
+      }
+
+      const hydrated = await hydrateProject(id);
+
+      if (!hydrated) {
+        // Not on the server and not usable from cache: the list is stale.
         refreshProjects();
         return;
       }
+
+      restoreProject(id);
       navigateView("builder");
       setMobilePane("chat");
       setChatCollapsed(false);
@@ -342,30 +385,25 @@ export function ChatApp() {
                   dismissPendingEdit: () => {
                     dismissPendingEdit();
                   },
+                  openLocationPicker: () => {
+                    openLocationPicker();
+                  },
                 });
               }}
             />
           </div>
 
           <div className="shrink-0 space-y-2 border-t border-[var(--lovable-border)] bg-[var(--lovable-panel)] px-3 py-3 sm:px-4">
-            {selectedSectionType && sectionEditMode ? (
-              <div
-                className="flex items-center gap-1.5 rounded-lg border border-blue-500/40 bg-blue-500/10 px-2.5 py-1.5"
-                role="status"
-                aria-live="polite"
-              >
-                <span className="text-[11px] font-medium text-blue-300">
-                  Editing: <span className="capitalize">{selectedSectionType}</span>
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setSelectedSectionType(null)}
-                  className="ml-auto inline-flex size-4 items-center justify-center rounded text-blue-300 hover:text-blue-100 transition"
-                  aria-label="Clear section selection"
-                >
-                  ✕
-                </button>
-              </div>
+            {sectionEditMode && selectedPick ? (
+              <ComposerTargetChip
+                pick={selectedPick}
+                onClear={() => setSelectedPick(null)}
+              />
+            ) : null}
+            {sectionEditMode && !selectedPick ? (
+              <p className="px-0.5 text-[11px] text-[var(--lovable-text-faint)]">
+                Click any text, button, or section — then say the change
+              </p>
             ) : null}
             {error ? (
               <Alert
@@ -433,18 +471,8 @@ export function ChatApp() {
           }`}
         >
           <div className="flex min-h-0 flex-1 flex-col">
-            {page && selectedSectionType && sectionEditMode ? (
-              <div className="shrink-0 border-b border-[var(--lovable-border)] p-2">
-                <SectionActionPanel
-                  sectionType={selectedSectionType}
-                  page={page}
-                  onApplyOps={(ops: EditOp[]) => {
-                    void applySectionOps(ops as Array<Record<string, unknown>>);
-                  }}
-                  onClose={() => setSelectedSectionType(null)}
-                />
-              </div>
-            ) : null}
+            {/* SectionActionPanel used to open above the preview on pick.
+                Element picker + composer chip is the edit surface now. */}
             <LivePreviewPane
               page={page}
               pageFamily={pageFamily}
@@ -458,6 +486,7 @@ export function ChatApp() {
               onSelectSection={(type) =>
                 setSelectedSectionType(type as typeof selectedSectionType)
               }
+              onPick={setSelectedPick}
               editMode={sectionEditMode}
               onEditModeChange={setSectionEditModeOn}
               activeStageLabel={(() => {
@@ -472,6 +501,16 @@ export function ChatApp() {
           </div>
         </div>
       </div>
+      <BuilderLocationPicker
+        open={locationPicker.open}
+        prefill={locationPicker.prefill}
+        page={page}
+        brief={brief}
+        onClose={closeLocationPicker}
+        onConfirm={(location) => {
+          void confirmPickedLocation(location);
+        }}
+      />
     </div>
   );
 }

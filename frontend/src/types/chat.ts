@@ -5,8 +5,16 @@ export type ChatMessageRole = "user" | "assistant" | "agent";
 
 export type ChatAction = {
   label: string;
-  action: "build" | "reset" | "preview" | "skip" | "apply_edit" | "dismiss_edit";
+  action:
+    | "build"
+    | "reset"
+    | "preview"
+    | "skip"
+    | "apply_edit"
+    | "dismiss_edit"
+    | "open_location_picker";
   variant?: "primary" | "outline";
+  ariaLabel?: string;
 };
 
 export type ChatMessage = {

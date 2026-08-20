@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import type { Page, PageAsset, PageSection } from "@/types/page";
 import type { PageFamily } from "@/lib/pageFamily";
 import { loadProject, saveProject } from "@/lib/projectStorage";
+import { saveServerVersion } from "@/lib/projectApi";
 import { savePreviewPayload } from "@/lib/previewStorage";
 import { uploadSectionImage } from "@/lib/uploadSectionImage";
 import {
@@ -36,9 +37,14 @@ export function PreviewInspector({
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   /**
-   * Persists an updated page into preview + project storage.
+   * Persists an updated page to the server, then to the local cache.
+   *
+   * Direct manipulation has no instruction to re-run, so the page itself is the
+   * intent and has to be committed as a version explicitly. Writing only to the
+   * cache would lose the change on the next reload, when the server's copy of
+   * the page is fetched back over it.
    */
-  function persistPage(next: Page) {
+  async function persistPage(next: Page) {
     onPageChange(next);
     savePreviewPayload({
       page: next,
@@ -46,12 +52,41 @@ export function PreviewInspector({
       businessName,
       projectId,
     });
-    if (projectId) {
-      const existing = loadProject(projectId);
-      if (existing) {
-        saveProject({ ...existing, page: next, updatedAt: Date.now() });
-      }
+
+    if (!projectId) return;
+
+    const existing = loadProject(projectId);
+    if (!existing) return;
+
+    let version = existing.serverVersion;
+
+    try {
+      const saved = await saveServerVersion({
+        projectId,
+        page: next,
+        brief: existing.brief,
+        direction: existing.direction,
+        pageFamily,
+        summary: "Edited in inspector",
+        expectedVersion: existing.serverVersion ?? 0,
+      });
+      version = saved.version;
+    } catch (saveError) {
+      // Surface it rather than failing silently: the user just made a change
+      // and needs to know it did not stick.
+      setError(
+        saveError instanceof Error
+          ? `Couldn't save: ${saveError.message}`
+          : "Couldn't save that change.",
+      );
     }
+
+    saveProject({
+      ...existing,
+      page: next,
+      updatedAt: Date.now(),
+      serverVersion: version,
+    });
   }
 
   /**
@@ -95,7 +130,7 @@ export function PreviewInspector({
           assetKey: asset.key,
         },
       });
-      persistPage(result.page);
+      await persistPage(result.page);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {

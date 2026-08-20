@@ -13,7 +13,7 @@
   --eg-gold-light: #e8d5a3;
   --eg-cream: #f5f0e8;
   --eg-muted: #a89f8f;
-  --eg-font-display: "Playfair Display", "Instrument Serif", Georgia, serif;
+  --eg-font-display: "Playfair Display", Georgia, serif;
   --eg-font-body: "DM Sans", system-ui, sans-serif;
   --theme-bg: #0a0a0a;
   --theme-bg-alt: #121212;
@@ -59,9 +59,9 @@
   --theme-accent: #8fa0b5;
   --theme-accent-on-dark: #b8c4d4;
   --theme-accent-contrast: #0e1014;
-  --theme-font-display: "Instrument Serif", Georgia, serif;
+  --theme-font-display: "Playfair Display", Georgia, serif;
   --theme-font-body: "DM Sans", system-ui, sans-serif;
-  --font-display: "Instrument Serif", Georgia, serif;
+  --font-display: "Playfair Display", Georgia, serif;
   --font-body: "DM Sans", system-ui, sans-serif;
   /* Legacy short aliases — fixes dark-on-dark / light-on-light in sections */
   --ink: var(--theme-ink);
@@ -90,8 +90,8 @@
   --theme-accent: #111111;
   --theme-accent-on-dark: #e4e4de;
   --theme-accent-contrast: #fdfdf9;
-  --theme-font-display: "Geist Variable", "DM Sans", system-ui, sans-serif;
-  --theme-font-body: "Geist Variable", "DM Sans", system-ui, sans-serif;
+  --theme-font-display: "DM Sans", system-ui, sans-serif;
+  --theme-font-body: "Work Sans", "DM Sans", system-ui, sans-serif;
   --ink: var(--theme-ink);
   --muted: var(--theme-muted);
   --accent: var(--theme-accent);
@@ -117,8 +117,8 @@
   --theme-accent: #9f6840;
   --theme-accent-on-dark: #e8c4a0;
   --theme-accent-contrast: #fff7ef;
-  --theme-font-display: "Instrument Serif", Georgia, serif;
-  --theme-font-body: "DM Sans", system-ui, sans-serif;
+  --theme-font-display: "Lora", Georgia, serif;
+  --theme-font-body: "Nunito Sans", "DM Sans", system-ui, sans-serif;
   --ink: var(--theme-ink);
   --muted: var(--theme-muted);
   --accent: var(--theme-accent);
@@ -144,8 +144,8 @@
   --theme-accent: #ff684c;
   --theme-accent-on-dark: #ff9b86;
   --theme-accent-contrast: #fff7f1;
-  --theme-font-display: "Geist Variable", "DM Sans", system-ui, sans-serif;
-  --theme-font-body: "Geist Variable", "DM Sans", system-ui, sans-serif;
+  --theme-font-display: "Sora", "DM Sans", system-ui, sans-serif;
+  --theme-font-body: "Nunito Sans", "DM Sans", system-ui, sans-serif;
   --ink: var(--theme-ink);
   --muted: var(--theme-muted);
   --accent: var(--theme-accent);
@@ -159,7 +159,7 @@
 
 .bold-theme {
   /* Grand Restaurant Demo 9 — crimson sunburst hero + light body, Rubik + Pacifico. */
-  --bold-font-script: "Pacifico", "Instrument Serif", cursive;
+  --bold-font-script: "Pacifico", Georgia, cursive;
   --bold-hero-red: #b91c1c;
   --theme-bg: #f9f9f9;
   --theme-bg-alt: #ffffff;

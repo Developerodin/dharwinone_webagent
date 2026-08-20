@@ -22,9 +22,18 @@ import {
 import type { ImageUploadTarget } from "@/lib/uploadSectionImage";
 import type { PageFamily } from "@/lib/pageFamily";
 import type { HistoryEntry } from "@/lib/projectStorage";
+import { formatLocationDumpLine } from "@/lib/locationPickerIntent";
+import { buildIntakeClarificationActions } from "@/lib/intakeClarificationActions";
+import type { PickedLocation } from "@/lib/mapsApi";
 import type { ChatMessage, ChatPhase } from "@/types/chat";
 import type { Brief, IntakeResponse, PipelineStage } from "@/types/intake";
 import type { Page, SectionType } from "@/types/page";
+import {
+  formatAttachedEditInstruction,
+  looksLikeQuestion,
+  sectionOnlyPick,
+  type PreviewPick,
+} from "@/lib/resolvePreviewPick";
 
 export { handleChatAction } from "@/lib/chatActions";
 
@@ -50,14 +59,38 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
   const [pageFamily, setPageFamily] = useState<PageFamily | null>(null);
   const [page, setPage] = useState<Page | null>(null);
   const [projectId, setProjectId] = useState<string | null>(null);
+  /**
+   * Version of the stored document this session is editing from.
+   *
+   * Sent as `expectedVersion` on every edit, so a change made in another tab
+   * is rejected with a conflict rather than silently overwritten.
+   */
+  const [serverVersion, setServerVersion] = useState(0);
   /** Pending Ask → Editor proposal instruction. */
   const [pendingEditInstruction, setPendingEditInstruction] = useState<
     string | null
   >(null);
-  const [selectedSectionType, setSelectedSectionType] =
-    useState<SectionType | null>(null);
+  const [selectedPick, setSelectedPick] = useState<PreviewPick | null>(null);
+  const selectedSectionType = selectedPick?.section ?? null;
+  /**
+   * Clears or sets a section-only pick (action panel / Esc). Keeps a field
+   * pick when the same section is re-asserted.
+   */
+  const setSelectedSectionType = useCallback((type: SectionType | null) => {
+    if (!type) {
+      setSelectedPick(null);
+      return;
+    }
+    setSelectedPick((prev) =>
+      prev?.section === type ? prev : sectionOnlyPick(type),
+    );
+  }, []);
   const [direction, setDirection] = useState<unknown>(null);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [locationPicker, setLocationPicker] = useState<{
+    open: boolean;
+    prefill: string;
+  }>({ open: false, prefill: "" });
 
   /**
    * Appends a message to the chat thread.
@@ -71,6 +104,39 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
     },
     [],
   );
+
+  /**
+   * Opens the map picker and posts a Select location chat control.
+   */
+  const promptLocationPicker = useCallback(
+    (prefill: string) => {
+      setLocationPicker({ open: true, prefill });
+      appendMessage({
+        role: "assistant",
+        content:
+          "Pick the place on the map, or tap Select location if you closed the picker.",
+        actions: [
+          {
+            label: "Select location",
+            action: "open_location_picker",
+            variant: "primary",
+            ariaLabel: "Select location on Google Maps",
+          },
+        ],
+      });
+    },
+    [appendMessage],
+  );
+
+  /**
+   * Reopens the map picker using the last prefill (chat button).
+   */
+  const openLocationPicker = useCallback(() => {
+    setLocationPicker((current) => ({
+      open: true,
+      prefill: current.prefill,
+    }));
+  }, []);
 
   /**
    * Upserts a pipeline stage status message in the chat thread.
@@ -145,7 +211,12 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
 
       if (data.status === "needs_clarification") {
         const canSkip = data.canSkip === true;
+        const gaps = data.gaps ?? [];
         setPendingQuestions(data.questions);
+        setLocationPicker({
+          open: false,
+          prefill: data.partialBrief.address?.trim() ?? "",
+        });
         appendMessage({
           role: "assistant",
           content: formatClarificationMessage(
@@ -154,15 +225,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
             canSkip,
           ),
           questions: data.questions,
-          actions: canSkip
-            ? [
-                {
-                  label: "Skip for now",
-                  action: "skip",
-                  variant: "outline",
-                },
-              ]
-            : undefined,
+          actions: buildIntakeClarificationActions({ canSkip, gaps }),
         });
         setPhase("clarifying");
         return;
@@ -193,12 +256,19 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
       if (!page || !brief) {
         throw new Error("No built page available to edit.");
       }
+      const pick = selectedPick;
+      const scopedInstruction = pick
+        ? formatAttachedEditInstruction(pick, instruction)
+        : instruction;
+      const skipAskForPick = Boolean(pick) && !looksLikeQuestion(instruction);
       const deps = {
-        instruction,
+        instruction: scopedInstruction,
         page,
         brief,
         pageFamily,
         projectId,
+      serverVersion,
+      setServerVersion,
         enrichedChatText,
         useFixture,
         appendMessage,
@@ -210,14 +280,16 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
         setMessages,
         setPhase,
         setPendingEditInstruction,
-        skipAsk: options?.skipAsk,
-        targetSection: selectedSectionType ?? undefined,
+        skipAsk: Boolean(options?.skipAsk) || skipAskForPick,
+        targetSection: pick?.section ?? selectedSectionType ?? undefined,
+        targetField: pick?.field,
         direction,
         history,
         setHistory,
         setDirection,
+        openLocationPicker: promptLocationPicker,
       };
-      if (options?.skipAsk) {
+      if (options?.skipAsk || skipAskForPick) {
         await runEditFlow(deps);
         return;
       }
@@ -232,6 +304,10 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
       page,
       pageFamily,
       projectId,
+      serverVersion,
+      setServerVersion,
+      promptLocationPicker,
+      selectedPick,
       selectedSectionType,
       updateStageMessage,
       useFixture,
@@ -251,6 +327,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
           instruction: "",
           ops,
           targetSection: selectedSectionType ?? undefined,
+          targetField: selectedPick?.field,
           direction,
           history,
           setHistory,
@@ -259,6 +336,8 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
           brief,
           pageFamily,
           projectId,
+      serverVersion,
+      setServerVersion,
           enrichedChatText,
           useFixture,
           appendMessage,
@@ -286,6 +365,9 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
       page,
       pageFamily,
       projectId,
+      serverVersion,
+      setServerVersion,
+      selectedPick,
       selectedSectionType,
       updateStageMessage,
       useFixture,
@@ -354,6 +436,8 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
           brief,
           pageFamily,
           projectId,
+      serverVersion,
+      setServerVersion,
           enrichedChatText,
           appendMessage,
           setPage,
@@ -374,6 +458,8 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
       page,
       pageFamily,
       projectId,
+      serverVersion,
+      setServerVersion,
     ],
   );
 
@@ -392,6 +478,8 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
           brief,
           pageFamily,
           projectId,
+      serverVersion,
+      setServerVersion,
           enrichedChatText,
           appendMessage,
           setPage,
@@ -412,6 +500,8 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
       page,
       pageFamily,
       projectId,
+      serverVersion,
+      setServerVersion,
     ],
   );
 
@@ -425,6 +515,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
 
       setError(null);
       appendMessage({ role: "user", content: trimmed });
+
       setIsBusy(true);
 
       try {
@@ -500,6 +591,111 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
   );
 
   /**
+   * Applies a confirmed map pin: edit op when a page exists, otherwise intake dump.
+   */
+  const confirmPickedLocation = useCallback(
+    async (location: PickedLocation) => {
+      setLocationPicker({ open: false, prefill: "" });
+      const dumpLine = formatLocationDumpLine(location);
+
+      if (page && brief && EDITABLE_PHASES.includes(phase)) {
+        setIsBusy(true);
+        setError(null);
+        try {
+          await runEditFlow({
+            instruction: `Update location to ${location.address}`,
+            ops: [
+              {
+                op: "set_location",
+                address: location.address,
+                lat: location.lat,
+                lng: location.lng,
+                placeId: location.placeId,
+                mapsUrl: location.mapsUrl,
+              },
+            ],
+            targetSection: "location_map",
+            direction,
+            history,
+            setHistory,
+            setDirection,
+            page,
+            brief,
+            pageFamily,
+            projectId,
+      serverVersion,
+      setServerVersion,
+            enrichedChatText,
+            useFixture,
+            appendMessage,
+            updateStageMessage,
+            setPage,
+            setBrief,
+            setPageFamily,
+            setProjectId,
+            setMessages,
+            setPhase,
+            skipAsk: true,
+          });
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Could not save location");
+          appendMessage({
+            role: "assistant",
+            content: "Could not save that location. Try picking it again.",
+          });
+        } finally {
+          setIsBusy(false);
+        }
+        return;
+      }
+
+      const combined = enrichedChatText
+        ? `${enrichedChatText}\n\n${dumpLine}`
+        : dumpLine;
+      setIsBusy(true);
+      setError(null);
+      try {
+        setPhase("analyzing");
+        updateStageMessage({ name: "Brief Extractor", status: "running" });
+        setEnrichedChatText(combined);
+        await runIntake(combined, phase === "clarifying" ? clarificationRound : 0);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Request failed");
+        appendMessage({
+          role: "assistant",
+          content: "Saved the pin locally but intake failed. Try sending again.",
+        });
+      } finally {
+        setIsBusy(false);
+      }
+    },
+    [
+      appendMessage,
+      brief,
+      clarificationRound,
+      direction,
+      enrichedChatText,
+      history,
+      page,
+      pageFamily,
+      phase,
+      projectId,
+      serverVersion,
+      setServerVersion,
+      runIntake,
+      updateStageMessage,
+      useFixture,
+    ],
+  );
+
+  /**
+   * Closes the location picker without applying a pin.
+   */
+  const closeLocationPicker = useCallback(() => {
+    setLocationPicker((current) => ({ ...current, open: false }));
+  }, []);
+
+  /**
    * Runs the confirmed build pipeline with streaming stage updates.
    */
   const confirmBuild = useCallback(async () => {
@@ -513,6 +709,8 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
         enrichedChatText,
         pageFamily,
         projectId,
+      serverVersion,
+      setServerVersion,
         useFixture,
         appendMessage,
         updateStageMessage,
@@ -569,6 +767,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
     if (!session) return false;
 
     setProjectId(session.projectId);
+    setServerVersion(session.serverVersion ?? 0);
     setMessages(session.messages);
     setPhase(session.phase);
     setBrief(session.brief);
@@ -606,10 +805,16 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
     dismissPendingEdit,
     pendingEditInstruction,
     selectedSectionType,
+    selectedPick,
     setSelectedSectionType,
+    setSelectedPick,
     applySectionOps,
     undoEdit,
     canUndo: history.length > 0,
     direction,
+    locationPicker,
+    confirmPickedLocation,
+    closeLocationPicker,
+    openLocationPicker,
   };
 }

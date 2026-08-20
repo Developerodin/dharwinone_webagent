@@ -12,6 +12,8 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { useAuth } from "@/auth/useAuth";
+import { userDisplayName, userInitials } from "@/auth/displayName";
 import type { AppView } from "@/lib/appView";
 import { BRAND_WORKSPACE } from "@/lib/brand";
 import type { StoredProject } from "@/lib/projectStorage";
@@ -77,6 +79,10 @@ export function DashboardSidebar({
   className,
   onCloseMobile,
 }: DashboardSidebarProps) {
+  const { user } = useAuth();
+  const displayName = userDisplayName(user);
+  const initials = userInitials(user);
+
   const primaryNav: NavItem[] = [
     {
       id: "dashboard",
@@ -273,16 +279,31 @@ export function DashboardSidebar({
       </div>
 
       <div className="mt-auto border-t border-[var(--lovable-border)] px-3 py-3">
-        <div className="flex items-center gap-2.5 rounded-lg px-1.5 py-1">
-          <div
-            className="flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-blue-500 text-[11px] font-semibold text-white"
-            aria-hidden="true"
-          >
-            J
-          </div>
+        <div
+          className="flex items-center gap-2.5 rounded-lg px-1.5 py-1"
+          aria-label={
+            displayName
+              ? `Signed in as ${displayName}`
+              : "Account"
+          }
+        >
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt=""
+              className="size-7 rounded-full object-cover"
+            />
+          ) : (
+            <div
+              className="flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-blue-500 text-[11px] font-semibold text-white"
+              aria-hidden="true"
+            >
+              {initials}
+            </div>
+          )}
           <div className="min-w-0 flex-1">
             <p className="truncate text-[12px] font-medium text-[var(--lovable-text)]">
-              John
+              {displayName || user?.email || "Account"}
             </p>
             <p className="truncate text-[10px] text-[var(--lovable-text-faint)]">
               Free plan

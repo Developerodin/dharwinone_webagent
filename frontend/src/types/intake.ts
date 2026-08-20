@@ -30,6 +30,10 @@ export type Brief = {
   category: string;
   phone: string | null;
   address: string | null;
+  email?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  placeId?: string | null;
   menuItems: MenuItem[];
   photos: string[];
   brandColors: string[] | null;

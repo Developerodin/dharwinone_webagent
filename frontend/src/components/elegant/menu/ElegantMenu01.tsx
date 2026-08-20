@@ -14,7 +14,6 @@ export function ElegantMenu01({ content }: SectionComponentProps) {
     <section aria-label="Menu" className={`${eg.sectionPad} ${eg.sectionAlt}`}>
       <div className="mx-auto max-w-5xl min-w-0">
         <div className="text-center">
-          <p className={eg.eyebrow}>Specialties</p>
           <div className="mx-auto mt-4 flex items-center justify-center gap-3 @min-[640px]:mt-6 @min-[640px]:gap-4">
             <span
               aria-hidden="true"

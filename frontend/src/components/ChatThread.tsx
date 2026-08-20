@@ -396,6 +396,7 @@ function MessageBubble({
                 type="button"
                 size="sm"
                 variant={action.variant === "outline" ? "outline" : "default"}
+                aria-label={action.ariaLabel ?? action.label}
                 onClick={() => onAction(action.action)}
                 className={
                   action.variant === "primary" || action.variant === undefined

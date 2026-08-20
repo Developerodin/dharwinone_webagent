@@ -49,20 +49,19 @@ function createTestimonials01(tokens: ThemeTokens): SectionComponent {
       <section aria-label="Testimonials" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
         <div className="mx-auto max-w-6xl">
           <SectionIntro
-            eyebrow="Testimonials"
             title={headline}
             body={body}
             tokens={tokens}
             align="center"
           />
           {featured ? (
-            <figure className={`${tokens.formCard} mx-auto mt-10 max-w-4xl p-6 text-center @min-[640px]:mt-14 @min-[640px]:p-8`}>
+            <figure className="mx-auto mt-10 max-w-4xl @min-[640px]:mt-14">
               <blockquote className={`text-xl leading-relaxed text-[var(--theme-ink)] @min-[640px]:text-2xl @min-[768px]:text-3xl ${tokens.heading}`}>
                 “{featured.quote}”
               </blockquote>
               <figcaption className="mt-6">
                 <p className="text-base font-medium text-[var(--theme-ink)]">{featured.name}</p>
-                <p className={`mt-1 text-xs uppercase tracking-[0.18em] ${tokens.accentText}`}>
+                <p className={`mt-1 text-sm ${tokens.accentText}`}>
                   {featured.role}
                 </p>
               </figcaption>
@@ -73,11 +72,11 @@ function createTestimonials01(tokens: ThemeTokens): SectionComponent {
               {rest.map((item) => (
                 <li
                   key={item.name}
-                  className="rounded-[1.5rem] border border-[var(--theme-line)] bg-[var(--theme-card)] p-6"
+                  className="border-t border-[var(--theme-line)] pt-6"
                 >
                   <p className={`text-sm leading-7 ${tokens.body}`}>“{item.quote}”</p>
                   <p className="mt-4 text-base font-medium text-[var(--theme-ink)]">{item.name}</p>
-                  <p className={`mt-1 text-xs uppercase tracking-[0.18em] ${tokens.accentText}`}>
+                  <p className={`mt-1 text-sm ${tokens.accentText}`}>
                     {item.role}
                   </p>
                 </li>
@@ -105,9 +104,8 @@ function createTestimonials02(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Testimonials" className={`${tokens.sectionPad} ${tokens.sectionDark}`}>
-        <div className="mx-auto max-w-6xl rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm @min-[640px]:p-8">
+        <div className="mx-auto max-w-6xl">
           <SectionIntro
-            eyebrow="What Guests Say"
             title={headline}
             tokens={tokens}
             align="center"
@@ -115,12 +113,12 @@ function createTestimonials02(tokens: ThemeTokens): SectionComponent {
           />
           <ul className="mt-8 grid gap-5 @min-[640px]:grid-cols-2 @min-[1024px]:grid-cols-3" role="list">
             {items.map((item) => (
-              <li key={item.name} className="rounded-[1.5rem] border border-white/10 bg-black/10 p-5">
+              <li key={item.name} className="border-t border-white/10 pt-5">
                 <p className={`text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>
                   “{item.quote}”
                 </p>
                 <p className="mt-5 text-base font-medium text-[var(--theme-on-dark)]">{item.name}</p>
-                <p className={`mt-1 text-xs uppercase tracking-[0.18em] ${tokens.accentTextOnDark}`}>
+                <p className={`mt-1 text-sm ${tokens.accentTextOnDark}`}>
                   {item.role}
                 </p>
               </li>
@@ -153,7 +151,6 @@ function createTeam01(tokens: ThemeTokens): SectionComponent {
       <section aria-label="Team" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
         <div className="mx-auto max-w-6xl">
           <SectionIntro
-            eyebrow="Team"
             title={headline}
             body={body}
             tokens={tokens}
@@ -173,7 +170,7 @@ function createTeam01(tokens: ThemeTokens): SectionComponent {
                 <h3 className="mt-5 text-lg font-medium text-[var(--theme-ink)] @min-[640px]:text-xl">
                   {member.name}
                 </h3>
-                <p className={`mt-1 text-xs uppercase tracking-[0.18em] ${tokens.accentText}`}>
+                <p className={`mt-1 text-sm ${tokens.accentText}`}>
                   {member.role}
                 </p>
                 {member.bio ? (
@@ -205,7 +202,7 @@ function createTeam02(tokens: ThemeTokens): SectionComponent {
     return (
       <section aria-label="Team" className={`${tokens.sectionPad} ${tokens.section}`}>
         <div className="mx-auto max-w-6xl">
-          <SectionIntro eyebrow="Meet the Team" title={headline} tokens={tokens} />
+          <SectionIntro title={headline} tokens={tokens} />
           {leadMember ? (
             <div className="mt-10 grid gap-8 @min-[768px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] @min-[768px]:items-center">
               <div className="overflow-hidden rounded-[2rem]">
@@ -217,11 +214,10 @@ function createTeam02(tokens: ThemeTokens): SectionComponent {
                 />
               </div>
               <div className={`${tokens.formCard} p-6 @min-[640px]:p-8`}>
-                <p className={tokens.eyebrow}>Featured</p>
                 <h3 className={`mt-4 text-2xl text-[var(--theme-ink)] @min-[640px]:text-3xl ${tokens.heading}`}>
                   {leadMember.name}
                 </h3>
-                <p className={`mt-2 text-sm uppercase tracking-[0.18em] ${tokens.accentText}`}>
+                <p className={`mt-2 text-sm ${tokens.accentText}`}>
                   {leadMember.role}
                 </p>
                 {leadMember.bio ? (
@@ -240,7 +236,7 @@ function createTeam02(tokens: ThemeTokens): SectionComponent {
                   className="rounded-[1.5rem] border border-[var(--theme-line)] bg-[var(--theme-card)] p-5"
                 >
                   <p className="text-lg font-medium text-[var(--theme-ink)]">{member.name}</p>
-                  <p className={`mt-2 text-xs uppercase tracking-[0.18em] ${tokens.accentText}`}>
+                  <p className={`mt-2 text-sm ${tokens.accentText}`}>
                     {member.role}
                   </p>
                   {member.bio ? (

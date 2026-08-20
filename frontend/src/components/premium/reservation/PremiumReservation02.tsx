@@ -28,10 +28,8 @@ export function PremiumReservation02({ content, assets }: SectionComponentProps)
         <div aria-hidden="true" className="absolute inset-0 bg-[var(--theme-bg-dark)]" />
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-[#070b14]/95 via-[#070b14]/60 to-[#070b14]/35" />
-      <div className="relative mx-auto flex min-h-[48svh] max-w-3xl flex-col items-center justify-center px-4 py-16 text-center @min-[640px]:min-h-[56svh] @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:px-10">
-        <p className={pm.eyebrow}>Reservations</p>
-        <span aria-hidden="true" className={`mx-auto mt-4 block @min-[640px]:mt-5 ${pm.accentRule}`} />
-        <h2 className={`mt-6 max-w-3xl text-white @min-[640px]:mt-8 ${pm.heading} ${pm.headingSection}`}>
+      <div className="relative mx-auto flex min-h-[48svh] max-w-6xl flex-col justify-end px-4 py-16 @min-[640px]:min-h-[56svh] @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:px-10">
+        <h2 className={`max-w-3xl text-white ${pm.heading} ${pm.headingSection}`}>
           {headline}
         </h2>
         {body ? (
@@ -39,7 +37,7 @@ export function PremiumReservation02({ content, assets }: SectionComponentProps)
             {body}
           </p>
         ) : null}
-        <div className="mt-8 flex w-full justify-center @min-[640px]:mt-10">
+        <div className="mt-8 flex w-full @min-[640px]:mt-10">
           <button
             type="button"
             onClick={createScrollHandler("contact")}

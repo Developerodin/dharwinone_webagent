@@ -18,7 +18,6 @@ export function ElegantGallery02({ content, assets }: SectionComponentProps) {
     <section aria-label="Gallery" className={`${eg.sectionPad} ${eg.sectionAlt}`}>
       <div className="mx-auto max-w-6xl min-w-0">
         <div className="animate-section-enter text-center">
-          <p className={eg.eyebrow}>Atmosphere</p>
           <div className="mx-auto mt-4 flex items-center justify-center gap-3 @min-[640px]:mt-5">
             <span aria-hidden="true" className={`${eg.goldRule} w-6 @min-[640px]:w-10`} />
             <h2 className={`min-w-0 ${eg.heading} ${eg.headingSection}`}>
@@ -50,7 +49,7 @@ export function ElegantGallery02({ content, assets }: SectionComponentProps) {
                 <div className="overflow-hidden">
                   <SectionMedia
                     src={asset.imagePath}
-                    className="aspect-[4/3] h-full w-full object-cover transition duration-300 hover:scale-[1.03]"
+                    className="aspect-[4/3] h-full w-full object-cover"
                   />
                 </div>
               </li>

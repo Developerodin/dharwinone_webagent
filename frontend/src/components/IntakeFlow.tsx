@@ -112,6 +112,11 @@ export function BriefSummaryCard({
             <span className="font-medium">Phone:</span> {brief.phone}
           </p>
         ) : null}
+        {brief.email ? (
+          <p>
+            <span className="font-medium">Email:</span> {brief.email}
+          </p>
+        ) : null}
         {brief.address ? (
           <p>
             <span className="font-medium">Address:</span> {brief.address}

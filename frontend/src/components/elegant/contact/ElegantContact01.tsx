@@ -1,4 +1,3 @@
-import { Clock3, Mail, MapPin, Phone } from "lucide-react";
 import { useId } from "react";
 import type { SectionComponentProps } from "../registry";
 import {
@@ -9,6 +8,11 @@ import {
 } from "../../premium/contentHelpers";
 import { eg } from "../shared/elegantTokens";
 import { useContactForm } from "@/components/shared/useContactForm";
+import { FormStatusBanner } from "@/components/shared/FormStatusBanner";
+import { AddressActions } from "@/components/shared/AddressActions";
+import { HairlineFacts } from "@/components/shared/HairlineFacts";
+import { getRestaurantEmail, getRestaurantName } from "@/lib/restaurantEmail";
+import { readCoord } from "@/lib/googleMapsLinks";
 
 /**
  * Elegant contact section with gold-framed details and reservation form.
@@ -23,72 +27,80 @@ export function ElegantContact01({ content }: SectionComponentProps) {
   );
   const address = getString(content, "address", "18 Heritage Court, New Delhi 110001");
   const phone = getString(content, "phone", "+91 98111 22334");
-  const email = getString(content, "email", "reservations@cavertahouse.com");
+  const email = getString(content, "email");
   const hours = getStringArray(content, "hours", []);
   const submitLabel = getString(content, "ctaLabel", "Request Reservation");
-  const form = useContactForm();
+  const form = useContactForm({
+    kind: "reservation",
+    toEmail: getRestaurantEmail(content),
+    businessName: getRestaurantName(content),
+  });
+  const point = {
+    address,
+    lat: readCoord(content.lat),
+    lng: readCoord(content.lng),
+  };
 
   return (
     <section aria-label="Contact and reservations" className={`${eg.sectionPad} ${eg.section}`}>
       <div className="mx-auto grid max-w-6xl gap-8 @min-[1024px]:grid-cols-[0.95fr_1.05fr]">
-        <div className={`${eg.panel} px-5 py-8 @min-[640px]:px-8 @min-[640px]:py-10 @min-[768px]:px-10`}>
-          <p className={eg.eyebrow}>Contact</p>
-          <div className="mt-4 flex items-center gap-3">
-            <span aria-hidden="true" className={`${eg.goldRule} w-8`} />
-            <span aria-hidden="true" className="size-1.5 rotate-45 bg-[var(--eg-gold)]" />
-            <span aria-hidden="true" className={`${eg.goldRule} w-8`} />
-          </div>
-          <h2 className={`mt-5 max-w-lg ${eg.heading} ${eg.headingSection}`}>{headline}</h2>
+        <div>
+          <h2 className={`max-w-lg ${eg.heading} ${eg.headingSection}`}>{headline}</h2>
           <p className={`mt-4 max-w-xl text-sm @min-[640px]:text-base ${eg.body}`}>{body}</p>
-
-          <dl className="mt-8 grid gap-5 @min-[640px]:grid-cols-2">
-            <div className="rounded-[1.5rem] border border-[var(--eg-gold)]/18 bg-black/15 p-5">
-              <dt className={`flex items-center gap-2 ${eg.inputLabel}`}>
-                <MapPin aria-hidden="true" className="size-4" />
-                Address
-              </dt>
-              <dd className="mt-3 text-sm leading-6 text-[var(--eg-cream)]">{address}</dd>
-            </div>
-            <div className="rounded-[1.5rem] border border-[var(--eg-gold)]/18 bg-black/15 p-5">
-              <dt className={`flex items-center gap-2 ${eg.inputLabel}`}>
-                <Phone aria-hidden="true" className="size-4" />
-                Phone
-              </dt>
-              <dd className="mt-3">
-                <a href={toTelHref(phone)} className="text-sm text-[var(--eg-cream)] transition hover:text-[var(--eg-gold)]">
-                  {phone}
-                </a>
-              </dd>
-            </div>
-            <div className="rounded-[1.5rem] border border-[var(--eg-gold)]/18 bg-black/15 p-5">
-              <dt className={`flex items-center gap-2 ${eg.inputLabel}`}>
-                <Mail aria-hidden="true" className="size-4" />
-                Email
-              </dt>
-              <dd className="mt-3">
-                <a href={toMailHref(email)} className="break-all text-sm text-[var(--eg-cream)] transition hover:text-[var(--eg-gold)]">
-                  {email}
-                </a>
-              </dd>
-            </div>
-            {hours.length > 0 ? (
-              <div className="rounded-[1.5rem] border border-[var(--eg-gold)]/18 bg-black/15 p-5">
-                <dt className={`flex items-center gap-2 ${eg.inputLabel}`}>
-                  <Clock3 aria-hidden="true" className="size-4" />
-                  Hours
-                </dt>
-                <dd className="mt-3 space-y-2 text-sm text-[var(--eg-cream)]">
-                  {hours.map((entry) => (
-                    <p key={entry}>{entry}</p>
-                  ))}
-                </dd>
-              </div>
-            ) : null}
-          </dl>
+          <HairlineFacts
+            className="mt-8"
+            inkClass="text-[var(--eg-cream)]"
+            mutedClass="text-[var(--eg-muted)]"
+            lineClass="divide-[var(--eg-gold)]/15"
+            facts={[
+              {
+                label: "Address",
+                value: (
+                  <>
+                    {address}
+                    <AddressActions point={point} onDark />
+                  </>
+                ),
+              },
+              {
+                label: "Phone",
+                value: (
+                  <a href={toTelHref(phone)} className={eg.footerLink}>
+                    {phone}
+                  </a>
+                ),
+              },
+              ...(email
+                ? [
+                    {
+                      label: "Email",
+                      value: (
+                        <a href={toMailHref(email)} className={`${eg.footerLink} break-all`}>
+                          {email}
+                        </a>
+                      ),
+                    },
+                  ]
+                : []),
+              ...(hours.length > 0
+                ? [
+                    {
+                      label: "Hours",
+                      value: (
+                        <div className="space-y-1">
+                          {hours.map((entry) => (
+                            <p key={entry}>{entry}</p>
+                          ))}
+                        </div>
+                      ),
+                    },
+                  ]
+                : []),
+            ]}
+          />
         </div>
 
         <div className={`${eg.panel} px-5 py-8 @min-[640px]:px-8 @min-[640px]:py-10`}>
-          <p className={eg.eyebrow}>Reservation Form</p>
           <h3 className={`mt-4 text-[1.75rem] leading-tight ${eg.heading}`}>
             Compose the details
           </h3>
@@ -254,13 +266,11 @@ export function ElegantContact01({ content }: SectionComponentProps) {
               </button>
             </div>
 
-            <div aria-live="polite">
-              {form.isSubmitted ? (
-                <p className="rounded-2xl border border-[var(--eg-gold)]/35 bg-white/[0.04] px-4 py-3 text-sm text-[var(--eg-cream)]">
-                  Request prepared. For same-day seating, please ring the dining room directly.
-                </p>
-              ) : null}
-            </div>
+            <FormStatusBanner
+              success={form.isSubmitted}
+              successMessage={form.successMessage}
+              error={form.submitError}
+            />
           </form>
         </div>
       </div>

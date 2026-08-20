@@ -1,119 +1,42 @@
 "use client";
 
-import { useState } from "react";
-import type { FormEvent } from "react";
+import { useState, type FormEvent } from "react";
+import {
+  hasContactErrors,
+  INITIAL_CONTACT_VALUES,
+  validateContactField,
+  validateContactForm,
+  type ContactFormErrors,
+  type ContactFormField,
+  type ContactFormValues,
+  type LeadKind,
+} from "@/lib/contactFormValidation";
+import { submitLead } from "@/lib/submitLead";
 
-export type ContactFormField =
-  | "name"
-  | "email"
-  | "phone"
-  | "date"
-  | "partySize"
-  | "message";
+export type { ContactFormField, ContactFormValues, LeadKind };
 
-export type ContactFormValues = Record<ContactFormField, string>;
-
-type ContactFormErrors = Partial<Record<ContactFormField, string>>;
-
-const INITIAL_VALUES: ContactFormValues = {
-  name: "",
-  email: "",
-  phone: "",
-  date: "",
-  partySize: "",
-  message: "",
+type UseContactFormOptions = {
+  kind: LeadKind;
+  toEmail: string | null;
+  businessName: string;
 };
 
 /**
- * Validates a single reservation form field.
+ * Shared contact and reservation form state with real SMTP submit.
  */
-function validateContactField(
-  field: ContactFormField,
-  value: string,
-): string | undefined {
-  const trimmed = value.trim();
-
-  if (field === "name") {
-    if (!trimmed) return "Enter your full name.";
-    if (trimmed.length < 2) return "Name should be at least 2 characters.";
-    return undefined;
-  }
-
-  if (field === "email") {
-    if (!trimmed) return "Enter your email address.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      return "Enter a valid email address.";
-    }
-    return undefined;
-  }
-
-  if (field === "phone") {
-    if (!trimmed) return "Enter your phone number.";
-    const digits = trimmed.replace(/\D/g, "");
-    if (digits.length < 10 || digits.length > 15) {
-      return "Enter a 10 to 15 digit phone number.";
-    }
-    return undefined;
-  }
-
-  if (field === "date") {
-    if (!trimmed) return "Choose a reservation date.";
-    return undefined;
-  }
-
-  if (field === "partySize") {
-    if (!trimmed) return "Enter the party size.";
-    const count = Number(trimmed);
-    if (!Number.isInteger(count) || count <= 0) {
-      return "Party size must be a whole number.";
-    }
-    if (count > 20) return "For parties above 20, please call directly.";
-    return undefined;
-  }
-
-  if (trimmed && trimmed.length < 10) {
-    return "Add a few more details so the team can prepare.";
-  }
-
-  if (trimmed.length > 400) {
-    return "Keep your notes under 400 characters.";
-  }
-
-  return undefined;
-}
-
-/**
- * Validates every field in the reservation contact form.
- */
-function validateContactForm(values: ContactFormValues): ContactFormErrors {
-  return {
-    name: validateContactField("name", values.name),
-    email: validateContactField("email", values.email),
-    phone: validateContactField("phone", values.phone),
-    date: validateContactField("date", values.date),
-    partySize: validateContactField("partySize", values.partySize),
-    message: validateContactField("message", values.message),
-  };
-}
-
-/**
- * Returns true when the form has at least one validation error.
- */
-function hasContactErrors(errors: ContactFormErrors): boolean {
-  return Object.values(errors).some(Boolean);
-}
-
-/**
- * Shared contact and reservation form state with blur + submit validation.
- */
-export function useContactForm() {
-  const [values, setValues] = useState<ContactFormValues>(INITIAL_VALUES);
+export function useContactForm({
+  kind,
+  toEmail,
+  businessName,
+}: UseContactFormOptions) {
+  const [values, setValues] = useState<ContactFormValues>(INITIAL_CONTACT_VALUES);
   const [errors, setErrors] = useState<ContactFormErrors>({});
   const [touched, setTouched] = useState<Partial<Record<ContactFormField, boolean>>>(
     {},
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   /**
    * Updates a single field value and clears stale success state.
@@ -121,11 +44,12 @@ export function useContactForm() {
   function setField(field: ContactFormField, value: string): void {
     setValues((current) => ({ ...current, [field]: value }));
     setIsSubmitted(false);
+    setSubmitError(null);
 
     if (touched[field]) {
       setErrors((current) => ({
         ...current,
-        [field]: validateContactField(field, value),
+        [field]: validateContactField(field, value, kind),
       }));
     }
   }
@@ -137,46 +61,78 @@ export function useContactForm() {
     setTouched((current) => ({ ...current, [field]: true }));
     setErrors((current) => ({
       ...current,
-      [field]: validateContactField(field, values[field]),
+      [field]: validateContactField(field, values[field], kind),
     }));
   }
 
   /**
-   * Validates the form and surfaces a success state for preview demos.
+   * Validates and emails the restaurant owner.
    */
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
-    const nextErrors = validateContactForm(values);
+    const nextErrors = validateContactForm(values, kind);
 
     setTouched({
       name: true,
       email: true,
       phone: true,
       date: true,
+      time: true,
       partySize: true,
       message: true,
     });
     setErrors(nextErrors);
     setIsSubmitted(false);
+    setSubmitError(null);
 
     if (hasContactErrors(nextErrors)) {
       return;
     }
 
+    if (!toEmail) {
+      setSubmitError(
+        "Couldn't send — no restaurant email. Set a contact email in chat first.",
+      );
+      return;
+    }
+
     setIsSubmitting(true);
-    await new Promise<void>((resolve) => {
-      window.setTimeout(resolve, 220);
-    });
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+    try {
+      await submitLead({
+        kind,
+        businessName,
+        toEmail,
+        values,
+      });
+      setIsSubmitted(true);
+      setValues(INITIAL_CONTACT_VALUES);
+      setTouched({});
+      setErrors({});
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Could not send that request. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
+  const successMessage =
+    kind === "reservation"
+      ? "Reservation request submitted successfully."
+      : "Enquiry submitted successfully.";
+
   return {
+    kind,
     values,
     errors,
     touched,
     isSubmitting,
     isSubmitted,
+    submitError,
+    successMessage,
     setField,
     blurField,
     handleSubmit,

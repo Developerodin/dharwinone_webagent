@@ -21,7 +21,6 @@ export function ElegantAbout02({ content, assets }: SectionComponentProps) {
           >
             “
           </span>
-          <p className={eg.eyebrow}>Heritage</p>
           <h2 className={`mt-4 @min-[640px]:mt-5 ${eg.heading} ${eg.headingSection}`}>
             {headline}
           </h2>
@@ -50,7 +49,7 @@ export function ElegantAbout02({ content, assets }: SectionComponentProps) {
           {imagePath ? (
             <SectionMedia
               src={imagePath}
-              className="relative aspect-[4/5] w-full object-cover transition duration-500 hover:brightness-110"
+              className="relative aspect-[4/5] w-full object-cover"
             />
           ) : (
             <div

@@ -26,7 +26,6 @@ export function PremiumTeam02({ content, assets }: SectionComponentProps) {
   return (
     <section aria-label="Team" className={`${pm.sectionPad} ${pm.section}`}>
       <div className="mx-auto max-w-6xl min-w-0">
-        <p className={pm.eyebrow}>Our Chef</p>
         <span aria-hidden="true" className={`mt-3 block ${pm.accentRule}`} />
         <h2 className={`mt-4 ${pm.heading} ${pm.headingSection}`}>{headline}</h2>
         {introText ? (

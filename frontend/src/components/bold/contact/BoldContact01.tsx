@@ -1,7 +1,13 @@
 import type { SectionComponentProps } from "@/components/premium/registry";
 import { getString } from "@/components/premium/contentHelpers";
-import { getContactFacts } from "@/components/familyKit/sections/shared";
+import {
+  ContactFactValue,
+  getContactFacts,
+} from "@/components/familyKit/sections/shared";
 import { createScrollHandler } from "@/lib/scrollToSection";
+import { FormStatusBanner } from "@/components/shared/FormStatusBanner";
+import { useContactForm } from "@/components/shared/useContactForm";
+import { getRestaurantEmail, getRestaurantName } from "@/lib/restaurantEmail";
 import { bd } from "../shared/boldTokens";
 
 /**
@@ -16,6 +22,11 @@ export function BoldContact01({ content }: SectionComponentProps) {
   );
   const facts = getContactFacts(content);
   const ctaLabel = getString(content, "ctaLabel", "Order Online");
+  const form = useContactForm({
+    kind: "contact",
+    toEmail: getRestaurantEmail(content),
+    businessName: getRestaurantName(content),
+  });
 
   return (
     <section aria-label="Contact" className={`${bd.sectionPad} ${bd.sectionAlt}`}>
@@ -46,13 +57,7 @@ export function BoldContact01({ content }: SectionComponentProps) {
                     {fact.label}
                   </dt>
                   <dd className="mt-2 text-sm font-medium text-[var(--theme-ink)] @min-[640px]:text-base">
-                    {fact.href ? (
-                      <a href={fact.href} className="transition hover:text-[var(--bold-hero-red)]">
-                        {fact.value}
-                      </a>
-                    ) : (
-                      fact.value
-                    )}
+                    <ContactFactValue fact={fact} />
                   </dd>
                 </div>
               ))
@@ -70,7 +75,8 @@ export function BoldContact01({ content }: SectionComponentProps) {
 
         <form
           className="flex flex-col gap-4 border border-[var(--theme-line)] bg-[var(--theme-card)] p-6 @min-[640px]:p-8"
-          onSubmit={(event) => event.preventDefault()}
+          noValidate
+          onSubmit={(event) => void form.handleSubmit(event)}
           aria-label="Contact form"
         >
           <p className="font-[family-name:var(--theme-font-display)] text-lg font-bold uppercase text-[var(--theme-ink)]">
@@ -84,9 +90,16 @@ export function BoldContact01({ content }: SectionComponentProps) {
               type="text"
               name="name"
               autoComplete="name"
+              value={form.values.name}
+              onChange={(event) => form.setField("name", event.target.value)}
+              onBlur={() => form.blurField("name")}
+              aria-invalid={Boolean(form.errors.name)}
               className="min-h-11 w-full border border-[var(--theme-line)] bg-[var(--theme-bg)] px-4 py-3 text-sm text-[var(--theme-ink)] outline-none placeholder:text-[var(--theme-muted)] focus:border-[var(--bold-hero-red)]"
               placeholder="Your name"
             />
+            {form.errors.name ? (
+              <p className="mt-2 text-sm text-[var(--bold-hero-red)]">{form.errors.name}</p>
+            ) : null}
           </label>
           <label className="block">
             <span className="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--bold-hero-red)]">
@@ -96,9 +109,16 @@ export function BoldContact01({ content }: SectionComponentProps) {
               type="email"
               name="email"
               autoComplete="email"
+              value={form.values.email}
+              onChange={(event) => form.setField("email", event.target.value)}
+              onBlur={() => form.blurField("email")}
+              aria-invalid={Boolean(form.errors.email)}
               className="min-h-11 w-full border border-[var(--theme-line)] bg-[var(--theme-bg)] px-4 py-3 text-sm text-[var(--theme-ink)] outline-none placeholder:text-[var(--theme-muted)] focus:border-[var(--bold-hero-red)]"
               placeholder="you@email.com"
             />
+            {form.errors.email ? (
+              <p className="mt-2 text-sm text-[var(--bold-hero-red)]">{form.errors.email}</p>
+            ) : null}
           </label>
           <label className="block">
             <span className="mb-2 block text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--bold-hero-red)]">
@@ -107,16 +127,29 @@ export function BoldContact01({ content }: SectionComponentProps) {
             <textarea
               name="message"
               rows={4}
+              value={form.values.message}
+              onChange={(event) => form.setField("message", event.target.value)}
+              onBlur={() => form.blurField("message")}
+              aria-invalid={Boolean(form.errors.message)}
               className="min-h-28 w-full border border-[var(--theme-line)] bg-[var(--theme-bg)] px-4 py-3 text-sm text-[var(--theme-ink)] outline-none placeholder:text-[var(--theme-muted)] focus:border-[var(--bold-hero-red)]"
               placeholder="How can we help?"
             />
+            {form.errors.message ? (
+              <p className="mt-2 text-sm text-[var(--bold-hero-red)]">{form.errors.message}</p>
+            ) : null}
           </label>
           <button
             type="submit"
-            className="mt-1 inline-flex min-h-11 items-center justify-center bg-[var(--bold-hero-red)] px-7 py-2.5 text-xs font-bold uppercase tracking-[0.18em] text-white transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--bold-hero-red)]"
+            disabled={form.isSubmitting}
+            className="mt-1 inline-flex min-h-11 items-center justify-center bg-[var(--bold-hero-red)] px-7 py-2.5 text-xs font-bold uppercase tracking-[0.18em] text-white transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--bold-hero-red)] disabled:opacity-60"
           >
-            Send message
+            {form.isSubmitting ? "Sending..." : "Send message"}
           </button>
+          <FormStatusBanner
+            success={form.isSubmitted}
+            successMessage={form.successMessage}
+            error={form.submitError}
+          />
         </form>
       </div>
     </section>

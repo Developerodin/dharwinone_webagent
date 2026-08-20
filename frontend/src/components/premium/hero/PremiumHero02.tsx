@@ -22,7 +22,6 @@ export function PremiumHero02({ content, assets }: SectionComponentProps) {
     >
       <div className="mx-auto grid min-h-[60svh] max-w-6xl @min-[768px]:min-h-[78vh] @min-[768px]:grid-cols-2">
         <div className="animate-section-enter flex flex-col justify-center px-4 py-14 @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:px-10 @min-[768px]:py-24">
-          <p className={pm.eyebrow}>Dining &amp; Atmosphere</p>
           <span
             aria-hidden="true"
             className={`mt-4 block origin-left transition-transform duration-500 @min-[640px]:mt-5 ${pm.accentRule}`}
@@ -50,7 +49,7 @@ export function PremiumHero02({ content, assets }: SectionComponentProps) {
           {imagePath ? (
             <SectionMedia
               src={imagePath}
-              className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-[1.02]"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           ) : (
             <div

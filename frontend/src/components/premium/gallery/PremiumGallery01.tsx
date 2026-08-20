@@ -13,7 +13,6 @@ export function PremiumGallery01({ content, assets }: SectionComponentProps) {
   return (
     <section aria-label="Gallery" className={`${pm.sectionPad} ${pm.section}`}>
       <div className="mx-auto max-w-6xl min-w-0">
-        <p className={`text-center ${pm.eyebrow}`}>Gallery</p>
         <h2 className={`mt-3 text-center @min-[640px]:mt-4 ${pm.heading} ${pm.headingSection}`}>
           {headline}
         </h2>
@@ -39,7 +38,7 @@ export function PremiumGallery01({ content, assets }: SectionComponentProps) {
               <li key={asset.key} className="min-w-0 overflow-hidden">
                 <SectionMedia
                   src={asset.imagePath}
-                  className="aspect-[4/3] w-full object-cover transition duration-300 hover:scale-[1.03]"
+                  className="aspect-[4/3] w-full object-cover"
                 />
               </li>
             ))}

@@ -1,4 +1,3 @@
-import { Clock3, Mail, MapPin, Phone } from "lucide-react";
 import { useId } from "react";
 import type { SectionComponentProps } from "../registry";
 import {
@@ -9,6 +8,11 @@ import {
 } from "../contentHelpers";
 import { pm } from "../shared/premiumTokens";
 import { useContactForm } from "@/components/shared/useContactForm";
+import { FormStatusBanner } from "@/components/shared/FormStatusBanner";
+import { AddressActions } from "@/components/shared/AddressActions";
+import { HairlineFacts } from "@/components/shared/HairlineFacts";
+import { getRestaurantEmail, getRestaurantName } from "@/lib/restaurantEmail";
+import { readCoord } from "@/lib/googleMapsLinks";
 
 /**
  * Premium contact section with split information panel and reservation form.
@@ -23,68 +27,77 @@ export function PremiumContact01({ content }: SectionComponentProps) {
   );
   const address = getString(content, "address", "15 Copper Lane, Jaipur 302001");
   const phone = getString(content, "phone", "+91 98765 43210");
-  const email = getString(content, "email", "reservations@maisoncopper.com");
+  const email = getString(content, "email");
   const hours = getStringArray(content, "hours", []);
   const submitLabel = getString(content, "ctaLabel", "Request Reservation");
-  const form = useContactForm();
+  const form = useContactForm({
+    kind: "reservation",
+    toEmail: getRestaurantEmail(content),
+    businessName: getRestaurantName(content),
+  });
+  const point = {
+    address,
+    lat: readCoord(content.lat),
+    lng: readCoord(content.lng),
+  };
 
   return (
     <section aria-label="Contact and reservations" className={`${pm.sectionPad} ${pm.section}`}>
       <div className="mx-auto grid max-w-6xl gap-8 @min-[1024px]:grid-cols-[1.05fr_0.95fr]">
-        <div className={`${pm.panel} px-5 py-8 @min-[640px]:px-8 @min-[640px]:py-10 @min-[768px]:px-10`}>
-          <p className={pm.eyebrow}>Contact</p>
-          <span aria-hidden="true" className={`mt-4 block ${pm.accentRule}`} />
-          <h2 className={`mt-5 max-w-lg ${pm.heading} ${pm.headingSection}`}>{headline}</h2>
+        <div>
+          <h2 className={`max-w-lg ${pm.heading} ${pm.headingSection}`}>{headline}</h2>
           <p className={`mt-4 max-w-xl text-sm @min-[640px]:text-base ${pm.body}`}>{body}</p>
-
-          <dl className="mt-8 grid gap-5 @min-[640px]:grid-cols-2">
-            <div className="rounded-[1.5rem] border border-white/10 bg-black/15 p-5">
-              <dt className={`flex items-center gap-2 ${pm.inputLabel}`}>
-                <MapPin aria-hidden="true" className="size-4" />
-                Address
-              </dt>
-              <dd className="mt-3 text-sm leading-6 text-[var(--theme-ink)]">{address}</dd>
-            </div>
-            <div className="rounded-[1.5rem] border border-white/10 bg-black/15 p-5">
-              <dt className={`flex items-center gap-2 ${pm.inputLabel}`}>
-                <Phone aria-hidden="true" className="size-4" />
-                Phone
-              </dt>
-              <dd className="mt-3">
-                <a href={toTelHref(phone)} className="text-sm text-[var(--theme-ink)] transition hover:text-[var(--theme-accent)]">
-                  {phone}
-                </a>
-              </dd>
-            </div>
-            <div className="rounded-[1.5rem] border border-white/10 bg-black/15 p-5">
-              <dt className={`flex items-center gap-2 ${pm.inputLabel}`}>
-                <Mail aria-hidden="true" className="size-4" />
-                Email
-              </dt>
-              <dd className="mt-3">
-                <a href={toMailHref(email)} className="break-all text-sm text-[var(--theme-ink)] transition hover:text-[var(--theme-accent)]">
-                  {email}
-                </a>
-              </dd>
-            </div>
-            {hours.length > 0 ? (
-              <div className="rounded-[1.5rem] border border-white/10 bg-black/15 p-5">
-                <dt className={`flex items-center gap-2 ${pm.inputLabel}`}>
-                  <Clock3 aria-hidden="true" className="size-4" />
-                  Hours
-                </dt>
-                <dd className="mt-3 space-y-2 text-sm text-[var(--theme-ink)]">
-                  {hours.map((entry) => (
-                    <p key={entry}>{entry}</p>
-                  ))}
-                </dd>
-              </div>
-            ) : null}
-          </dl>
+          <HairlineFacts
+            className="mt-8"
+            facts={[
+              {
+                label: "Address",
+                value: (
+                  <>
+                    {address}
+                    <AddressActions point={point} />
+                  </>
+                ),
+              },
+              {
+                label: "Phone",
+                value: (
+                  <a href={toTelHref(phone)} className={pm.footerLink}>
+                    {phone}
+                  </a>
+                ),
+              },
+              ...(email
+                ? [
+                    {
+                      label: "Email",
+                      value: (
+                        <a href={toMailHref(email)} className={`${pm.footerLink} break-all`}>
+                          {email}
+                        </a>
+                      ),
+                    },
+                  ]
+                : []),
+              ...(hours.length > 0
+                ? [
+                    {
+                      label: "Hours",
+                      value: (
+                        <div className="space-y-1">
+                          {hours.map((entry) => (
+                            <p key={entry}>{entry}</p>
+                          ))}
+                        </div>
+                      ),
+                    },
+                  ]
+                : []),
+            ]}
+          />
         </div>
 
         <div className={`${pm.panel} px-5 py-8 @min-[640px]:px-8 @min-[640px]:py-10`}>
-          <p className={pm.eyebrow}>Reservation Form</p>
           <h3 className={`mt-4 text-[1.75rem] leading-tight ${pm.heading}`}>
             Tell us the details
           </h3>
@@ -111,7 +124,7 @@ export function PremiumContact01({ content }: SectionComponentProps) {
                   placeholder="Your full name"
                 />
                 {form.errors.name ? (
-                  <p id={`${formId}-name-error`} className="mt-2 text-sm text-[#e7b39a]">
+                    <p id={`${formId}-name-error`} className="mt-2 text-sm text-red-400">
                     {form.errors.name}
                   </p>
                 ) : null}
@@ -136,7 +149,7 @@ export function PremiumContact01({ content }: SectionComponentProps) {
                   placeholder="name@example.com"
                 />
                 {form.errors.email ? (
-                  <p id={`${formId}-email-error`} className="mt-2 text-sm text-[#e7b39a]">
+                  <p id={`${formId}-email-error`} className="mt-2 text-sm text-red-400">
                     {form.errors.email}
                   </p>
                 ) : null}
@@ -161,7 +174,7 @@ export function PremiumContact01({ content }: SectionComponentProps) {
                   placeholder="+91 98765 43210"
                 />
                 {form.errors.phone ? (
-                  <p id={`${formId}-phone-error`} className="mt-2 text-sm text-[#e7b39a]">
+                  <p id={`${formId}-phone-error`} className="mt-2 text-sm text-red-400">
                     {form.errors.phone}
                   </p>
                 ) : null}
@@ -187,7 +200,7 @@ export function PremiumContact01({ content }: SectionComponentProps) {
                   placeholder="4"
                 />
                 {form.errors.partySize ? (
-                  <p id={`${formId}-partySize-error`} className="mt-2 text-sm text-[#e7b39a]">
+                  <p id={`${formId}-partySize-error`} className="mt-2 text-sm text-red-400">
                     {form.errors.partySize}
                   </p>
                 ) : null}
@@ -211,7 +224,7 @@ export function PremiumContact01({ content }: SectionComponentProps) {
                   aria-describedby={form.errors.date ? `${formId}-date-error` : undefined}
                 />
                 {form.errors.date ? (
-                  <p id={`${formId}-date-error`} className="mt-2 text-sm text-[#e7b39a]">
+                  <p id={`${formId}-date-error`} className="mt-2 text-sm text-red-400">
                     {form.errors.date}
                   </p>
                 ) : null}
@@ -234,7 +247,7 @@ export function PremiumContact01({ content }: SectionComponentProps) {
                   placeholder="Anniversary tasting, window seating, dietary notes..."
                 />
                 {form.errors.message ? (
-                  <p id={`${formId}-message-error`} className="mt-2 text-sm text-[#e7b39a]">
+                  <p id={`${formId}-message-error`} className="mt-2 text-sm text-red-400">
                     {form.errors.message}
                   </p>
                 ) : null}
@@ -242,7 +255,7 @@ export function PremiumContact01({ content }: SectionComponentProps) {
             </div>
 
             <div className="flex flex-col gap-3 @min-[640px]:flex-row @min-[640px]:items-center @min-[640px]:justify-between">
-              <p className="text-sm text-[#aa9381]">
+              <p className={`text-sm ${pm.body}`}>
                 Requests are reviewed during service hours.
               </p>
               <button type="submit" className={pm.primaryButton} disabled={form.isSubmitting}>
@@ -250,13 +263,11 @@ export function PremiumContact01({ content }: SectionComponentProps) {
               </button>
             </div>
 
-            <div aria-live="polite">
-              {form.isSubmitted ? (
-                <p className="rounded-2xl border border-[var(--theme-accent)]/40 bg-[var(--theme-card)] px-4 py-3 text-sm text-[var(--theme-ink)]">
-                  Request prepared. For immediate confirmation, call the reservation desk.
-                </p>
-              ) : null}
-            </div>
+            <FormStatusBanner
+              success={form.isSubmitted}
+              successMessage={form.successMessage}
+              error={form.submitError}
+            />
           </form>
         </div>
       </div>

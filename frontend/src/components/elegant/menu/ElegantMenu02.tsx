@@ -18,7 +18,6 @@ export function ElegantMenu02({ content }: SectionComponentProps) {
     <section aria-label="Menu" className={`${eg.sectionPad} ${eg.section}`}>
       <div className="mx-auto max-w-2xl min-w-0">
         <div className="animate-section-enter text-center">
-          <p className={eg.eyebrow}>Tasting Menu</p>
           <h2 className={`mt-4 @min-[640px]:mt-5 ${eg.heading} ${eg.headingSection}`}>
             {sectionTitle}
           </h2>

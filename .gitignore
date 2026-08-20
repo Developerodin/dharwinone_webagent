@@ -37,6 +37,9 @@ backend/data/images/uploads/
 /Restaurant/
 /backend/data/dumpiamgedata/
 
+# Prisma client is generated from schema.prisma — regenerate, never commit
+backend/src/generated/
+
 # Misc
 *.local
 .cache/

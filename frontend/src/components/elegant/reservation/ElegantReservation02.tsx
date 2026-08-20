@@ -29,7 +29,6 @@ export function ElegantReservation02({ content, assets }: SectionComponentProps)
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/95 via-[#0a0a0a]/65 to-[#0a0a0a]/35" />
       <div className="relative mx-auto flex min-h-[48svh] max-w-3xl flex-col items-center justify-center px-4 py-16 text-center @min-[640px]:min-h-[56svh] @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:px-10">
-        <p className={eg.eyebrow}>Reservations</p>
         <span aria-hidden="true" className={`mx-auto mt-4 block @min-[640px]:mt-5 ${eg.goldRule}`} />
         <h2 className={`mt-6 max-w-3xl @min-[640px]:mt-8 ${eg.heading} ${eg.headingSection}`}>
           {headline}

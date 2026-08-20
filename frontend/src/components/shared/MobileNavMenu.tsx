@@ -8,6 +8,8 @@ export type MobileNavToggleProps = {
   menuId: string;
   onToggle: () => void;
   className: string;
+  /** Show at every `/page` width (overlay / off-canvas headers). */
+  alwaysVisible?: boolean;
 };
 
 /**
@@ -19,17 +21,23 @@ export function MobileNavToggle({
   menuId,
   onToggle,
   className,
+  alwaysVisible = false,
 }: MobileNavToggleProps) {
+  const displayClass = alwaysVisible
+    ? "inline-flex"
+    : "hidden @max-[1023px]/page:!inline-flex";
+  const showClose = open && !alwaysVisible;
+
   return (
     <button
       type="button"
-      className={`hidden size-11 shrink-0 items-center justify-center rounded-full transition duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 @max-[1023px]/page:!inline-flex ${className}`}
+      className={`${displayClass} size-11 shrink-0 items-center justify-center rounded-full transition duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${className}`}
       aria-label={open ? "Close navigation menu" : "Open navigation menu"}
       aria-expanded={open}
       aria-controls={menuId}
       onClick={onToggle}
     >
-      {open ? (
+      {showClose ? (
         <X className="size-5" strokeWidth={1.75} aria-hidden="true" />
       ) : (
         <Menu className="size-5" strokeWidth={1.75} aria-hidden="true" />

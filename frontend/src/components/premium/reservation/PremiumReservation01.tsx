@@ -15,12 +15,10 @@ export function PremiumReservation01({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Reservation" className={`${pm.sectionPad} ${pm.sectionAlt}`}>
-      <div className="mx-auto max-w-3xl min-w-0 text-center">
-        <p className={pm.eyebrow}>Reservations</p>
-        <span aria-hidden="true" className={`mx-auto mt-3 block @min-[640px]:mt-4 ${pm.accentRule}`} />
-        <h2 className={`mt-4 @min-[640px]:mt-6 ${pm.heading} ${pm.headingSection}`}>{headline}</h2>
+      <div className="mx-auto max-w-6xl min-w-0">
+        <h2 className={`${pm.heading} ${pm.headingSection}`}>{headline}</h2>
         {body ? (
-          <p className={`mx-auto mt-4 max-w-2xl text-sm @min-[640px]:mt-5 @min-[640px]:text-base ${pm.body}`}>
+          <p className={`mt-4 max-w-2xl text-sm @min-[640px]:mt-5 @min-[640px]:text-base ${pm.body}`}>
             {body}
           </p>
         ) : null}
@@ -30,7 +28,7 @@ export function PremiumReservation01({ content }: SectionComponentProps) {
             {address ? <li className={pm.body}>{address}</li> : null}
           </ul>
         )}
-        <div className="mt-8 flex w-full justify-center @min-[640px]:mt-10">
+        <div className="mt-8 flex w-full @min-[640px]:mt-10">
           <button
             type="button"
             onClick={createScrollHandler("contact")}

@@ -100,7 +100,13 @@ export function formatBriefSummary(brief: Brief, family: PageFamily): string {
     `Visual theme: ${getPageFamilyLabel(family)} (Creative Director)`,
     brandLine,
     brief.phone ? `Phone: ${brief.phone}` : "",
+    brief.email
+      ? `Email: ${brief.email}\nContact / reservation queries will go to this email.`
+      : "",
     brief.address ? `Address: ${brief.address}` : "",
+    brief.hours?.length
+      ? `Hours: ${brief.hours.map((h) => `${h.days} ${h.open}–${h.close}`).join("; ")}`
+      : "",
     "",
     `Menu (${brief.menuItems.length} items):`,
     menuPreview,

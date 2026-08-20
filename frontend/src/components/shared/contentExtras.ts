@@ -6,6 +6,22 @@ export type NavItem = {
 };
 
 /**
+ * Splits nav items into two groups for a centered-brand header.
+ */
+export function splitNavItems<T>(items: readonly T[]): { left: T[]; right: T[] } {
+  const midpoint = Math.ceil(items.length / 2);
+  return { left: items.slice(0, midpoint), right: items.slice(midpoint) };
+}
+
+/**
+ * Prepends a Home → hero item when the nav list does not already include hero.
+ */
+export function withHomeNavItem(items: readonly NavItem[]): NavItem[] {
+  if (items.some((item) => item.target === "hero")) return [...items];
+  return [{ label: "Home", target: "hero" }, ...items];
+}
+
+/**
  * Safely reads nav items from section content.
  */
 export function getNavItems(content: Record<string, unknown>): NavItem[] {

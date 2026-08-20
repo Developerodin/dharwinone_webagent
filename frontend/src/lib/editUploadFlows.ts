@@ -2,6 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 import { createMessageId } from "@/lib/chatFormatters";
 import { performAsk, type AskResult } from "@/lib/performAsk";
 import { performPageEdit } from "@/lib/performPageEdit";
+import { saveServerVersion } from "@/lib/projectApi";
 import {
   ensureProjectId,
   persistProjectState,
@@ -23,6 +24,7 @@ import type { ChatMessage, ChatPhase } from "@/types/chat";
 import type { Brief, PipelineStage } from "@/types/intake";
 import type { HistoryEntry } from "@/lib/projectStorage";
 import type { Page } from "@/types/page";
+import { parseLocationPickerIntent } from "@/lib/locationPickerIntent";
 
 type AppendMessage = (message: Omit<ChatMessage, "id" | "timestamp">) => void;
 
@@ -50,6 +52,10 @@ export type RunEditFlowDeps = {
   brief: Brief;
   pageFamily: PageFamily | null;
   projectId: string | null;
+  /** Version the client is editing from, for optimistic concurrency. */
+  serverVersion?: number;
+  /** Records the version the server stored this edit as. */
+  setServerVersion?: (version: number) => void;
   enrichedChatText: string;
   useFixture: boolean;
   appendMessage: AppendMessage;
@@ -70,6 +76,8 @@ export type RunEditFlowDeps = {
   ops?: Array<Record<string, unknown>>;
   /** Section type context for targeted edits. */
   targetSection?: string;
+  /** Content field context for click-scoped copy edits. */
+  targetField?: string;
   /** Creative direction to forward and persist. */
   direction?: unknown;
   /** Current edit history — a snapshot is prepended before applying. */
@@ -78,6 +86,8 @@ export type RunEditFlowDeps = {
   setHistory?: (fn: (prev: HistoryEntry[]) => HistoryEntry[]) => void;
   /** Called with the updated direction after a successful edit. */
   setDirection?: (dir: unknown) => void;
+  /** Opens the map picker when Ask classifies a location-pin request. */
+  openLocationPicker?: (prefill: string) => void;
 };
 
 export type UploadImageFlowDeps = {
@@ -90,6 +100,12 @@ export type UploadImageFlowDeps = {
   brief: Brief | null;
   pageFamily: PageFamily | null;
   projectId: string | null;
+  /** Version the client is editing from, for optimistic concurrency. */
+  serverVersion?: number;
+  /** Records the version the server stored this edit as. */
+  setServerVersion?: (version: number) => void;
+  /** Creative direction carried onto the saved version. */
+  direction?: unknown;
   enrichedChatText: string;
   appendMessage: AppendMessage;
   setPage: (page: Page) => void;
@@ -137,6 +153,22 @@ export async function runAskThenEditFlow(deps: RunEditFlowDeps): Promise<void> {
     family,
     useFixture,
   });
+
+  if (ask.openLocationPicker) {
+    deps.setMessages((current) =>
+      applyStageToMessages(current, {
+        name: "Ask",
+        status: "done",
+        message: "Opening map picker",
+        detail: "Location pin requested",
+        ms: 0,
+      }),
+    );
+    const prefill = parseLocationPickerIntent(instruction)?.prefill ?? "";
+    deps.openLocationPicker?.(prefill);
+    setPhase("editing");
+    return;
+  }
 
   if (ask.intent === "edit") {
     // Mark Ask done, then Editor applies immediately.
@@ -201,12 +233,14 @@ export async function runEditFlow(deps: RunEditFlowDeps): Promise<void> {
     instruction,
     ops,
     targetSection,
+    targetField,
     direction,
     history,
     page,
     brief,
     pageFamily,
     projectId,
+    serverVersion,
     enrichedChatText,
     useFixture,
     appendMessage,
@@ -221,14 +255,19 @@ export async function runEditFlow(deps: RunEditFlowDeps): Promise<void> {
 
   const family = pageFamily ?? "premium";
   const agentName = editorLabelFor(specialist);
+  const attached = Boolean(targetSection);
 
   setPhase("editing");
   appendMessage({
     role: "agent",
-    content: `**${agentName}** applying your changes…`,
+    content: attached
+      ? `**${agentName}** reading the attached element…`
+      : `**${agentName}** applying your changes…`,
     stageName: agentName,
     stageStatus: "running",
-    stageDetail: "Applying your edits to the live page…",
+    stageDetail: attached
+      ? "Understanding what you want, then applying it to the pick…"
+      : "Applying your edits to the live page…",
   });
 
   try {
@@ -236,11 +275,17 @@ export async function runEditFlow(deps: RunEditFlowDeps): Promise<void> {
       instruction,
       ops,
       targetSection,
+      targetField,
       direction,
       page,
       brief,
       family,
       useFixture,
+      // With a project id the server loads the page itself and appends a
+      // version; expectedVersion is what makes a concurrent tab a clean 409
+      // rather than a silent overwrite.
+      projectId,
+      expectedVersion: serverVersion,
     });
 
     // Build the next history (snapshot taken BEFORE applying new state).
@@ -257,6 +302,9 @@ export async function runEditFlow(deps: RunEditFlowDeps): Promise<void> {
     setPage(result.page);
     setBrief(result.brief);
     setPageFamily(result.family);
+    if (typeof result.version === "number") {
+      deps.setServerVersion?.(result.version);
+    }
     // Update in-memory history and direction.
     deps.setHistory?.(() => nextHistory);
     if (result.direction !== undefined) {
@@ -306,6 +354,7 @@ export async function runEditFlow(deps: RunEditFlowDeps): Promise<void> {
         nextEnriched: enrichedChatText,
         nextDirection: result.direction,
         nextHistory,
+        serverVersion: result.version,
       });
       return nextMessages;
     });
@@ -336,6 +385,8 @@ export async function runUploadImageFlow(
     brief,
     pageFamily,
     projectId,
+    serverVersion,
+    direction,
     enrichedChatText,
     appendMessage,
     setPage,
@@ -387,6 +438,25 @@ export async function runUploadImageFlow(
           page,
           target,
         });
+
+    // The upload endpoint returns a modified page but stores nothing, so this
+    // change has to be committed as a version explicitly. Without it the new
+    // image lives only in the local cache and vanishes on the next reload,
+    // when the server's copy of the page is fetched back.
+    let uploadedVersion = serverVersion;
+    if (projectId) {
+      const saved = await saveServerVersion({
+        projectId,
+        page: result.page,
+        brief,
+        direction,
+        pageFamily: pageFamily ?? "premium",
+        summary: `Updated ${label}`,
+        expectedVersion: serverVersion ?? 0,
+      });
+      uploadedVersion = saved.version;
+      deps.setServerVersion?.(saved.version);
+    }
     setPage(result.page);
 
     const activeId = ensureProjectId(projectId);
@@ -430,6 +500,7 @@ export async function runUploadImageFlow(
         nextPage: result.page,
         nextFamily: pageFamily,
         nextEnriched: enrichedChatText,
+        serverVersion: uploadedVersion,
       });
       return nextMessages;
     });

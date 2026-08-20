@@ -14,7 +14,6 @@ export function ElegantTeam01({ content, assets }: SectionComponentProps) {
   return (
     <section aria-label="Team" className={`${eg.sectionPad} ${eg.sectionAlt}`}>
       <div className="mx-auto max-w-6xl min-w-0">
-        <p className={`text-center ${eg.eyebrow}`}>Our Team</p>
         <span aria-hidden="true" className={`mx-auto mt-3 block @min-[640px]:mt-4 ${eg.goldRule}`} />
         <h2 className={`mt-4 text-center @min-[640px]:mt-6 ${eg.heading} ${eg.headingSection}`}>
           {headline}

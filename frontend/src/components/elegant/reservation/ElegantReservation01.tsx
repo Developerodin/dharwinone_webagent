@@ -16,7 +16,6 @@ export function ElegantReservation01({ content }: SectionComponentProps) {
   return (
     <section aria-label="Reservation" className={`${eg.sectionPad} ${eg.sectionAlt}`}>
       <div className="mx-auto max-w-3xl min-w-0 text-center">
-        <p className={eg.eyebrow}>Reservations</p>
         <span aria-hidden="true" className={`mx-auto mt-3 block @min-[640px]:mt-4 ${eg.goldRule}`} />
         <h2 className={`mt-4 @min-[640px]:mt-6 ${eg.heading} ${eg.headingSection}`}>{headline}</h2>
         {body ? (

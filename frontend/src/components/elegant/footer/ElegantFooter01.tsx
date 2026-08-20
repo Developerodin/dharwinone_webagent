@@ -30,21 +30,12 @@ export function ElegantFooter01({ content }: SectionComponentProps) {
       <div className="mx-auto max-w-7xl px-4 py-12 @min-[640px]:px-6 @min-[768px]:px-10 @min-[768px]:py-16">
         <div className="grid gap-10 @min-[768px]:grid-cols-[1.15fr_0.75fr_0.95fr]">
           <div>
-            <p className={eg.eyebrow}>Elegant Collection</p>
-            <h2 className={`mt-4 text-[2rem] ${eg.heading}`}>{brandName}</h2>
+            <h2 className={`text-[2rem] ${eg.heading}`}>{brandName}</h2>
             <p className={`mt-4 max-w-md text-sm @min-[640px]:text-base ${eg.body}`}>{body}</p>
-            <button
-              type="button"
-              onClick={() => scrollToSection("reservation")}
-              className={`mt-6 ${eg.goldButton}`}
-            >
-              Reserve an Evening
-            </button>
           </div>
 
           <div>
-            <p className={eg.inputLabel}>Navigate</p>
-            <nav aria-label="Footer navigation" className="mt-4 flex flex-col gap-3">
+            <nav aria-label="Footer navigation" className="flex flex-col gap-3">
               {navItems.map((item) => (
                 <button
                   key={`${item.target}-${item.label}`}
@@ -88,8 +79,8 @@ export function ElegantFooter01({ content }: SectionComponentProps) {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-3 border-t border-[var(--eg-gold)]/15 pt-5 text-xs uppercase tracking-[0.18em] text-[var(--eg-muted)] @min-[640px]:flex-row @min-[640px]:items-center @min-[640px]:justify-between">
-          <p>Crafted for composed evenings.</p>
+        <div className="mt-10 flex flex-col gap-3 border-t border-[var(--eg-gold)]/15 pt-5 text-sm text-[var(--eg-muted)] @min-[640px]:flex-row @min-[640px]:items-center @min-[640px]:justify-between">
+          <p>{getString(content, "copyright", brandName)}</p>
           <button
             type="button"
             onClick={() => scrollToSection("hero")}

@@ -22,6 +22,8 @@ export type ChatSessionSnapshot = {
   projectId: string | null;
   direction?: unknown;
   history?: HistoryEntry[];
+  /** Server version this snapshot corresponds to. */
+  serverVersion?: number;
 };
 
 /**
@@ -39,6 +41,7 @@ export function createEmptyChatSession(): ChatSessionSnapshot {
     projectId: null,
     direction: null,
     history: [],
+    serverVersion: 0,
   };
 }
 
@@ -74,5 +77,6 @@ export function loadChatSession(id: string): ChatSessionSnapshot | null {
     projectId: project.id,
     direction: project.direction,
     history: project.history ?? [],
+    serverVersion: project.serverVersion ?? 0,
   };
 }

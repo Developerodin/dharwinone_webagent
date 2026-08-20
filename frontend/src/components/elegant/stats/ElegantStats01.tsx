@@ -13,7 +13,6 @@ export function ElegantStats01({ content }: SectionComponentProps) {
     <section aria-label="Stats" className={`${eg.sectionPad} ${eg.sectionAlt}`}>
       <div className="mx-auto max-w-5xl min-w-0">
         <h2 className={`text-center ${eg.heading} ${eg.headingSection}`}>{headline}</h2>
-        <span aria-hidden="true" className={`mx-auto mt-4 block @min-[640px]:mt-5 ${eg.goldRule}`} />
         <ul
           className="mt-10 grid grid-cols-2 gap-8 @min-[640px]:mt-14 @min-[640px]:gap-10 @min-[768px]:grid-cols-4"
           role="list"
@@ -30,7 +29,7 @@ export function ElegantStats01({ content }: SectionComponentProps) {
                 >
                   {item.value}
                 </p>
-                <p className={`mt-2 text-xs uppercase tracking-[0.18em] @min-[640px]:text-sm ${eg.body}`}>
+                <p className={`mt-2 text-sm ${eg.body}`}>
                   {item.label}
                 </p>
               </li>

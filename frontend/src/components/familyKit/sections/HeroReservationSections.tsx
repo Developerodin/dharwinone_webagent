@@ -77,9 +77,7 @@ function createHero01(tokens: ThemeTokens): SectionComponent {
           className="absolute inset-0 z-[1] bg-gradient-to-t from-black/78 via-black/48 to-black/22"
         />
         <div className="relative z-[2] mx-auto flex min-h-[68svh] max-w-6xl flex-col justify-center px-4 py-16 @min-[640px]:min-h-[76svh] @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:min-h-[88svh] @min-[768px]:px-10 @min-[768px]:py-24">
-          <p className={tokens.eyebrowOnDark}>Restaurant Experience</p>
-          <span aria-hidden="true" className={`mt-4 block ${tokens.ruleOnDark}`} />
-          <h2 className={`mt-5 max-w-4xl text-[var(--theme-on-dark)] ${tokens.heading} ${tokens.headingHero}`}>
+          <h2 className={`max-w-4xl text-[var(--theme-on-dark)] ${tokens.heading} ${tokens.headingHero}`}>
             {headline}
           </h2>
           <p className={`mt-5 max-w-2xl text-base leading-relaxed @min-[640px]:text-lg @min-[768px]:text-xl ${tokens.mutedOnDark}`}>
@@ -129,7 +127,6 @@ function createHero02(tokens: ThemeTokens): SectionComponent {
       <section aria-label="Hero" className={`${tokens.sectionPad} ${tokens.section}`}>
         <div className="mx-auto grid max-w-6xl gap-8 @min-[768px]:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] @min-[768px]:items-center @min-[768px]:gap-14">
           <div className="min-w-0">
-            <p className={tokens.eyebrow}>Curated Evenings</p>
             <h2 className={`mt-4 max-w-3xl text-[var(--theme-ink)] ${tokens.heading} ${tokens.headingHero}`}>
               {headline}
             </h2>
@@ -192,15 +189,13 @@ function createReservation01(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Reservation" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
-        <div className={`${tokens.formCard} mx-auto max-w-3xl p-6 text-center @min-[640px]:p-8 @min-[768px]:p-10`}>
+        <div className="mx-auto max-w-6xl">
           <SectionIntro
-            eyebrow="Reservations"
             title={headline}
             body={body}
             tokens={tokens}
-            align="center"
           />
-          <div className="mt-7 flex justify-center">
+          <div className="mt-7">
             <button
               type="button"
               className={tokens.primaryButton}
@@ -234,9 +229,8 @@ function createReservation02(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Reservation" className={`${tokens.sectionPad} ${tokens.sectionDark}`}>
-        <div className="mx-auto grid max-w-6xl gap-8 rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm @min-[768px]:grid-cols-[minmax(0,1fr)_auto] @min-[768px]:items-center @min-[768px]:gap-10 @min-[768px]:p-8">
+        <div className="mx-auto grid max-w-6xl gap-8 @min-[768px]:grid-cols-[minmax(0,1fr)_auto] @min-[768px]:items-center @min-[768px]:gap-10">
           <div className="min-w-0">
-            <p className={tokens.eyebrowOnDark}>Table Service</p>
             <h2 className={`mt-4 text-[var(--theme-on-dark)] ${tokens.heading} ${tokens.headingSection}`}>
               {headline}
             </h2>

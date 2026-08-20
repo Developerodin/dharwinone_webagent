@@ -1,6 +1,9 @@
 import type { SectionComponentProps } from "../registry";
 import { getString } from "../contentHelpers";
 import { pm } from "../shared/premiumTokens";
+import { AddressActions } from "@/components/shared/AddressActions";
+import { LocationMapEmbed } from "@/components/shared/LocationMapEmbed";
+import { readCoord } from "@/lib/googleMapsLinks";
 
 /**
  * Premium location section with address and phone from brief.
@@ -11,11 +14,15 @@ export function PremiumLocation01({ content }: SectionComponentProps) {
   const address =
     typeof content.address === "string" ? content.address : null;
   const phone = typeof content.phone === "string" ? content.phone : null;
+  const point = {
+    address,
+    lat: readCoord(content.lat),
+    lng: readCoord(content.lng),
+  };
 
   return (
     <section aria-label="Location" className={`${pm.sectionPad} ${pm.sectionAlt}`}>
       <div className="mx-auto max-w-3xl min-w-0 text-center">
-        <p className={pm.eyebrow}>Find Us</p>
         <h2 className={`mt-3 @min-[640px]:mt-4 ${pm.heading} ${pm.headingSection}`}>
           {headline}
         </h2>
@@ -30,6 +37,7 @@ export function PremiumLocation01({ content }: SectionComponentProps) {
               <dt className={pm.inputLabel}>Address</dt>
               <dd className="mt-2 break-words text-base text-[var(--theme-ink)] @min-[640px]:text-lg">
                 {address}
+                <AddressActions point={point} />
               </dd>
             </div>
           ) : null}
@@ -52,6 +60,9 @@ export function PremiumLocation01({ content }: SectionComponentProps) {
             </p>
           ) : null}
         </dl>
+        <div className="mt-10 overflow-hidden rounded-[1.5rem] @min-[640px]:mt-12">
+          <LocationMapEmbed point={point} label="Restaurant location map" />
+        </div>
       </div>
     </section>
   );

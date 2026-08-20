@@ -12,6 +12,13 @@ import {
 /** Desktop breakpoint matching `@min-[1024px]/page` header layouts. */
 const DESKTOP_MIN_WIDTH = 1024;
 
+export type UseMobileNavOptions = {
+  /** Keep the menu open at desktop `/page` widths (off-canvas headers). */
+  persistOnDesktop?: boolean;
+  /** Close when the page or preview pane scrolls. Defaults to true. */
+  closeOnScroll?: boolean;
+};
+
 export type UseMobileNavResult = {
   open: boolean;
   menuId: string;
@@ -34,7 +41,11 @@ function findPageContainer(from: HTMLElement | null): Element | null {
  * Manages mobile nav open state with Escape, outside-click, scroll, and
  * desktop-breakpoint dismissal.
  */
-export function useMobileNav(): UseMobileNavResult {
+export function useMobileNav(
+  options: UseMobileNavOptions = {},
+): UseMobileNavResult {
+  const persistOnDesktop = options.persistOnDesktop ?? false;
+  const closeOnScroll = options.closeOnScroll ?? true;
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLElement | null>(null);
   const menuId = useId();
@@ -107,17 +118,20 @@ export function useMobileNav(): UseMobileNavResult {
 
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("pointerdown", handlePointerDown);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    scrollParent?.addEventListener("scroll", handleScroll, { passive: true });
+    if (closeOnScroll) {
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      scrollParent?.addEventListener("scroll", handleScroll, { passive: true });
+    }
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("pointerdown", handlePointerDown);
       window.removeEventListener("scroll", handleScroll);
       scrollParent?.removeEventListener("scroll", handleScroll);
     };
-  }, [open]);
+  }, [open, closeOnScroll]);
 
   useEffect(() => {
+    if (persistOnDesktop) return;
     const root = rootRef.current;
     const container = findPageContainer(root);
     if (!container || typeof ResizeObserver === "undefined") return;
@@ -138,7 +152,7 @@ export function useMobileNav(): UseMobileNavResult {
     const observer = new ResizeObserver(handleResize);
     observer.observe(container);
     return () => observer.disconnect();
-  }, []);
+  }, [persistOnDesktop]);
 
   return { open, menuId, rootRef, toggle, close };
 }

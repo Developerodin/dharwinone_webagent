@@ -47,10 +47,6 @@ function createAbout01(tokens: ThemeTokens): SectionComponent {
       "Our kitchen is rooted in seasonality, clean technique, and the kind of service that feels polished without losing warmth.",
     );
     const imagePath = getLeadMedia(assets);
-    const eyebrow =
-      typeof content.eyebrow === "string" && content.eyebrow.trim()
-        ? content.eyebrow
-        : "About Us";
 
     return (
       <SectionFrame
@@ -69,7 +65,6 @@ function createAbout01(tokens: ThemeTokens): SectionComponent {
           </div>
           <div className="min-w-0">
             <SectionIntro
-              eyebrow={eyebrow}
               title={headline}
               body={body}
               tokens={tokens}
@@ -103,7 +98,6 @@ function createAbout02(tokens: ThemeTokens): SectionComponent {
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-3xl">
             <SectionIntro
-              eyebrow="Our Story"
               title={headline}
               body={body}
               tokens={tokens}
@@ -127,11 +121,11 @@ function createAbout02(tokens: ThemeTokens): SectionComponent {
 }
 
 /**
- * Builds the services card grid.
+ * Builds the services grid.
  */
 function createServices01(tokens: ThemeTokens): SectionComponent {
   /**
-   * Feature card grid for service promises and dining formats.
+   * Feature grid for service promises and dining formats.
    */
   function FamilyServices01({ content }: SectionComponentProps) {
     const headline = getHeadline(content, "Ways we host the room.");
@@ -145,7 +139,6 @@ function createServices01(tokens: ThemeTokens): SectionComponent {
       <section aria-label="Services" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
         <div className="mx-auto max-w-6xl">
           <SectionIntro
-            eyebrow="Services"
             title={headline}
             body={body}
             tokens={tokens}
@@ -158,12 +151,9 @@ function createServices01(tokens: ThemeTokens): SectionComponent {
             {items.map((item) => (
               <li
                 key={item.title}
-                className="rounded-[1.5rem] border border-[var(--theme-line)] bg-[var(--theme-card)] p-6"
+                className="border-t border-[var(--theme-line)] pt-5"
               >
-                <p className={`text-[11px] uppercase tracking-[0.24em] ${tokens.accentText}`}>
-                  Service
-                </p>
-                <h3 className="mt-4 text-lg font-medium text-[var(--theme-ink)] @min-[640px]:text-xl">
+                <h3 className="text-lg font-medium text-[var(--theme-ink)] @min-[640px]:text-xl">
                   {item.title}
                 </h3>
                 <p className={`mt-3 text-sm leading-7 ${tokens.body}`}>{item.description}</p>
@@ -179,11 +169,11 @@ function createServices01(tokens: ThemeTokens): SectionComponent {
 }
 
 /**
- * Builds the numbered service list.
+ * Builds the linear service list.
  */
 function createServices02(tokens: ThemeTokens): SectionComponent {
   /**
-   * Linear service narrative with numbered points and more whitespace.
+   * Linear service narrative with more whitespace.
    */
   function FamilyServices02({ content }: SectionComponentProps) {
     const headline = getHeadline(content, "How the experience unfolds.");
@@ -196,25 +186,20 @@ function createServices02(tokens: ThemeTokens): SectionComponent {
     return (
       <section aria-label="Services" className={`${tokens.sectionPad} ${tokens.section}`}>
         <div className="mx-auto grid max-w-6xl gap-10 @min-[768px]:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] @min-[768px]:gap-14">
-          <SectionIntro eyebrow="Hospitality" title={headline} body={body} tokens={tokens} />
-          <ol className="space-y-6" role="list">
-            {items.map((item, index) => (
+          <SectionIntro title={headline} body={body} tokens={tokens} />
+          <ul className="space-y-6" role="list">
+            {items.map((item) => (
               <li
                 key={item.title}
-                className="grid grid-cols-[auto_1fr] gap-4 border-b border-[var(--theme-line)] pb-6 last:border-b-0"
+                className="border-b border-[var(--theme-line)] pb-6 last:border-b-0"
               >
-                <span className={`pt-1 text-sm font-medium tabular-nums ${tokens.accentText}`}>
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <h3 className="text-lg font-medium text-[var(--theme-ink)] @min-[640px]:text-xl">
-                    {item.title}
-                  </h3>
-                  <p className={`mt-3 text-sm leading-7 ${tokens.body}`}>{item.description}</p>
-                </div>
+                <h3 className="text-lg font-medium text-[var(--theme-ink)] @min-[640px]:text-xl">
+                  {item.title}
+                </h3>
+                <p className={`mt-3 text-sm leading-7 ${tokens.body}`}>{item.description}</p>
               </li>
             ))}
-          </ol>
+          </ul>
         </div>
       </section>
     );
@@ -238,7 +223,6 @@ function createStats01(tokens: ThemeTokens): SectionComponent {
       <section aria-label="Stats" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
         <div className="mx-auto max-w-6xl">
           <SectionIntro
-            eyebrow="Highlights"
             title={headline}
             tokens={tokens}
             align="center"
@@ -283,9 +267,8 @@ function createStats02(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Stats" className={`${tokens.sectionPad} ${tokens.sectionDark}`}>
-        <div className="mx-auto max-w-6xl rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm @min-[640px]:p-8">
+        <div className="mx-auto max-w-6xl">
           <SectionIntro
-            eyebrow="At a Glance"
             title={headline}
             tokens={tokens}
             align="center"
@@ -305,16 +288,9 @@ function createStats02(tokens: ThemeTokens): SectionComponent {
             ))}
           </ul>
           {highlights.length > 0 ? (
-            <div className="mt-8 flex flex-wrap justify-center gap-2">
-              {highlights.map((item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-white/12 px-4 py-2 text-xs uppercase tracking-[0.18em] text-white/80"
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
+            <p className={`mt-8 text-sm ${tokens.mutedOnDark}`}>
+              {highlights.join(" · ")}
+            </p>
           ) : null}
         </div>
       </section>

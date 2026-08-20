@@ -45,7 +45,6 @@ export function ElegantHero02({ content, assets }: SectionComponentProps) {
             className="mt-2 hidden w-px shrink-0 bg-[var(--eg-gold)] @min-[640px]:block @min-[640px]:self-stretch"
           />
           <div className="min-w-0">
-            <p className={eg.eyebrow}>Fine Dining</p>
             <h2 className={`mt-5 @min-[640px]:mt-7 ${eg.heading} ${eg.headingHero}`}>
               {headline}
             </h2>

@@ -10,6 +10,8 @@ export type PageEditResult = {
   family: PageFamily;
   /** Creative direction returned by the pipeline (if any). */
   direction?: unknown;
+  /** Version the server stored this edit as. */
+  version?: number;
   message: string;
 };
 
@@ -31,6 +33,10 @@ export async function performPageEdit(args: {
   /** Creative direction to forward to the pipeline. */
   direction?: unknown;
   useFixture: boolean;
+  /** Server project this edit belongs to. */
+  projectId?: string | null;
+  /** Version being edited from, for optimistic concurrency. */
+  expectedVersion?: number;
 }): Promise<PageEditResult> {
   const result = await applyPageEdit(args);
   return {
@@ -38,6 +44,7 @@ export async function performPageEdit(args: {
     brief: result.brief,
     family: result.family,
     direction: result.direction,
+    version: result.version,
     message: formatEditResultMessage(result.summary),
   };
 }

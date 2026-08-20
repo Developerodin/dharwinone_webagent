@@ -7,7 +7,13 @@ import type { Page } from "@/types/page";
 export async function consumeBuildStream(
   response: Response,
   onStage: (stage: PipelineStage) => void,
-): Promise<{ page: Page; meta: Record<string, unknown>; direction?: unknown }> {
+): Promise<{
+  page: Page;
+  meta: Record<string, unknown>;
+  direction?: unknown;
+  /** Version the server stored this build as; drives later expectedVersion. */
+  version?: number;
+}> {
   const reader = response.body?.getReader();
   if (!reader) {
     throw new Error("Streaming body unavailable");
@@ -19,6 +25,7 @@ export async function consumeBuildStream(
     page: Page;
     meta: Record<string, unknown>;
     direction?: unknown;
+    version?: number;
   } | null = null;
 
   while (true) {
@@ -41,6 +48,7 @@ export async function consumeBuildStream(
         page?: Page;
         meta?: Record<string, unknown>;
         direction?: unknown;
+        version?: number;
         error?: string;
       };
 
@@ -53,6 +61,7 @@ export async function consumeBuildStream(
           page: payload.page,
           meta: payload.meta ?? {},
           direction: payload.direction,
+          version: payload.version,
         };
       }
 

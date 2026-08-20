@@ -1,0 +1,38 @@
+/* Motion for the auth and onboarding screens. */
+
+@keyframes otp-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+@keyframes auth-enter-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes auth-enter-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-step-forward { animation: auth-enter-up 220ms ease-out both; }
+.auth-step-back { animation: auth-enter-down 220ms ease-out both; }
+
+/* Anyone who has asked for less motion gets a cross-fade with no travel.
+   The transition still reads as a change of screen, just without the movement
+   that triggers discomfort. */
+@media (prefers-reduced-motion: reduce) {
+  .auth-step-forward,
+  .auth-step-back {
+    animation: none;
+    transition: opacity 160ms ease-out;
+  }
+  .animate-\[otp-shake_0\.3s_ease-in-out\] { animation: none; }
+}
+
+/* Google renders its button in an iframe we cannot style; centring the
+   wrapper is the only reliable alignment hook. */
+.google-slot > div { margin: 0 auto !important; }

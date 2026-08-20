@@ -13,7 +13,6 @@ export function PremiumMenu01({ content }: SectionComponentProps) {
   return (
     <section aria-label="Menu" className={`${pm.sectionPad} ${pm.sectionAlt}`}>
       <div className="mx-auto max-w-4xl min-w-0">
-        <p className={`text-center ${pm.eyebrow}`}>Our Menu</p>
         <h2 className={`mt-3 text-center @min-[640px]:mt-4 ${pm.heading} ${pm.headingSection}`}>
           {sectionTitle}
         </h2>

@@ -4,8 +4,9 @@ import {
   formatBuildReadyMessage,
 } from "@/lib/chatFormatters";
 import { consumeBuildStream } from "@/lib/consumeBuildStream";
+import { getAccessToken } from "@/lib/apiClient";
+import { createServerProject } from "@/lib/projectApi";
 import {
-  ensureProjectId,
   persistProjectState,
   syncPreviewPayload,
 } from "@/lib/projectPersist";
@@ -19,6 +20,9 @@ export type ConfirmBuildDeps = {
   enrichedChatText: string;
   pageFamily: PageFamily | null;
   projectId: string | null;
+  /** Unused by build (a build always starts a new version chain), accepted so
+   *  callers can pass one dependency object to every flow. */
+  serverVersion?: number;
   useFixture: boolean;
   appendMessage: (message: Omit<ChatMessage, "id" | "timestamp">) => void;
   updateStageMessage: (stage: PipelineStage) => void;
@@ -26,6 +30,8 @@ export type ConfirmBuildDeps = {
   setPage: (page: Page) => void;
   setPageFamily: (family: PageFamily) => void;
   setProjectId: (id: string) => void;
+  /** Records the version the server stored this build as. */
+  setServerVersion?: (version: number) => void;
   setMessages: Dispatch<SetStateAction<ChatMessage[]>>;
   setPhase: (phase: ChatPhase) => void;
   setError: (error: string | null) => void;
@@ -65,17 +71,35 @@ export async function runConfirmBuild(deps: ConfirmBuildDeps): Promise<void> {
   seedBuildStageRoster();
 
   try {
+    // The build has to belong to a project before it runs, so the server has
+    // somewhere to write the resulting version. Creating it first also means a
+    // build that dies halfway still leaves a project the user can retry into.
+    const serverProjectId = projectId ?? (await createServerProject({
+      name: brief.businessName ?? undefined,
+      ...(pageFamily ? { pageFamily } : {}),
+    })).id;
+    setProjectId(serverProjectId);
+
     const query = useFixture ? "?fixture=1&stream=1" : "?stream=1";
-    const response = await fetch(`/api/build${query}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chatText: enrichedChatText,
-        brief,
-        confirmed: true,
-        ...(pageFamily ? { family: pageFamily } : {}),
-      }),
-    });
+    const response = await fetch(
+      `/api/projects/${serverProjectId}/build${query}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getAccessToken() ?? ""}`,
+          // Guards against the auth layer replaying this request after a token
+          // refresh — a build runs an LLM pipeline and must not run twice.
+          "Idempotency-Key": `build-${serverProjectId}-${enrichedChatText.length}`,
+        },
+        body: JSON.stringify({
+          chatText: enrichedChatText,
+          brief,
+          confirmed: true,
+          ...(pageFamily ? { family: pageFamily } : {}),
+        }),
+      },
+    );
 
     if (
       !response.ok &&
@@ -99,8 +123,10 @@ export async function runConfirmBuild(deps: ConfirmBuildDeps): Promise<void> {
     const buildDirection = result.direction ?? result.meta.direction;
     if (buildDirection !== undefined) deps.setDirection?.(buildDirection);
 
-    const activeId = ensureProjectId(projectId);
-    setProjectId(activeId);
+    const activeId = serverProjectId;
+    if (typeof result.version === "number") {
+      deps.setServerVersion?.(result.version);
+    }
     syncPreviewPayload({
       page: result.page,
       family,
@@ -139,6 +165,7 @@ export async function runConfirmBuild(deps: ConfirmBuildDeps): Promise<void> {
         nextEnriched: enrichedChatText,
         nextDirection: buildDirection,
         nextHistory: [],
+        serverVersion: result.version,
       });
       return nextMessages;
     });

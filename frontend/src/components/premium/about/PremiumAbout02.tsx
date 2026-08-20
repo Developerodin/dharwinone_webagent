@@ -15,7 +15,6 @@ export function PremiumAbout02({ content, assets }: SectionComponentProps) {
     <section aria-label="About" className={`${pm.sectionPad} ${pm.sectionAlt}`}>
       <div className="mx-auto max-w-6xl min-w-0">
         <div className="animate-section-enter mx-auto max-w-3xl text-center">
-          <p className={pm.eyebrow}>Our Story</p>
           <span
             aria-hidden="true"
             className={`mx-auto mt-4 block @min-[640px]:mt-5 ${pm.accentRule}`}
@@ -34,12 +33,12 @@ export function PremiumAbout02({ content, assets }: SectionComponentProps) {
           {imagePath ? (
             <SectionMedia
               src={imagePath}
-              className="aspect-[4/5] w-full object-cover transition duration-700 hover:scale-[1.015] @min-[768px]:aspect-[3/4]"
+              className="aspect-[16/10] w-full object-cover @min-[768px]:aspect-[21/9]"
             />
           ) : (
             <div
               aria-hidden="true"
-              className="aspect-[4/5] w-full bg-[var(--theme-line)]/40 @min-[768px]:aspect-[3/4]"
+              className="aspect-[16/10] w-full bg-[var(--theme-line)]/40 @min-[768px]:aspect-[21/9]"
             />
           )}
           <div

@@ -14,12 +14,16 @@ import type {
 import {
   MediaPanel,
   SectionIntro,
+  ContactFactValue,
   getBodyCopy,
   getContactFacts,
   getGalleryMedia,
   getHeadline,
   getLeadMedia,
+  getMenuTitle,
 } from "./shared";
+import { LocationMapEmbed } from "@/components/shared/LocationMapEmbed";
+import { readCoord } from "@/lib/googleMapsLinks";
 
 /**
  * Creates menu, gallery, and location sections for a family.
@@ -45,7 +49,7 @@ function createMenu01(tokens: ThemeTokens): SectionComponent {
    * Menu list with generous spacing and clean price alignment.
    */
   function FamilyMenu01({ content }: SectionComponentProps) {
-    const headline = getHeadline(content, "A menu tuned to the season.");
+    const headline = getMenuTitle(content, "A menu tuned to the season.");
     const body = getBodyCopy(
       content,
       "Balanced plates, confident flavor, and enough range to keep the table ordering one more round.",
@@ -56,7 +60,6 @@ function createMenu01(tokens: ThemeTokens): SectionComponent {
       <section aria-label="Menu" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
         <div className="mx-auto max-w-4xl">
           <SectionIntro
-            eyebrow="Menu"
             title={headline}
             body={body}
             tokens={tokens}
@@ -98,7 +101,7 @@ function createMenu02(tokens: ThemeTokens): SectionComponent {
    * Menu cards arranged in responsive columns for dense service menus.
    */
   function FamilyMenu02({ content }: SectionComponentProps) {
-    const headline = getHeadline(content, "Signature dishes worth returning for.");
+    const headline = getMenuTitle(content, "Signature dishes worth returning for.");
     const body = getBodyCopy(
       content,
       "A tighter format for featured plates, pairings, and best sellers the team loves to recommend.",
@@ -112,31 +115,33 @@ function createMenu02(tokens: ThemeTokens): SectionComponent {
     return (
       <section aria-label="Menu" className={`${tokens.sectionPad} ${tokens.section}`}>
         <div className="mx-auto max-w-6xl">
-          <SectionIntro eyebrow="Kitchen Favourites" title={headline} body={body} tokens={tokens} />
-          <div className="mt-10 grid gap-6 @min-[640px]:mt-14 @min-[1024px]:grid-cols-2">
+          <SectionIntro title={headline} body={body} tokens={tokens} />
+          <div className="mt-10 grid gap-10 @min-[640px]:mt-14 @min-[1024px]:grid-cols-2 @min-[1024px]:gap-16">
             {columns.map((column, columnIndex) => (
-              <div
+              <ul
                 key={`column-${columnIndex}`}
-                className="rounded-[1.75rem] border border-[var(--theme-line)] bg-[var(--theme-card)] p-6"
+                className="space-y-0 border-t border-[var(--theme-line)]"
+                role="list"
               >
-                <ul className="space-y-5" role="list">
-                  {column.map((item) => (
-                    <li key={item.name} className="border-b border-[var(--theme-line)] pb-5 last:border-b-0 last:pb-0">
-                      <div className="flex items-start justify-between gap-4">
-                        <h3 className="text-lg font-medium text-[var(--theme-ink)]">
-                          {item.name}
-                        </h3>
-                        <span className={`shrink-0 text-sm font-medium tabular-nums @min-[640px]:text-base ${tokens.accentText}`}>
-                          {formatPrice(item.price)}
-                        </span>
-                      </div>
-                      {item.description ? (
-                        <p className={`mt-2 text-sm leading-7 ${tokens.body}`}>{item.description}</p>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                {column.map((item) => (
+                  <li
+                    key={item.name}
+                    className="border-b border-[var(--theme-line)] py-5"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <h3 className="text-lg font-medium text-[var(--theme-ink)]">
+                        {item.name}
+                      </h3>
+                      <span className={`shrink-0 text-sm font-medium tabular-nums @min-[640px]:text-base ${tokens.accentText}`}>
+                        {formatPrice(item.price)}
+                      </span>
+                    </div>
+                    {item.description ? (
+                      <p className={`mt-2 text-sm leading-7 ${tokens.body}`}>{item.description}</p>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
             ))}
           </div>
         </div>
@@ -155,18 +160,19 @@ function createGallery01(tokens: ThemeTokens): SectionComponent {
    * Balanced gallery grid for dining room and plate photography.
    */
   function FamilyGallery01({ content, assets }: SectionComponentProps) {
-    const headline = getHeadline(content, "A look inside the room.");
-    const body = getBodyCopy(
-      content,
-      "Moments from the pass, the bar, and the tables that keep the energy moving through service.",
-    );
+    const headline = getString(content, "headline", "A look inside the room.");
+    const body =
+      getString(content, "caption") ||
+      getBodyCopy(
+        content,
+        "Moments from the pass, the bar, and the tables that keep the energy moving through service.",
+      );
     const images = getGalleryMedia(assets);
 
     return (
       <section aria-label="Gallery" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
         <div className="mx-auto max-w-6xl">
           <SectionIntro
-            eyebrow="Gallery"
             title={headline}
             body={body}
             tokens={tokens}
@@ -186,7 +192,7 @@ function createGallery01(tokens: ThemeTokens): SectionComponent {
                   <MediaPanel
                     src={image}
                     alt={`Gallery image ${index + 1}`}
-                    className="aspect-[4/5] h-full w-full object-cover transition duration-300 hover:scale-[1.03]"
+                    className="aspect-[4/5] h-full w-full object-cover"
                     fallbackClassName="aspect-[4/5] w-full bg-[var(--theme-bg)]"
                   />
                 </li>
@@ -209,18 +215,20 @@ function createGallery02(tokens: ThemeTokens): SectionComponent {
    * Bento gallery layout with a featured visual when assets allow it.
    */
   function FamilyGallery02({ content, assets }: SectionComponentProps) {
-    const headline = getHeadline(content, "Texture, light, and service in motion.");
-    const body = getBodyCopy(
-      content,
-      "A more kinetic layout for bar energy, plated details, and scenes that show the personality of the space.",
-    );
+    const headline = getString(content, "headline", "Texture, light, and service in motion.");
+    const body =
+      getString(content, "caption") ||
+      getBodyCopy(
+        content,
+        "A more kinetic layout for bar energy, plated details, and scenes that show the personality of the space.",
+      );
     const images = getGalleryMedia(assets);
     const count = images.length;
 
     return (
       <section aria-label="Gallery" className={`${tokens.sectionPad} ${tokens.section}`}>
         <div className="mx-auto max-w-6xl">
-          <SectionIntro eyebrow="Scenes" title={headline} body={body} tokens={tokens} />
+          <SectionIntro title={headline} body={body} tokens={tokens} />
           {count === 0 ? (
             <p className={`mt-10 text-center text-sm @min-[640px]:mt-12 ${tokens.body}`}>
               No gallery images available for this build.
@@ -238,7 +246,7 @@ function createGallery02(tokens: ThemeTokens): SectionComponent {
                   <MediaPanel
                     src={image}
                     alt={`Gallery image ${index + 1}`}
-                    className="h-full w-full object-cover transition duration-300 hover:scale-[1.03]"
+                    className="h-full w-full object-cover"
                     fallbackClassName="h-full min-h-[8rem] w-full bg-[var(--theme-bg-alt)]"
                   />
                 </li>
@@ -269,6 +277,11 @@ function createLocation01(tokens: ThemeTokens): SectionComponent {
     );
     const imagePath = getLeadMedia(assets);
     const facts = getContactFacts(content).slice(0, 3);
+    const point = {
+      address: getString(content, "address") || null,
+      lat: readCoord(content.lat),
+      lng: readCoord(content.lng),
+    };
 
     return (
       <section aria-label="Location" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
@@ -282,7 +295,7 @@ function createLocation01(tokens: ThemeTokens): SectionComponent {
             />
           </div>
           <div className="min-w-0">
-            <SectionIntro eyebrow="Visit Us" title={headline} body={body} tokens={tokens} />
+            <SectionIntro title={headline} body={body} tokens={tokens} />
             <dl className="mt-8 space-y-5">
               {facts.map((fact) => (
                 <div key={fact.label} className="border-b border-[var(--theme-line)] pb-5 last:border-b-0 last:pb-0">
@@ -290,17 +303,14 @@ function createLocation01(tokens: ThemeTokens): SectionComponent {
                     {fact.label}
                   </dt>
                   <dd className="mt-3 text-sm leading-7 text-[var(--theme-ink)] @min-[640px]:text-base">
-                    {fact.href ? (
-                      <a href={fact.href} className="transition-opacity hover:opacity-75">
-                        {fact.value}
-                      </a>
-                    ) : (
-                      fact.value
-                    )}
+                    <ContactFactValue fact={fact} />
                   </dd>
                 </div>
               ))}
             </dl>
+            <div className="mt-8 overflow-hidden rounded-[1.5rem] border border-[var(--theme-line)]">
+              <LocationMapEmbed point={point} label="Restaurant location map" />
+            </div>
           </div>
         </div>
       </section>
@@ -326,6 +336,11 @@ function createLocation02(tokens: ThemeTokens): SectionComponent {
     );
     const imagePath = getLeadMedia(assets);
     const facts = getContactFacts(content).slice(0, 3);
+    const point = {
+      address: getString(content, "address") || null,
+      lat: readCoord(content.lat),
+      lng: readCoord(content.lng),
+    };
 
     return (
       <section aria-label="Location" className={`${tokens.sectionPad} ${tokens.sectionDark}`}>
@@ -340,7 +355,6 @@ function createLocation02(tokens: ThemeTokens): SectionComponent {
           </div>
           <div className="min-w-0">
             <SectionIntro
-              eyebrow="Directions"
               title={headline}
               body={body}
               tokens={tokens}
@@ -356,10 +370,13 @@ function createLocation02(tokens: ThemeTokens): SectionComponent {
                     {fact.label}
                   </p>
                   <p className={`mt-3 text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>
-                    {fact.value}
+                    <ContactFactValue fact={fact} onDark />
                   </p>
                 </div>
               ))}
+            </div>
+            <div className="mt-6 overflow-hidden rounded-[1.25rem] border border-white/10">
+              <LocationMapEmbed point={point} label="Restaurant location map" />
             </div>
           </div>
         </div>

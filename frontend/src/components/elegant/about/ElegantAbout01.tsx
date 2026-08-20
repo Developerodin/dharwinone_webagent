@@ -34,7 +34,6 @@ export function ElegantAbout01({ content, assets }: SectionComponentProps) {
           )}
         </div>
         <div className="order-1 min-w-0 @min-[768px]:order-2">
-          <p className={eg.eyebrow}>About Us</p>
           <span aria-hidden="true" className={`mt-3 block @min-[640px]:mt-4 ${eg.goldRule}`} />
           <h2 className={`mt-4 @min-[640px]:mt-6 ${eg.heading} ${eg.headingSection}`}>
             {headline}

@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { PromptComposer } from "@/components/shell/PromptComposer";
 import { BrandMark } from "@/components/BrandMark";
+import { useAuth } from "@/auth/useAuth";
+import { userFirstName } from "@/auth/displayName";
 import { BRAND_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
@@ -60,6 +62,7 @@ const QUICK_CHIPS: QuickChip[] = [
 ];
 
 type HomeDashboardProps = {
+  /** Override the greeting name. Defaults to the signed-in user's first name. */
   userName?: string;
   onStartBuild: (prompt: string) => void;
   disabled?: boolean;
@@ -71,11 +74,13 @@ type HomeDashboardProps = {
  * Lovable-style starting page: mesh gradient, greeting, prompt, quick chips.
  */
 export function HomeDashboard({
-  userName = "John",
+  userName,
   onStartBuild,
   disabled = false,
   onOpenMenu,
 }: HomeDashboardProps) {
+  const { user } = useAuth();
+  const greetingName = userName ?? userFirstName(user);
   const [prompt, setPrompt] = useState("");
 
   /**
@@ -145,7 +150,7 @@ export function HomeDashboard({
 
       <div className="relative z-10 flex min-h-[min(100%,32rem)] flex-1 flex-col items-center justify-center px-4 pb-10 pt-6 sm:pb-16 sm:pt-8">
         <h1 className="max-w-3xl text-center text-[1.75rem] font-semibold tracking-tight text-white sm:text-4xl md:text-[2.75rem]">
-          Got an idea, {userName}?
+          {greetingName ? `Got an idea, ${greetingName}?` : "Got an idea?"}
         </h1>
 
         <div id="prompt" className="mt-6 w-full max-w-2xl scroll-mt-8 sm:mt-8">

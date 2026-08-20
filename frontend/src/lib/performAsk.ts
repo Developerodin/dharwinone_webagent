@@ -7,6 +7,7 @@ export type AskResult = {
   message: string;
   proposedEdit: string | null;
   specialist: "style" | "layout" | "copy" | "general" | null;
+  openLocationPicker: boolean;
 };
 
 /**
@@ -45,5 +46,6 @@ export async function performAsk(args: {
     message: data.message ?? "",
     proposedEdit: data.proposedEdit ?? null,
     specialist: data.specialist ?? null,
+    openLocationPicker: Boolean(data.openLocationPicker),
   };
 }

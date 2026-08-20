@@ -47,7 +47,7 @@ export function BoldGallery01({ content, assets }: SectionComponentProps) {
                 <li key={src} className="overflow-hidden">
                   <SectionMedia
                     src={src}
-                    className="aspect-square h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                    className="aspect-square h-full w-full object-cover"
                   />
                 </li>
               ))}

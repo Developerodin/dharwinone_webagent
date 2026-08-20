@@ -48,7 +48,6 @@ export function PremiumHero03({ content, assets }: SectionComponentProps) {
       ) : null}
       <div className="absolute inset-0 bg-gradient-to-t from-[#070b14]/70 via-[#070b14]/35 to-[#070b14]/10" />
       <div className="relative mx-auto flex min-h-[60svh] max-w-6xl flex-col items-center justify-center px-4 py-16 text-center @min-[640px]:min-h-[70svh] @min-[640px]:px-6 @min-[768px]:min-h-[85vh] @min-[768px]:px-10">
-        <p className={pm.eyebrow}>Welcome</p>
         <span aria-hidden="true" className={`mx-auto mt-4 block ${pm.accentRule}`} />
         <h2 className={`mt-6 max-w-4xl text-white ${pm.heading} ${pm.headingHero}`}>
           {headline}

@@ -1,4 +1,10 @@
-import type { CSSProperties, KeyboardEvent } from "react";
+import {
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
 import type {
   Page,
   PageSection,
@@ -6,6 +12,16 @@ import type {
   ThemeOverrides,
 } from "../types/page";
 import { pageComponentRegistry } from "../components/pageRegistry";
+import {
+  ElementPickOverlay,
+  type PickOverlayRect,
+} from "@/components/preview/ElementPickOverlay";
+import {
+  previewPickFromEvent,
+  resolvePickTag,
+  sectionOnlyPick,
+  type PreviewPick,
+} from "@/lib/resolvePreviewPick";
 import {
   getFamilyFromComponentId,
   themeClassForFamily,
@@ -24,7 +40,34 @@ type PageRendererProps = {
   selectedSectionType?: string | null;
   /** Called when the user clicks or activates a section wrapper. */
   onSelectSection?: (type: string) => void;
+  /** Called with the resolved element pick in Edit/inspect mode. */
+  onPick?: (pick: PreviewPick) => void;
 };
+
+/**
+ * Bounding box of a hovered node, relative to the page root.
+ */
+function overlayRectFor(
+  root: HTMLElement,
+  target: HTMLElement,
+): PickOverlayRect | null {
+  if (target.closest("[data-pick-overlay]")) return null;
+  if (target === root) return null;
+  const rootRect = root.getBoundingClientRect();
+  const box = target.getBoundingClientRect();
+  const sectionRoot = target.closest("[data-section]");
+  const tag =
+    sectionRoot instanceof HTMLElement
+      ? resolvePickTag(target, sectionRoot).tag
+      : target.tagName.toLowerCase();
+  return {
+    top: box.top - rootRect.top,
+    left: box.left - rootRect.left,
+    width: box.width,
+    height: box.height,
+    label: `<${tag}>`,
+  };
+}
 
 /**
  * Detects the page family from the first recognizable component id.
@@ -108,20 +151,44 @@ export function PageRenderer({
   selectable = false,
   selectedSectionType = null,
   onSelectSection,
+  onPick,
 }: PageRendererProps) {
   const family = resolvePageFamily(page.sections);
   const themeClass = themeClassForFamily(family);
   const overrideStyle = themeOverrideStyle(page.themeOverrides);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [hoverRect, setHoverRect] = useState<PickOverlayRect | null>(null);
+
+  /**
+   * Updates the inspect overlay as the pointer moves over preview nodes.
+   */
+  function handleMouseMove(event: ReactMouseEvent<HTMLDivElement>) {
+    if (!selectable) return;
+    const root = rootRef.current;
+    const target = event.target;
+    if (!root || !(target instanceof HTMLElement)) return;
+    setHoverRect(overlayRectFor(root, target));
+  }
+
+  /**
+   * Clears the inspect overlay when the pointer leaves the page.
+   */
+  function handleMouseLeave() {
+    setHoverRect(null);
+  }
 
   return (
     <div
+      ref={rootRef}
       className={cn(
-        "@container/page flex w-full min-w-0 flex-col gap-0 overflow-x-hidden",
+        "relative @container/page flex w-full min-w-0 flex-col gap-0 overflow-x-hidden",
         themeClass,
       )}
       style={overrideStyle}
       aria-label="Rendered restaurant page"
       data-page-family={family}
+      onMouseMove={selectable ? handleMouseMove : undefined}
+      onMouseLeave={selectable ? handleMouseLeave : undefined}
     >
       {page.sections.map((section, index) => (
         <SectionSlot
@@ -132,8 +199,10 @@ export function PageRenderer({
           selectable={selectable}
           selected={selectable && selectedSectionType === section.type}
           onSelect={onSelectSection}
+          onPick={onPick}
         />
       ))}
+      {selectable ? <ElementPickOverlay rect={hoverRect} /> : null}
     </div>
   );
 }
@@ -145,6 +214,7 @@ type SectionSlotProps = {
   selectable?: boolean;
   selected?: boolean;
   onSelect?: (type: string) => void;
+  onPick?: (pick: PreviewPick) => void;
 };
 
 /**
@@ -157,8 +227,10 @@ function SectionSlot({
   selectable = false,
   selected = false,
   onSelect,
+  onPick,
 }: SectionSlotProps) {
   const Component = pageComponentRegistry[section.componentId];
+  const rootRef = useRef<HTMLDivElement>(null);
   const { style: overrideStyle, paddingClass } = sectionOverrideStyle(
     section.styleOverrides,
   );
@@ -176,37 +248,56 @@ function SectionSlot({
   }
 
   /**
-   * Keyboard handler: Enter / Space activates section selection.
+   * Keyboard handler: Enter / Space attaches the whole section.
    */
   function handleKeyDown(e: KeyboardEvent) {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      onSelect?.(section.type);
-    }
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault();
+    const pick = sectionOnlyPick(section.type);
+    onPick?.(pick);
+    onSelect?.(section.type);
+  }
+
+  /**
+   * Capture-phase click: pick the element and block preview navigation.
+   */
+  function handleClickCapture(e: ReactMouseEvent<HTMLDivElement>) {
+    if (!selectable) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.nativeEvent.preventDefault();
+    const root = rootRef.current;
+    if (!root) return;
+    const pick = previewPickFromEvent(e.nativeEvent, section, root);
+    onPick?.(pick);
+    onSelect?.(section.type);
   }
 
   return (
     <div
+      ref={rootRef}
       id={sectionDomId(section.type)}
+      data-section={section.type}
       className={cn(
         "scroll-mt-24",
         paddingClass,
         animate && "animate-section-enter",
-        selectable && "cursor-pointer",
-        selectable && !selected &&
-          "hover:outline hover:outline-2 hover:outline-offset-[-2px] hover:outline-blue-400/60",
+        selectable && "cursor-crosshair",
         selected &&
-          "outline outline-2 outline-offset-[-2px] outline-blue-500",
+          "outline outline-2 outline-offset-[-2px] outline-blue-500/50",
       )}
       style={{
         ...(animate ? { animationDelay: `${delayMs}ms` } : null),
         ...overrideStyle,
       }}
-      role={selectable ? "button" : undefined}
+      role={selectable ? "group" : undefined}
       tabIndex={selectable ? 0 : undefined}
-      aria-label={selectable ? `Select ${section.type} section` : undefined}
-      aria-pressed={selectable ? selected : undefined}
-      onClick={selectable ? () => onSelect?.(section.type) : undefined}
+      aria-label={
+        selectable
+          ? `Pick an element in the ${section.type} section`
+          : undefined
+      }
+      onClickCapture={selectable ? handleClickCapture : undefined}
       onKeyDown={selectable ? handleKeyDown : undefined}
     >
       <Component

@@ -8,9 +8,11 @@ import {
   renderStyledText,
 } from "@/components/premium/contentHelpers";
 import type { PageAsset } from "@/types/page";
+import { AddressActions } from "@/components/shared/AddressActions";
+import { readCoord } from "@/lib/googleMapsLinks";
 
 type SectionIntroProps = {
-  eyebrow: string;
+  eyebrow?: string;
   title: ReactNode;
   body?: string;
   tokens: ThemeTokens;
@@ -37,9 +39,7 @@ export function SectionIntro({
   onDark = false,
 }: SectionIntroProps) {
   const alignClass = align === "center" ? "text-center" : "text-left";
-  const ruleClass = align === "center" ? "mx-auto" : "";
   const eyebrowClass = onDark ? tokens.eyebrowOnDark : tokens.eyebrow;
-  const ruleTone = onDark ? tokens.ruleOnDark : tokens.rule;
   const bodyClass = onDark ? tokens.mutedOnDark : tokens.body;
   // Inherit section text color on dark bands; force ink only on light surfaces.
   const titleClass = onDark
@@ -48,9 +48,8 @@ export function SectionIntro({
 
   return (
     <div className={alignClass}>
-      <p className={eyebrowClass}>{eyebrow}</p>
-      <span aria-hidden="true" className={`mt-3 block ${ruleClass} ${ruleTone}`} />
-      <h2 className={`mt-4 ${titleClass}`}>{title}</h2>
+      {eyebrow?.trim() ? <p className={eyebrowClass}>{eyebrow.trim()}</p> : null}
+      <h2 className={`${eyebrow?.trim() ? "mt-3" : ""} ${titleClass}`}>{title}</h2>
       {body ? (
         <p
           className={`mt-4 text-sm @min-[640px]:mt-5 @min-[640px]:text-base @min-[768px]:text-lg ${bodyClass}`}
@@ -109,6 +108,16 @@ export function getHeadline(
 }
 
 /**
+ * Reads the menu heading from copy fields (`sectionTitle` or `headline`).
+ */
+export function getMenuTitle(
+  content: Record<string, unknown>,
+  fallback: string,
+): string {
+  return getString(content, "sectionTitle") || getHeadline(content, fallback);
+}
+
+/**
  * Reads a section headline preserving styled color runs.
  */
 export function getStyledHeadline(
@@ -133,31 +142,83 @@ export function getBodyCopy(
   );
 }
 
-/**
- * Reads address, phone, email, and hours from content for contact surfaces.
- */
-export function getContactFacts(content: Record<string, unknown>): Array<{
+export type ContactFact = {
   label: string;
   value: string;
   href?: string;
-}> {
+  kind?: "address" | "phone" | "email" | "hours";
+  lat?: number | null;
+  lng?: number | null;
+};
+
+/**
+ * Reads address, phone, email, and hours from content for contact surfaces.
+ */
+export function getContactFacts(content: Record<string, unknown>): ContactFact[] {
   const address = getString(content, "address");
   const phone = getString(content, "phone");
   const email = getString(content, "email");
   const hours = getHoursText(content);
 
-  return [
-    address ? { label: "Address", value: address } : null,
-    phone
-      ? {
-          label: "Phone",
-          value: phone,
-          href: `tel:${phone.replace(/\D/g, "")}`,
-        }
-      : null,
-    email ? { label: "Email", value: email, href: `mailto:${email}` } : null,
-    hours ? { label: "Hours", value: hours } : null,
-  ].filter((item): item is { label: string; value: string; href?: string } => Boolean(item));
+  const facts: ContactFact[] = [];
+  if (address) {
+    facts.push({
+      label: "Address",
+      value: address,
+      kind: "address",
+      lat: readCoord(content.lat),
+      lng: readCoord(content.lng),
+    });
+  }
+  if (phone) {
+    facts.push({
+      label: "Phone",
+      value: phone,
+      kind: "phone",
+      href: `tel:${phone.replace(/\D/g, "")}`,
+    });
+  }
+  if (email) {
+    facts.push({
+      label: "Email",
+      value: email,
+      kind: "email",
+      href: `mailto:${email}`,
+    });
+  }
+  if (hours) {
+    facts.push({ label: "Hours", value: hours, kind: "hours" });
+  }
+  return facts;
+}
+
+/**
+ * Renders a contact fact value, with map actions on addresses.
+ */
+export function ContactFactValue({
+  fact,
+  onDark = false,
+}: {
+  fact: ContactFact;
+  onDark?: boolean;
+}) {
+  return (
+    <>
+      {fact.href ? (
+        <a href={fact.href} className="transition-opacity hover:opacity-75">
+          {fact.value}
+        </a>
+      ) : (
+        fact.value
+      )}
+      {fact.kind === "address" ? (
+        <AddressActions
+          point={{ address: fact.value, lat: fact.lat, lng: fact.lng }}
+          onDark={onDark}
+        />
+      ) : null}
+    </>
+  );
 }
 
 /**

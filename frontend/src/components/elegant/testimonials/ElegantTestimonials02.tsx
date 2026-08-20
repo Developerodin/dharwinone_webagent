@@ -13,7 +13,6 @@ export function ElegantTestimonials02({ content }: SectionComponentProps) {
   return (
     <section aria-label="Testimonials" className={`${eg.sectionPad} ${eg.section}`}>
       <div className="mx-auto max-w-6xl min-w-0">
-        <p className={`text-center ${eg.eyebrow}`}>Testimonials</p>
         <span aria-hidden="true" className={`mx-auto mt-3 block @min-[640px]:mt-4 ${eg.goldRule}`} />
         <h2 className={`mt-4 text-center @min-[640px]:mt-6 ${eg.heading} ${eg.headingSection}`}>
           {headline}
@@ -35,7 +34,7 @@ export function ElegantTestimonials02({ content }: SectionComponentProps) {
                   &ldquo;{item.quote}&rdquo;
                 </blockquote>
                 <p className={`mt-6 text-sm ${eg.heading}`}>{item.name}</p>
-                <p className="mt-1 text-xs uppercase tracking-[0.16em] text-[var(--eg-gold)]">
+                <p className={`mt-1 text-sm ${eg.body}`}>
                   {item.role}
                 </p>
               </li>

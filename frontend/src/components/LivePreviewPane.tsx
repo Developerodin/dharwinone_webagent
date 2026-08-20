@@ -4,6 +4,7 @@ import { ThinkingIndicator } from "@/components/ThinkingIndicator";
 import { BrandMark } from "@/components/BrandMark";
 import { PageRenderer } from "@/render/PageRenderer";
 import { getPageFamilyLabel } from "@/lib/pageFamilyLabel";
+import type { PreviewPick } from "@/lib/resolvePreviewPick";
 import { cn } from "@/lib/utils";
 import type { PageFamily } from "@/lib/pageFamily";
 import type { ChatPhase } from "@/types/chat";
@@ -32,6 +33,8 @@ type LivePreviewPaneProps = {
   selectedSectionType?: string | null;
   /** Called when the user clicks a section in the preview. */
   onSelectSection?: (type: string) => void;
+  /** Called with the resolved element pick in Edit/inspect mode. */
+  onPick?: (pick: PreviewPick) => void;
   /** Manual section-edit mode. Off = browse/scroll without selecting. */
   editMode?: boolean;
   /** Toggles manual section-edit mode. */
@@ -78,6 +81,7 @@ export function LivePreviewPane({
   selectable = false,
   selectedSectionType = null,
   onSelectSection,
+  onPick,
   editMode = false,
   onEditModeChange,
 }: LivePreviewPaneProps) {
@@ -241,6 +245,7 @@ export function LivePreviewPane({
                     selectable={selectable}
                     selectedSectionType={selectedSectionType}
                     onSelectSection={onSelectSection}
+                    onPick={onPick}
                   />
                 </div>
                 </div>
@@ -260,6 +265,7 @@ export function LivePreviewPane({
                     selectable={selectable}
                     selectedSectionType={selectedSectionType}
                     onSelectSection={onSelectSection}
+                    onPick={onPick}
                   />
                 </div>
               </div>

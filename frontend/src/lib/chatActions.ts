@@ -17,6 +17,7 @@ export function handleChatAction(
     sendSkip?: () => void;
     applyPendingEdit?: () => void;
     dismissPendingEdit?: () => void;
+    openLocationPicker?: () => void;
   },
 ): void {
   if (action === "build") {
@@ -41,6 +42,10 @@ export function handleChatAction(
   }
   if (action === "dismiss_edit") {
     handlers.dismissPendingEdit?.();
+    return;
+  }
+  if (action === "open_location_picker") {
+    handlers.openLocationPicker?.();
     return;
   }
   handlers.resetChat();

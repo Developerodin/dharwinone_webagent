@@ -12,7 +12,6 @@ export function PremiumStats01({ content }: SectionComponentProps) {
   return (
     <section aria-label="Stats" className={`${pm.sectionPad} ${pm.sectionAlt}`}>
       <div className="mx-auto max-w-6xl min-w-0">
-        <p className={`text-center ${pm.eyebrow}`}>By The Numbers</p>
         <h2 className={`mt-3 text-center ${pm.heading} ${pm.headingSection}`}>
           {headline}
         </h2>
@@ -25,7 +24,7 @@ export function PremiumStats01({ content }: SectionComponentProps) {
               <p className={`text-3xl @min-[640px]:text-4xl @min-[768px]:text-5xl ${pm.heading}`}>
                 {item.value}
               </p>
-              <p className={`mt-2 text-xs uppercase tracking-[0.18em] ${pm.body}`}>
+              <p className={`mt-2 text-sm ${pm.body}`}>
                 {item.label}
               </p>
             </li>

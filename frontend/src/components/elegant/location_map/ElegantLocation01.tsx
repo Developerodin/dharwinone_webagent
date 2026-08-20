@@ -1,6 +1,9 @@
 import type { SectionComponentProps } from "../registry";
 import { getString } from "../../premium/contentHelpers";
 import { eg } from "../shared/elegantTokens";
+import { AddressActions } from "@/components/shared/AddressActions";
+import { LocationMapEmbed } from "@/components/shared/LocationMapEmbed";
+import { readCoord } from "@/lib/googleMapsLinks";
 
 /**
  * Caverta-style reservation and location block with hours-style note.
@@ -11,6 +14,11 @@ export function ElegantLocation01({ content }: SectionComponentProps) {
   const address =
     typeof content.address === "string" ? content.address : null;
   const phone = typeof content.phone === "string" ? content.phone : null;
+  const point = {
+    address,
+    lat: readCoord(content.lat),
+    lng: readCoord(content.lng),
+  };
 
   return (
     <section
@@ -19,7 +27,6 @@ export function ElegantLocation01({ content }: SectionComponentProps) {
     >
       <div className="mx-auto grid max-w-6xl gap-8 @min-[640px]:gap-10 @min-[768px]:grid-cols-2 @min-[768px]:gap-16">
         <div className="min-w-0">
-          <p className={eg.eyebrow}>Reservations</p>
           <span aria-hidden="true" className={`mt-3 block @min-[640px]:mt-4 ${eg.goldRule}`} />
           <h2 className={`mt-4 @min-[640px]:mt-6 ${eg.heading} ${eg.headingSection}`}>
             {headline}
@@ -44,7 +51,10 @@ export function ElegantLocation01({ content }: SectionComponentProps) {
                 <dt className="text-[10px] uppercase tracking-[0.2em] text-[var(--eg-gold)] @min-[640px]:text-xs">
                   Address
                 </dt>
-                <dd className={`mt-2 break-words ${eg.body}`}>{address}</dd>
+                <dd className={`mt-2 break-words ${eg.body}`}>
+                  {address}
+                  <AddressActions point={point} />
+                </dd>
               </div>
             ) : null}
             {phone ? (
@@ -68,6 +78,9 @@ export function ElegantLocation01({ content }: SectionComponentProps) {
               </p>
             ) : null}
           </dl>
+          <div className="mt-6 overflow-hidden border border-[var(--eg-gold)]/25">
+            <LocationMapEmbed point={point} label="Restaurant location map" />
+          </div>
         </div>
       </div>
     </section>

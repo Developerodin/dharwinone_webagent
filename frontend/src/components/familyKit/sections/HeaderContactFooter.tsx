@@ -1,21 +1,21 @@
 import { getNavItems } from "@/components/shared/contentExtras";
 import type { ThemeTokens } from "@/components/shared/themeTokens";
 import { createScrollHandler } from "@/lib/scrollToSection";
-import { getString } from "@/components/premium/contentHelpers";
 import type {
   SectionComponent,
   SectionComponentProps,
 } from "@/components/premium/registry";
+import { SiteLeadForm } from "@/components/shared/SiteLeadForm";
 import { createFamilyHeaders } from "./FamilyHeaders";
 import {
   SectionIntro,
   getBodyCopy,
   getBrandName,
+  ContactFactValue,
   getContactFacts,
   getCopyrightLine,
   getHeadline,
   getTagline,
-  getHoursText,
 } from "./shared";
 
 /**
@@ -54,28 +54,16 @@ function createContact01(tokens: ThemeTokens): SectionComponent {
         <div className="mx-auto grid max-w-6xl gap-10 @min-[768px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] @min-[768px]:gap-14">
           <div className="min-w-0">
             <SectionIntro
-              eyebrow="Contact"
               title={headline}
               body={body}
               tokens={tokens}
             />
-            <dl className="mt-8 grid gap-5 @min-[640px]:mt-10 @min-[640px]:grid-cols-2 @min-[768px]:grid-cols-1">
+            <dl className="mt-8 divide-y divide-[var(--theme-line)]">
               {facts.map((fact) => (
-                <div
-                  key={fact.label}
-                  className="rounded-[1.5rem] border border-[var(--theme-line)] bg-[var(--theme-card)] p-5"
-                >
-                  <dt className={`text-[11px] uppercase tracking-[0.22em] ${tokens.accentText}`}>
-                    {fact.label}
-                  </dt>
-                  <dd className="mt-3 text-sm leading-7 text-[var(--theme-ink)] @min-[640px]:text-base">
-                    {fact.href ? (
-                      <a href={fact.href} className="transition-opacity hover:opacity-75">
-                        {fact.value}
-                      </a>
-                    ) : (
-                      fact.value
-                    )}
+                <div key={fact.label} className="flex flex-col gap-2 py-4 first:pt-0 last:pb-0">
+                  <dt className={`text-sm ${tokens.body}`}>{fact.label}</dt>
+                  <dd className="text-sm leading-7 text-[var(--theme-ink)] @min-[640px]:text-base">
+                    <ContactFactValue fact={fact} />
                   </dd>
                 </div>
               ))}
@@ -83,29 +71,13 @@ function createContact01(tokens: ThemeTokens): SectionComponent {
           </div>
 
           <div className={`${tokens.formCard} min-w-0 p-6 @min-[640px]:p-8`}>
-            <div className="grid gap-4 @min-[640px]:grid-cols-2">
-              <label className="grid gap-2 text-sm text-[var(--theme-ink)]">
-                <span>Name</span>
-                <input type="text" aria-label="Name" className={tokens.input} />
-              </label>
-              <label className="grid gap-2 text-sm text-[var(--theme-ink)]">
-                <span>Email</span>
-                <input type="email" aria-label="Email" className={tokens.input} />
-              </label>
-            </div>
-            <label className="mt-4 grid gap-2 text-sm text-[var(--theme-ink)]">
-              <span>Message</span>
-              <textarea
-                aria-label="Message"
-                rows={6}
-                className={`${tokens.input} resize-none`}
-              />
-            </label>
-            <div className="mt-6 flex justify-start">
-              <button type="button" className={tokens.primaryButton}>
-                Send Enquiry
-              </button>
-            </div>
+            <SiteLeadForm
+              content={content}
+              tokens={tokens}
+              kind="contact"
+              layout="enquiry"
+              submitLabel="Send Enquiry"
+            />
           </div>
         </div>
       </section>
@@ -128,9 +100,7 @@ function createContact02(tokens: ThemeTokens): SectionComponent {
       content,
       "From celebrations to intimate dinners, send the details and we'll shape the right table for the moment.",
     );
-    const address = getString(content, "address", "17 Market Lane, Old Quarter");
-    const phone = getString(content, "phone", "+1 (555) 410-1200");
-    const hours = getHoursText(content);
+    const facts = getContactFacts(content);
 
     return (
       <section
@@ -144,74 +114,29 @@ function createContact02(tokens: ThemeTokens): SectionComponent {
         <div className="relative mx-auto max-w-6xl">
           <div className={`${tokens.formCard} mx-auto max-w-4xl p-6 @min-[640px]:p-8 @min-[768px]:p-10`}>
             <SectionIntro
-              eyebrow="Private Dining"
               title={headline}
               body={body}
               tokens={tokens}
-              align="center"
             />
-            <div className="mt-8 grid gap-4 @min-[640px]:grid-cols-2">
-              <label className="grid gap-2 text-sm text-[var(--theme-ink)]">
-                <span>Name</span>
-                <input type="text" aria-label="Name" className={tokens.input} />
-              </label>
-              <label className="grid gap-2 text-sm text-[var(--theme-ink)]">
-                <span>Email</span>
-                <input type="email" aria-label="Email" className={tokens.input} />
-              </label>
-              <label className="grid gap-2 text-sm text-[var(--theme-ink)]">
-                <span>Phone</span>
-                <input type="tel" aria-label="Phone" className={tokens.input} />
-              </label>
-              <label className="grid gap-2 text-sm text-[var(--theme-ink)]">
-                <span>Date</span>
-                <input type="text" aria-label="Date" className={tokens.input} />
-              </label>
-              <label className="grid gap-2 text-sm text-[var(--theme-ink)]">
-                <span>Time</span>
-                <input type="text" aria-label="Time" className={tokens.input} />
-              </label>
-              <label className="grid gap-2 text-sm text-[var(--theme-ink)]">
-                <span>Requests</span>
-                <input type="text" aria-label="Special requests" className={tokens.input} />
-              </label>
-            </div>
-            <label className="mt-4 grid gap-2 text-sm text-[var(--theme-ink)]">
-              <span>Notes</span>
-              <textarea
-                aria-label="Notes"
-                rows={5}
-                className={`${tokens.input} resize-none`}
-              />
-            </label>
-            <div className="mt-6 flex justify-center">
-              <button type="button" className={tokens.primaryButton}>
-                Send Request
-              </button>
-            </div>
+            <SiteLeadForm
+              content={content}
+              tokens={tokens}
+              kind="reservation"
+              layout="reservation"
+              submitLabel="Send Request"
+            />
           </div>
 
-          <div className="mx-auto mt-8 grid max-w-5xl gap-4 @min-[640px]:grid-cols-3">
-            {[
-              { label: "Address", value: address },
-              { label: "Phone", value: phone },
-              hours ? { label: "Hours", value: hours } : null,
-            ]
-              .filter((fact): fact is { label: string; value: string } => Boolean(fact))
-              .map((fact) => (
-              <div
-                key={fact.label}
-                className="rounded-[1.25rem] border border-white/10 bg-white/5 p-5 text-center backdrop-blur-sm"
-              >
-                <p className={`text-[11px] uppercase tracking-[0.24em] ${tokens.accentTextOnDark}`}>
-                  {fact.label}
-                </p>
-                <p className={`mt-3 text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>
-                  {fact.value}
-                </p>
+          <dl className="mx-auto mt-8 max-w-5xl divide-y divide-white/10 @min-[640px]:grid @min-[640px]:grid-cols-3 @min-[640px]:divide-y-0 @min-[640px]:gap-8">
+            {facts.map((fact) => (
+              <div key={fact.label} className="py-4 first:pt-0 @min-[640px]:py-0">
+                <dt className={`text-sm ${tokens.mutedOnDark}`}>{fact.label}</dt>
+                <dd className={`mt-2 text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>
+                  <ContactFactValue fact={fact} onDark />
+                </dd>
               </div>
             ))}
-          </div>
+          </dl>
         </div>
       </section>
     );
@@ -243,32 +168,25 @@ function createFooter01(tokens: ThemeTokens): SectionComponent {
               {tagline}
             </p>
           </div>
-          <div>
-            <p className={`text-[11px] uppercase tracking-[0.24em] ${tokens.accentText}`}>
-              Navigate
-            </p>
-            <div className="mt-4 flex flex-col items-start gap-2">
+          <nav aria-label="Footer navigation" className="flex flex-col items-start gap-2">
               {navItems.map((item) => (
                 <button
                   key={`${item.target}-${item.label}`}
                   type="button"
                   onClick={createScrollHandler(item.target)}
-                  className={tokens.navLink}
+                  className={`w-fit text-left text-sm ${tokens.body} transition hover:text-[var(--theme-ink)]`}
                   aria-label={`Scroll to ${item.label}`}
                 >
                   {item.label}
                 </button>
               ))}
-            </div>
-          </div>
+            </nav>
           <div>
-            <p className={`text-[11px] uppercase tracking-[0.24em] ${tokens.accentText}`}>
-              Contact
-            </p>
-            <ul className="mt-4 space-y-3" role="list">
+            <ul className="space-y-3" role="list">
               {facts.map((fact) => (
                 <li key={fact.label} className={`text-sm @min-[640px]:text-base ${tokens.body}`}>
-                  <span className="text-[var(--theme-ink)]">{fact.label}:</span> {fact.value}
+                  <span className="text-[var(--theme-ink)]">{fact.label}:</span>{" "}
+                  <ContactFactValue fact={fact} />
                 </li>
               ))}
             </ul>
@@ -298,7 +216,7 @@ function createFooter02(tokens: ThemeTokens): SectionComponent {
 
     return (
       <footer aria-label="Footer" className={`${tokens.sectionPad} ${tokens.sectionDark}`}>
-        <div className="mx-auto max-w-6xl rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm @min-[640px]:p-8">
+        <div className="mx-auto max-w-6xl">
           <div className="grid gap-8 @min-[768px]:grid-cols-[minmax(0,1fr)_auto_minmax(0,0.9fr)] @min-[768px]:items-start">
             <div>
               <p className={`text-xl text-[var(--theme-on-dark)] ${tokens.heading}`}>{brandName}</p>
@@ -306,13 +224,13 @@ function createFooter02(tokens: ThemeTokens): SectionComponent {
                 {tagline}
               </p>
             </div>
-            <nav aria-label="Footer navigation" className="flex flex-wrap gap-2">
+            <nav aria-label="Footer navigation" className="flex flex-wrap gap-x-5 gap-y-2">
               {navItems.map((item) => (
                 <button
                   key={`${item.target}-${item.label}`}
                   type="button"
                   onClick={createScrollHandler(item.target)}
-                  className={tokens.navLinkOnDark}
+                  className={`text-sm ${tokens.mutedOnDark} transition hover:text-[var(--theme-on-dark)]`}
                   aria-label={`Scroll to ${item.label}`}
                 >
                   {item.label}
@@ -322,7 +240,8 @@ function createFooter02(tokens: ThemeTokens): SectionComponent {
             <div className="space-y-2">
               {facts.map((fact) => (
                 <p key={fact.label} className={`text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>
-                  <span className="text-[var(--theme-on-dark)]">{fact.label}:</span> {fact.value}
+                  <span className="text-[var(--theme-on-dark)]">{fact.label}:</span>{" "}
+                  <ContactFactValue fact={fact} onDark />
                 </p>
               ))}
             </div>

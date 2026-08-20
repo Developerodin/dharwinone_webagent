@@ -1,6 +1,9 @@
 import type { SectionComponentProps } from "@/components/premium/registry";
 import { getString } from "@/components/premium/contentHelpers";
 import { getContactFacts } from "@/components/familyKit/sections/shared";
+import { AddressActions } from "@/components/shared/AddressActions";
+import { LocationMapEmbed } from "@/components/shared/LocationMapEmbed";
+import { readCoord } from "@/lib/googleMapsLinks";
 import { bd } from "../shared/boldTokens";
 
 /**
@@ -15,6 +18,11 @@ export function BoldLocation01({ content }: SectionComponentProps) {
   );
   const facts = getContactFacts(content);
   const address = facts.find((f) => f.label === "Address")?.value ?? "";
+  const point = {
+    address: address || null,
+    lat: readCoord(content.lat),
+    lng: readCoord(content.lng),
+  };
 
   return (
     <section aria-label="Location" className={`${bd.sectionPad} ${bd.sectionAlt}`}>
@@ -31,6 +39,7 @@ export function BoldLocation01({ content }: SectionComponentProps) {
               {address}
             </p>
           ) : null}
+          {address ? <AddressActions point={point} /> : null}
           <p className={`mt-3 max-w-md text-sm uppercase tracking-[0.04em] @min-[640px]:text-base ${bd.body}`}>
             {note}
           </p>
@@ -55,24 +64,14 @@ export function BoldLocation01({ content }: SectionComponentProps) {
               ))}
           </dl>
         </div>
-        <div
-          aria-label="Map placeholder"
-          className="min-h-[16rem] border-4 border-[var(--bold-hero-red)] bg-[linear-gradient(145deg,#f3f3f3,#e8e8e8)] @min-[640px]:min-h-[22rem]"
-        >
-          <div className="flex h-full items-center justify-center p-6 text-center">
-            <p className="font-[family-name:var(--theme-font-display)] text-sm font-bold uppercase tracking-[0.16em] text-[var(--theme-muted)]">
-              Map · {address || brandFallback(content)}
-            </p>
-          </div>
+        <div className="min-h-[16rem] overflow-hidden border-4 border-[var(--bold-hero-red)] @min-[640px]:min-h-[22rem]">
+          <LocationMapEmbed
+            point={point}
+            label="Restaurant location map"
+            className="h-full min-h-[16rem] @min-[640px]:min-h-[22rem]"
+          />
         </div>
       </div>
     </section>
   );
-}
-
-/**
- * Reads brand name for map fallback label.
- */
-function brandFallback(content: Record<string, unknown>): string {
-  return getString(content, "brandName", "Grand Burger");
 }

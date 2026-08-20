@@ -34,7 +34,6 @@ export function PremiumAbout01({ content, assets }: SectionComponentProps) {
           )}
         </div>
         <div className="order-1 min-w-0 @min-[768px]:order-2">
-          <p className={pm.eyebrow}>About Us</p>
           <span aria-hidden="true" className={`mt-3 block @min-[640px]:mt-4 ${pm.accentRule}`} />
           <h2 className={`mt-4 @min-[640px]:mt-6 ${pm.heading} ${pm.headingSection}`}>
             {headline}

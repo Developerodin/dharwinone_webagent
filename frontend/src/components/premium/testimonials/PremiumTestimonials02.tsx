@@ -13,7 +13,6 @@ export function PremiumTestimonials02({ content }: SectionComponentProps) {
   return (
     <section aria-label="Testimonials" className={`${pm.sectionPad} ${pm.section}`}>
       <div className="mx-auto max-w-6xl min-w-0">
-        <p className={`text-center ${pm.eyebrow}`}>Testimonials</p>
         <h2 className={`mt-3 text-center ${pm.heading} ${pm.headingSection}`}>
           {headline}
         </h2>
@@ -32,7 +31,7 @@ export function PremiumTestimonials02({ content }: SectionComponentProps) {
                 “{item.quote}”
               </blockquote>
               <p className={`mt-6 text-sm font-medium ${pm.heading}`}>{item.name}</p>
-              <p className="mt-1 text-xs uppercase tracking-[0.16em] text-[var(--theme-accent)]">
+              <p className={`mt-1 text-sm ${pm.body}`}>
                 {item.role}
               </p>
             </li>
