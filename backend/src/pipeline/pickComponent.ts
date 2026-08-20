@@ -10,54 +10,56 @@ type VariantMap = Record<SectionType, readonly string[]>;
 /**
  * Builds standard component id lists for a family.
  */
-function familyVariants(
-  family: PageFamily,
-  heroCount: 2 | 3 = 2,
-): VariantMap {
-  const hero =
-    heroCount === 3
-      ? ([
-          `${family}-hero-01`,
-          `${family}-hero-02`,
-          `${family}-hero-03`,
-        ] as const)
-      : ([`${family}-hero-01`, `${family}-hero-02`] as const);
-
+function familyVariants(family: PageFamily): VariantMap {
   return {
     header: [
       `${family}-header-01`,
       `${family}-header-02`,
       `${family}-header-03`,
     ],
-    hero,
-    about: [`${family}-about-01`, `${family}-about-02`],
-    services: [`${family}-services-01`, `${family}-services-02`],
-    menu: [`${family}-menu-01`, `${family}-menu-02`],
-    stats: [`${family}-stats-01`, `${family}-stats-02`],
-    gallery: [`${family}-gallery-01`, `${family}-gallery-02`],
+    hero: [`${family}-hero-01`, `${family}-hero-02`, `${family}-hero-03`],
+    about: [`${family}-about-01`, `${family}-about-02`, `${family}-about-03`],
+    services: [
+      `${family}-services-01`,
+      `${family}-services-02`,
+      `${family}-services-03`,
+    ],
+    menu: [`${family}-menu-01`, `${family}-menu-02`, `${family}-menu-03`],
+    stats: [`${family}-stats-01`, `${family}-stats-02`, `${family}-stats-03`],
+    gallery: [
+      `${family}-gallery-01`,
+      `${family}-gallery-02`,
+      `${family}-gallery-03`,
+    ],
     testimonials: [
       `${family}-testimonials-01`,
       `${family}-testimonials-02`,
+      `${family}-testimonials-03`,
     ],
-    team: [`${family}-team-01`, `${family}-team-02`],
+    team: [`${family}-team-01`, `${family}-team-02`, `${family}-team-03`],
     reservation: [
       `${family}-reservation-01`,
       `${family}-reservation-02`,
+      `${family}-reservation-03`,
     ],
-    location_map: [`${family}-location-01`, `${family}-location-02`],
+    location_map: [
+      `${family}-location-01`,
+      `${family}-location-02`,
+      `${family}-location-03`,
+    ],
     contact: [`${family}-contact-01`, `${family}-contact-02`],
-    footer: [`${family}-footer-01`, `${family}-footer-02`],
+    footer: [`${family}-footer-01`, `${family}-footer-02`, `${family}-footer-03`],
   };
 }
 
 /** Available component ids per family and section type. */
 export const COMPONENT_VARIANTS: Record<PageFamily, VariantMap> = {
-  premium: familyVariants("premium", 3),
-  elegant: familyVariants("elegant", 3),
-  minimal: familyVariants("minimal", 2),
-  rustic: familyVariants("rustic", 2),
-  vibrant: familyVariants("vibrant", 2),
-  bold: familyVariants("bold", 2),
+  premium: familyVariants("premium"),
+  elegant: familyVariants("elegant"),
+  minimal: familyVariants("minimal"),
+  rustic: familyVariants("rustic"),
+  vibrant: familyVariants("vibrant"),
+  bold: familyVariants("bold"),
 };
 
 /**
@@ -197,6 +199,14 @@ function scoreVariant(
   const elegantOrTea =
     /\b(elegant|fine\s*dining|upscale)\b/.test(corpus) ||
     TEA_REFINED_RE.test(teaCueCorpus);
+  const roomForward =
+    /\b(neighbourhood|neighborhood|dining\s*room|this\s*room|kitchen|terrace)\b/.test(
+      corpus,
+    );
+  const featuredPlate =
+    /\b(house\s*special|must[\s-]?order|featured\s*plate)\b/.test(corpus);
+  const atmospheric =
+    /\b(atmosphere|texture|plated|dining\s*room)\b/.test(corpus);
 
   if (suffix === "02") {
     if (sectionType === "hero" && photoHeavy && !elegantOrTea) score += 5;
@@ -216,6 +226,33 @@ function scoreVariant(
   // photoHeavy → hero-03 only when not elegant/tea (those rely on diversity + recentSuffixes).
   if (suffix === "03" && sectionType === "hero" && photoHeavy && !elegantOrTea) {
     score += 6;
+  }
+  if (suffix === "03") {
+    if (sectionType === "about" && roomForward) score += 5;
+    if (sectionType === "menu" && featuredPlate) score += 5;
+    if (sectionType === "gallery" && atmospheric) score += 5;
+    if (sectionType === "services" && /\b(how\s*we\s*host|private\s*room)\b/.test(corpus)) {
+      score += 4;
+    }
+    if (sectionType === "stats" && /\b(founded|years?\s*(old|in))\b/.test(corpus)) {
+      score += 4;
+    }
+    if (sectionType === "testimonials" && /\b(press|one\s*guest)\b/.test(corpus)) {
+      score += 4;
+    }
+    if (sectionType === "team" && /\b(head\s*chef|executive\s*chef)\b/.test(corpus)) {
+      score += 4;
+    }
+    if (sectionType === "reservation" && /\b(call\s*(us|ahead)|phone)\b/.test(corpus)) {
+      score += 3;
+    }
+    if (sectionType === "location_map" && roomForward) score += 3;
+    if (
+      sectionType === "location_map" &&
+      /\b(hours|open\s*(daily|until)|service\s*hours)\b/.test(corpus)
+    ) {
+      score += 3;
+    }
   }
   // Equal soft nudge for tea/elegant so hash + recentSuffixes diversify 01/02/03.
   if (sectionType === "hero" && elegantOrTea) {

@@ -2,6 +2,7 @@ import type { PageFamily } from "../config/pageFamily.js";
 import type { Brief } from "../schemas/brief.schema.js";
 import type { PageSection, SectionType } from "../schemas/page.schema.js";
 import { pickComponent } from "./pickComponent.js";
+import { formatBriefHoursLines } from "./hoursFormat.js";
 import {
   listCatalogImagePaths,
   orientationForSection,
@@ -78,6 +79,13 @@ export function defaultSectionContent(
         headline: "Find Us",
         body: brief.address ?? "Visit us soon",
         directionsNote: "We look forward to hosting you",
+        phone: brief.phone,
+        address: brief.address,
+        email: brief.email ?? null,
+        lat: brief.lat ?? null,
+        lng: brief.lng ?? null,
+        placeId: brief.placeId ?? null,
+        hours: formatBriefHoursLines(brief),
       };
     case "services":
       return {
@@ -125,6 +133,9 @@ export function defaultSectionContent(
         headline: "Reserve a Table",
         body: "Tell us when you’d like to join us.",
         ctaLabel: "Request Reservation",
+        phone: brief.phone,
+        address: brief.address,
+        email: brief.email ?? null,
       };
     case "contact":
       return {
@@ -133,6 +144,10 @@ export function defaultSectionContent(
         ctaLabel: "Send Message",
         phone: brief.phone,
         address: brief.address,
+        email: brief.email ?? null,
+        lat: brief.lat ?? null,
+        lng: brief.lng ?? null,
+        hours: formatBriefHoursLines(brief),
       };
     case "footer":
       return {
@@ -141,6 +156,10 @@ export function defaultSectionContent(
         brandName: brief.businessName,
         phone: brief.phone,
         address: brief.address,
+        email: brief.email ?? null,
+        lat: brief.lat ?? null,
+        lng: brief.lng ?? null,
+        hours: formatBriefHoursLines(brief),
         navItems: [
           { label: "About", target: "about" },
           { label: "Menu", target: "menu" },

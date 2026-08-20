@@ -21,6 +21,8 @@ export type AskAgentResult = {
   proposedEdit: string | null;
   /** Specialist hint for edit UX cards. */
   specialist: "style" | "layout" | "copy" | "general" | null;
+  /** When true, UI opens the map picker instead of running Editor. */
+  openLocationPicker: boolean;
 };
 
 const askResponseSchema = z.object({
@@ -28,7 +30,52 @@ const askResponseSchema = z.object({
   message: z.string().min(1),
   proposedEdit: z.string().nullable(),
   specialist: z.enum(["style", "layout", "copy", "general"]).nullable(),
+  openLocationPicker: z.boolean(),
 });
+
+/**
+ * Fills Ask result defaults so every branch sets openLocationPicker.
+ */
+function askResult(
+  result: Omit<AskAgentResult, "openLocationPicker"> & {
+    openLocationPicker?: boolean;
+  },
+): AskAgentResult {
+  return { openLocationPicker: false, ...result };
+}
+
+/**
+ * True when the user is talking about a contact inbox, not a street address.
+ */
+export function isEmailInboxIntent(instruction: string): boolean {
+  const text = instruction.trim();
+  if (!text) return false;
+  if (/[^\s@]+@[^\s@]+\.[^\s@]+/.test(text)) return true;
+  if (!/\bemail(\s+address)?\b/i.test(text)) return false;
+  if (/\b(map|pin|google\s*maps?)\b/i.test(text)) return false;
+  return /\b(add|update|change|set|edit|need|want)\b/i.test(text);
+}
+
+/**
+ * True when the user wants a map/street pin (never for email inbox).
+ */
+export function wantsLocationPicker(instruction: string): boolean {
+  const text = instruction.trim();
+  if (!text || isEmailInboxIntent(text)) return false;
+  const lower = text.toLowerCase();
+  if (/\b(google\s*maps?|map\s+embed|drop\s+a\s+pin)\b/.test(lower)) return true;
+  if (/\bpick\s+(?:a\s+|the\s+|our\s+)?(?:location|address|pin)\b/.test(lower)) {
+    return true;
+  }
+  const hasPlace =
+    /\b(location|street\s+address|map|pin)\b/.test(lower) ||
+    (/\baddress\b/.test(lower) && !/\bemail\b/.test(lower));
+  const hasAction =
+    /\b(add|update|change|set|edit|pick|choose|select|put|move|need|want|wanna|please)\b/.test(
+      lower,
+    );
+  return hasPlace && hasAction;
+}
 
 /**
  * True when heuristic already knows this is a clear edit (skip LLM).
@@ -41,6 +88,7 @@ export function isClearEditHeuristic(instruction: string): boolean {
     return true;
   }
   if (isCycleSectionComponentIntent(text)) return true;
+  if (isEmailInboxIntent(text)) return true;
 
   // Single accent / color / text style / theme family / font
   if (
@@ -79,8 +127,27 @@ export function classifyIntentHeuristic(instruction: string): AskAgentResult {
   const text = instruction.trim();
   const lower = text.toLowerCase();
 
+  if (isEmailInboxIntent(text)) {
+    return askResult({
+      intent: "edit",
+      message: "",
+      proposedEdit: null,
+      specialist: "copy",
+    });
+  }
+
+  if (wantsLocationPicker(text)) {
+    return askResult({
+      intent: "ask",
+      message: "Pick the place on the map, or tap Select location if you closed the picker.",
+      proposedEdit: null,
+      specialist: "general",
+      openLocationPicker: true,
+    });
+  }
+
   if (isThemeInquiryIntent(text)) {
-    return {
+    return askResult({
       intent: "ask",
       message: [
         "Themes available:",
@@ -94,26 +161,26 @@ export function classifyIntentHeuristic(instruction: string): AskAgentResult {
       ].join("\n"),
       proposedEdit: null,
       specialist: "style",
-    };
+    });
   }
 
   if (/\b(surprise\s+me|remix(\s+layout)?|different\s+layouts?)\b/i.test(text)) {
-    return {
+    return askResult({
       intent: "edit",
       message: "",
       proposedEdit: null,
       specialist: "layout",
-    };
+    });
   }
 
   if (isCycleSectionComponentIntent(text)) {
     const section = inferEditSection(text, "header");
-    return {
+    return askResult({
       intent: "edit",
       message: "",
       proposedEdit: `switch ${section} layout`,
       specialist: "layout",
-    };
+    });
   }
 
   const isQuestion =
@@ -142,12 +209,12 @@ export function classifyIntentHeuristic(instruction: string): AskAgentResult {
           )
         ? "style"
         : "copy";
-    return {
+    return askResult({
       intent: "edit",
       message: "",
       proposedEdit: null,
       specialist,
-    };
+    });
   }
 
   if (isQuestion || needsConfirm) {
@@ -165,7 +232,7 @@ export function classifyIntentHeuristic(instruction: string): AskAgentResult {
         ? `switch ${inferEditSection(text, "header")} layout`
         : null;
 
-    return {
+    return askResult({
       intent: "ask",
       message: proposal
         ? [
@@ -187,7 +254,7 @@ export function classifyIntentHeuristic(instruction: string): AskAgentResult {
           ].join("\n"),
       proposedEdit: proposal,
       specialist,
-    };
+    });
   }
 
   const clearEdit =
@@ -207,21 +274,21 @@ export function classifyIntentHeuristic(instruction: string): AskAgentResult {
           )
         ? "style"
         : "copy";
-    return {
+    return askResult({
       intent: "edit",
       message: "",
       proposedEdit: null,
       specialist,
-    };
+    });
   }
 
-  return {
+  return askResult({
     intent: "ask",
     message:
       "I can answer questions or propose edits (colors, fonts, sections, spacing). What would you like to do?",
     proposedEdit: null,
     specialist: "general",
-  };
+  });
 }
 
 /**
@@ -240,7 +307,8 @@ export async function runAskAgent(args: {
     args.useFixture ||
     process.env.USE_FIXTURE_BRIEF === "true" ||
     isClearEditHeuristic(args.instruction) ||
-    heuristic.intent === "edit"
+    heuristic.intent === "edit" ||
+    heuristic.openLocationPicker
   ) {
     // For cycle intents, pass proposedEdit so confirm CTAs have a clean string
     if (
@@ -267,21 +335,28 @@ export async function runAskAgent(args: {
           content: `You are the Ask agent for a restaurant website builder.
 You NEVER mutate the page. You answer questions, suggest options, and optionally propose an edit instruction for the Editor.
 
+When suggesting visual options: name one signature change (which section leads, a specific palette, or a type pair). Never say "make it more modern" or propose cream-and-terracotta defaults.
+
 Return intent:
-- "edit" for clear imperatives: rewrite one headline, color a word, set accent/bg, named theme switch, "surprise me"/"remix layout", "switch header layout" / cycle one section.
+- "edit" for clear imperatives: rewrite one headline, color a word, set accent/bg, named theme switch, "surprise me"/"remix layout", "switch header layout" / cycle one section, set/update contact email inbox.
 - "ask" for questions, vague asks, add/remove section, multi-target palettes needing confirmation.
+
+Set openLocationPicker true ONLY when the user wants a street/map/pin for the restaurant (e.g. "update the location", "drop a pin"). Then intent should be ask, proposedEdit null.
+Set openLocationPicker false for "email address" / an @inbox — that is a contact email edit, NEVER a map pin.
 
 CRITICAL:
 - "surprise me" / "remix layout" → intent edit (never ask clarifying questions).
 - Header/nav/footer “different component / not looking good / switch it” → intent edit; proposedEdit like "switch header layout". NEVER remix_layout for a single section.
 - remix_layout only when user says surprise/remix/different layouts (global).
+- Contact email / "email address" / an @gmail inbox → intent edit, openLocationPicker false.
+- Restaurant location / map / pin / street address (not email) → openLocationPicker true.
 
 When intent is ask and a concrete change is requested, set proposedEdit to the exact Editor instruction and ask to confirm.
 When intent is edit, message may be empty and proposedEdit null (Editor runs the user text), unless you normalize to a clearer instruction in proposedEdit.
 specialist: style | layout | copy | general.
 
-Supported: brand/section/button/text colors (names, dark green, light grey, or #hex), fonts, partial word color, add/remove sections (not header/footer remove), spacing, themes, copy, images, menu, cycle section layouts including header/contact/footer.
-Unsupported: videos, map embeds, multi-page, drag-resize, custom font uploads.`,
+Supported: brand/section/button/text colors (names, dark green, light grey, or #hex), fonts, partial word color, add/remove sections (not header/footer remove), spacing, themes, copy, images, menu, cycle section layouts including header/contact/footer, contact email inbox, restaurant location via the map picker.
+Unsupported: videos, multi-page, drag-resize, custom font uploads.`,
         },
         {
           role: "user",
@@ -303,12 +378,13 @@ User: ${args.instruction}`,
 
     const parsed = completion.choices[0]?.message?.parsed;
     if (parsed) {
-      return {
+      return askResult({
         intent: parsed.intent,
         message: parsed.message,
         proposedEdit: parsed.proposedEdit,
         specialist: parsed.specialist,
-      };
+        openLocationPicker: parsed.openLocationPicker,
+      });
     }
   } catch (error) {
     console.warn(

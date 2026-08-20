@@ -6,6 +6,13 @@ export function isCycleSectionComponentIntent(text: string): boolean {
   const sectionAlt =
     "hero|about|menu|gallery|moments|location|services|stats|testimonials|team|reservation|header|footer|contact|section|story|reviews?";
 
+  const wantsPlaceNotLayout =
+    /\b(location|address|map|google\s*maps?|pin)\b/.test(lower) &&
+    !/\b(layout|design|variant|component|style|template|ui)\b/.test(lower);
+  if (wantsPlaceNotLayout) {
+    return false;
+  }
+
   if (
     /\b(layout|design|variant|component|style|template|ui)\b/.test(lower) &&
     /\b(change|switch|swap|different|another|next|use|try)\b/.test(lower) &&

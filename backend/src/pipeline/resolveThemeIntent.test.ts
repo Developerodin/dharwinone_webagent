@@ -50,9 +50,7 @@ describe("checkUnsupportedEdit theme exemption", () => {
     expect(checkUnsupportedEdit("add a video background")).toBeNull();
   });
 
-  it("still blocks map embeds", () => {
-    expect(checkUnsupportedEdit("add a google maps embed")).toContain(
-      "advanced media",
-    );
+  it("allows map embeds via the location picker", () => {
+    expect(checkUnsupportedEdit("add a google maps embed")).toBeNull();
   });
 });

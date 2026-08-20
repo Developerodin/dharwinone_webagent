@@ -79,6 +79,12 @@ describe("resolveEditTarget", () => {
       isCycleSectionComponentIntent("change the entire hero section"),
     ).toBe(true);
     expect(isCycleSectionComponentIntent("different menu layout")).toBe(true);
+    expect(isCycleSectionComponentIntent("change the location")).toBe(
+      false,
+    );
+    expect(
+      isCycleSectionComponentIntent("change the location section layout"),
+    ).toBe(true);
     expect(isRewriteCopyIntent("change the about section")).toBe(false);
   });
 

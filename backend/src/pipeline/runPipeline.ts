@@ -5,6 +5,7 @@ import type { CreativeDirection } from "../schemas/creativeDirection.schema.js";
 import { getManifest } from "../schemas/manifest.schema.js";
 import type { Page, PageSection, SectionType } from "../schemas/page.schema.js";
 import { assemblePage } from "./assemblePage.js";
+import { hydrateLocationFacts } from "./applyLocationOp.js";
 import {
   applyCreativePalette,
   runCreativeDirector,
@@ -160,11 +161,7 @@ function enrichSectionContent(
   }
 
   if (sectionType === "location_map") {
-    return {
-      ...content,
-      phone: brief.phone,
-      address: brief.address,
-    };
+    return hydrateLocationFacts(content, brief);
   }
 
   if (sectionType === "services") {
@@ -184,11 +181,7 @@ function enrichSectionContent(
   }
 
   if (sectionType === "reservation") {
-    return {
-      ...content,
-      phone: brief.phone,
-      address: brief.address,
-    };
+    return hydrateLocationFacts(content, brief);
   }
 
   if (sectionType === "header") {
@@ -218,19 +211,13 @@ function enrichSectionContent(
   }
 
   if (sectionType === "contact") {
-    return {
-      ...content,
-      phone: brief.phone,
-      address: brief.address,
-    };
+    return hydrateLocationFacts(content, brief);
   }
 
   if (sectionType === "footer") {
     return {
-      ...content,
+      ...hydrateLocationFacts(content, brief),
       brandName: brief.businessName,
-      phone: brief.phone,
-      address: brief.address,
       navItems: defaultNavItems(brief, presentSections),
     };
   }

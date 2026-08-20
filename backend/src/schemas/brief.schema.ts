@@ -39,6 +39,12 @@ export const briefSchema = z.object({
   category: z.string().min(1),
   phone: z.string().nullable(),
   address: z.string().nullable(),
+  /** Restaurant inbox for contact/reservation leads. Never invent. */
+  email: z.string().nullable().optional(),
+  /** Map pin from the location picker. Never invent. */
+  lat: z.number().nullable().optional(),
+  lng: z.number().nullable().optional(),
+  placeId: z.string().nullable().optional(),
   menuItems: z.array(menuItemSchema),
   photos: z.array(z.string()),
   /** Brand colors as names or hex; null = use theme defaults. */
@@ -77,6 +83,10 @@ export function normalizeBrief(brief: Brief): Brief {
     ...brief,
     phone: brief.phone ?? null,
     address: brief.address ?? null,
+    email: brief.email ?? null,
+    lat: typeof brief.lat === "number" ? brief.lat : null,
+    lng: typeof brief.lng === "number" ? brief.lng : null,
+    placeId: brief.placeId ?? null,
     brandColors: brief.brandColors?.length ? brief.brandColors : null,
     usp: brief.usp ?? null,
     story: brief.story ?? null,
@@ -126,5 +136,9 @@ export function coerceBriefInput(input: unknown): unknown {
     socials: record.socials ?? null,
     photos: Array.isArray(record.photos) ? record.photos : [],
     menuItems: Array.isArray(record.menuItems) ? record.menuItems : [],
+    email: record.email ?? null,
+    lat: typeof record.lat === "number" ? record.lat : null,
+    lng: typeof record.lng === "number" ? record.lng : null,
+    placeId: record.placeId ?? null,
   };
 }

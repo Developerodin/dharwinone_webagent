@@ -8,6 +8,7 @@ import { getManifest } from "../schemas/manifest.schema.js";
 import type { SectionType } from "../schemas/page.schema.js";
 import { factCheck } from "./factCheck.js";
 import { slopCheck } from "./slopCheck.js";
+import { COPY_SKILL } from "./designSkillPrompt.js";
 import { writeCopyFixture } from "./writeCopy.js";
 
 export type PlannedCopySection = {
@@ -88,13 +89,18 @@ export async function writeAllSectionCopy(args: {
       messages: [
         {
           role: "system",
-          content: `You write all section copy for one restaurant page in a single response.
+          content: `${COPY_SKILL}
+
+You write all section copy for one restaurant page in a single response.
 Rules:
 - Use ONLY facts in the brief. Never invent hours, phone, prices, chefs, guests, or awards.
 - Follow the narrative positioning, proofPoints, and voiceRules.
+- Serve the signature (${args.direction.signature?.note ?? "one memorable idea"}) — other sections stay quieter.
 - Banned phrases: ${banned.join("; ")}.
 - Every headline must contain a concrete noun from the brief (dish, place, year, technique).
+- If usp/audience are present, they steer voice and who the copy is for — do not genericize them away or print "USP:" / "Audience:" labels.
 - Match copy length to emphasis: compact=very short, hero/major=richer.
+- eyebrow fields: return an empty string.
 - Return an object keyed by sectionType with the listed fields.
 ${flagNote}`,
         },
@@ -103,6 +109,8 @@ ${flagNote}`,
           content: JSON.stringify({
             brief: args.brief,
             narrative: args.direction.narrative,
+            signature: args.direction.signature,
+            subject: args.direction.subject,
             archetype: args.direction.archetype,
             family,
             sections: sectionSpecs,

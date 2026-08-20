@@ -6,8 +6,10 @@ import { inventPalette } from "./creativeDirector.js";
 import { luminance } from "./colorResolve.js";
 import {
   findCuisineMatch,
+  fontStackFor,
   getHorecaDesignSystem,
   inventPaletteFromHoreca,
+  listDistinctiveTypePairs,
   themeOverridesForFamily,
 } from "./horecaDesignSystem.js";
 
@@ -29,6 +31,14 @@ describe("horecaDesignSystem", () => {
     expect(system.cuisines.length).toBeGreaterThan(20);
     expect(system.componentGuidance.bySection.about).toBe("lightSection");
     expect(system.componentGuidance.bySection.footer).toBe("darkSection");
+  });
+
+  it("lists distinctive type pairs without Inter/Fraunces/Geist faces", () => {
+    const pairs = listDistinctiveTypePairs();
+    expect(pairs.length).toBeGreaterThan(5);
+    expect(pairs.every((pair) => !/inter|fraunces|geist|instrument/i.test(`${pair.headingFont} ${pair.bodyFont}`))).toBe(true);
+    expect(fontStackFor("Inter")).toContain("Karla");
+    expect(fontStackFor("Fraunces")).toContain("Playfair");
   });
 
   it("matches Indian / Italian cuisine cues", () => {

@@ -53,16 +53,16 @@ const NAMED_COLORS: Record<string, string> = {
 };
 
 const FONT_STACKS: Record<string, string> = {
-  serif: '"Instrument Serif", "Times New Roman", serif',
-  "instrument serif": '"Instrument Serif", "Times New Roman", serif',
+  serif: '"Playfair Display", "Times New Roman", serif',
+  "instrument serif": '"Playfair Display", Georgia, serif',
   playfair: '"Playfair Display", Georgia, serif',
   "playfair display": '"Playfair Display", Georgia, serif',
-  sans: '"Geist Variable", "DM Sans", system-ui, sans-serif',
-  geist: '"Geist Variable", system-ui, sans-serif',
+  sans: '"DM Sans", system-ui, sans-serif',
+  geist: '"DM Sans", system-ui, sans-serif',
   "dm sans": '"DM Sans", system-ui, sans-serif',
-  modern: '"Geist Variable", system-ui, sans-serif',
+  modern: '"Sora", "DM Sans", system-ui, sans-serif',
   elegant: '"Playfair Display", Georgia, serif',
-  rustic: '"Instrument Serif", Georgia, serif',
+  rustic: '"Lora", Georgia, serif',
 };
 
 export type SurfaceTokens = {

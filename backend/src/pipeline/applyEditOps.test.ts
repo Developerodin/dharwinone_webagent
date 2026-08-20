@@ -35,6 +35,16 @@ describe("parseEditOpsFixture", () => {
     });
   });
 
+  it("parses contact email updates", () => {
+    const parsed = parseEditOpsFixture(
+      "need to update email address akshay96102@gmail.com add this emaisl for cocntect us",
+    );
+    expect(parsed.ops).toContainEqual({
+      op: "set_email",
+      email: "akshay96102@gmail.com",
+    });
+  });
+
   it("parses theme switch", () => {
     const parsed = parseEditOpsFixture("use elegant theme");
     expect(parsed.ops).toContainEqual({
@@ -190,5 +200,97 @@ describe("applyEditOps", () => {
     expect(healed?.assets[0]?.imagePath).toMatch(
       /^\/images\/restaurant\/about\/.+\.webp$/,
     );
+  });
+
+  it("set_location writes address and coords to location/contact/footer and brief", async () => {
+    resetCatalogCache();
+    const built = await runPipeline({
+      chatText: "ignored",
+      useFixture: true,
+      family: "premium",
+    });
+
+    const result = await applyEditOps({
+      page: built.page,
+      brief: built.brief,
+      family: "premium",
+      ops: [
+        {
+          op: "set_location",
+          address: "1 Palace Rd, Jaipur",
+          lat: 26.9124,
+          lng: 75.7873,
+          placeId: "abc",
+          mapsUrl: "https://www.google.com/maps/search/?api=1&query=26.9124,75.7873",
+        },
+      ],
+    });
+
+    expect(result.brief.address).toBe("1 Palace Rd, Jaipur");
+    expect(result.brief.lat).toBe(26.9124);
+    expect(result.brief.lng).toBe(75.7873);
+
+    for (const type of ["location_map", "contact", "footer"] as const) {
+      const section = result.page.sections.find((item) => item.type === type);
+      expect(section?.content.address).toBe("1 Palace Rd, Jaipur");
+      expect(section?.content.lat).toBe(26.9124);
+      expect(section?.content.lng).toBe(75.7873);
+    }
+  });
+
+  it("hydrates opening hours as strings onto contact, footer, and location_map", async () => {
+    resetCatalogCache();
+    const built = await runPipeline({
+      chatText: "ignored",
+      useFixture: true,
+      family: "premium",
+    });
+
+    for (const type of ["location_map", "contact", "footer"] as const) {
+      const section = built.page.sections.find((item) => item.type === type);
+      expect(section?.content.hours).toEqual(["Mon–Sun 12:00–22:00"]);
+    }
+  });
+
+  it("set_email hydrates brief plus contact/footer/reservation", async () => {
+    resetCatalogCache();
+    const built = await runPipeline({
+      chatText: "ignored",
+      useFixture: true,
+      family: "premium",
+    });
+
+    const result = await applyEditOps({
+      page: built.page,
+      brief: built.brief,
+      family: "premium",
+      ops: [{ op: "set_email", email: "akshay96102@gmail.com" }],
+    });
+
+    expect(result.brief.email).toBe("akshay96102@gmail.com");
+    expect(result.notes.join(" ")).toMatch(/akshay96102@gmail.com/);
+    for (const type of ["contact", "footer", "reservation"] as const) {
+      const section = result.page.sections.find((item) => item.type === type);
+      expect(section?.content.email).toBe("akshay96102@gmail.com");
+    }
+  });
+
+  it("set_email rejects placeholder inboxes", async () => {
+    resetCatalogCache();
+    const built = await runPipeline({
+      chatText: "ignored",
+      useFixture: true,
+      family: "premium",
+    });
+
+    const result = await applyEditOps({
+      page: built.page,
+      brief: built.brief,
+      family: "premium",
+      ops: [{ op: "set_email", email: "hello@example.com" }],
+    });
+
+    expect(result.brief.email).toBe("reservations@nonnarosa.com");
+    expect(result.notes.join(" ")).toMatch(/isn't usable/i);
   });
 });

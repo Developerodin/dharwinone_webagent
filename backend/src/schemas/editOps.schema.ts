@@ -126,6 +126,18 @@ export const editOpSchema = z.discriminatedUnion("op", [
     /** Salt so repeated remixes diverge; null = timestamp at apply. */
     salt: z.string().nullable(),
   }),
+  z.object({
+    op: z.literal("set_location"),
+    address: z.string().min(1),
+    lat: z.number(),
+    lng: z.number(),
+    placeId: z.string().nullable(),
+    mapsUrl: z.string().nullable(),
+  }),
+  z.object({
+    op: z.literal("set_email"),
+    email: z.string().min(1),
+  }),
 ]);
 
 export const editOpsResponseSchema = z.object({

@@ -1,19 +1,11 @@
-import { zodResponseFormat } from "openai/helpers/zod";
-import { z } from "zod";
 import {
   getDefaultPageFamily,
   type PageFamily,
 } from "../config/pageFamily.js";
-import { getModelFor, getOpenAIClient } from "../lib/openai.js";
 import type { Brief } from "../schemas/brief.schema.js";
-import {
-  archetypeSchema,
-  narrativeSchema,
-  sectionPlanItemSchema,
-  type Archetype,
-  type CreativeDirection,
-  type CreativePalette,
-  type SectionPlanItem,
+import type {
+  CreativeDirection,
+  CreativePalette,
 } from "../schemas/creativeDirection.schema.js";
 import type { Page, SectionType } from "../schemas/page.schema.js";
 import {
@@ -23,13 +15,25 @@ import {
   resolveColor,
 } from "./colorResolve.js";
 import {
+  applySignatureToSectionPlan,
   buildFixtureNarrative,
   buildFixtureSectionPlan,
+  buildFixtureSignature,
+  buildFixtureSubject,
   fetchCreativeDirectionLlm,
   inferArchetype,
+  inferMode,
 } from "./creativeDirectionLlm.js";
-import { inventPaletteFromHoreca } from "./horecaDesignSystem.js";
+import {
+  fontStackFor,
+  getTypePairById,
+} from "./horecaDesignSystem.js";
 import { inferPageFamily } from "./inferPageFamily.js";
+import {
+  briefAllowsGenericLook,
+  inventPalette,
+  isGenericAiPalette,
+} from "./paletteDefaults.js";
 import { COMPONENT_VARIANTS, stableHash } from "./pickComponent.js";
 
 /** Sections that get explicit variant hints from Creative Director. */
@@ -42,95 +46,6 @@ const HINT_SECTIONS: SectionType[] = [
   "reservation",
   "contact",
   "footer",
-];
-
-type PaletteCandidate = {
-  label: string;
-  accent: string;
-  bg?: string;
-  ink?: string;
-};
-
-/** Curated cuisine/vibe → palette candidates (deterministic pick by seed). */
-const PALETTE_BUCKETS: Array<{
-  re: RegExp;
-  options: PaletteCandidate[];
-}> = [
-  {
-    re: /\b(italian|trattoria|pizza|pasta|mediterranean)\b/i,
-    options: [
-      { label: "warm tomato", accent: "#c23b22", bg: "#faf6f1", ink: "#1f1a17" },
-      { label: "olive grove", accent: "#5c7a3a", bg: "#f7f4ec", ink: "#222018" },
-      { label: "terracotta", accent: "#c45c26", bg: "#f8f1ea", ink: "#2a211c" },
-    ],
-  },
-  {
-    re: /\b(sushi|japanese|omakase|ramen|korean)\b/i,
-    options: [
-      { label: "ink stone", accent: "#1a1a1a", bg: "#f5f5f3", ink: "#111111" },
-      { label: "matcha", accent: "#4a6b4a", bg: "#f4f6f2", ink: "#1a1f1a" },
-      { label: "indigo", accent: "#2c3e6b", bg: "#f3f4f8", ink: "#151822" },
-    ],
-  },
-  {
-    re: /\b(bbq|barbecue|smokehouse|steak|grill)\b/i,
-    options: [
-      { label: "ember rust", accent: "#9f6840", bg: "#f6efe6", ink: "#241c16" },
-      { label: "charcoal fire", accent: "#c45c26", bg: "#1c1814", ink: "#f2ebe3" },
-      { label: "hickory", accent: "#8b5a2b", bg: "#f5ede3", ink: "#1f1812" },
-    ],
-  },
-  {
-    re: /\b(cafe|coffee|brunch|bakery|bistro)\b/i,
-    options: [
-      { label: "coral cream", accent: "#ff684c", bg: "#fff8f4", ink: "#1f1916" },
-      { label: "espresso", accent: "#6b4226", bg: "#faf6f1", ink: "#1a1410" },
-      { label: "latte", accent: "#c4a484", bg: "#fbf7f2", ink: "#2a221c" },
-    ],
-  },
-  {
-    re: /\b(fine[\s-]?dining|upscale|michelin|luxury|elegant|tasting)\b/i,
-    options: [
-      { label: "gold charcoal", accent: "#c9a962", bg: "#121212", ink: "#f5f0e6" },
-      { label: "champagne", accent: "#d4b896", bg: "#1a1814", ink: "#f7f2ea" },
-      { label: "onyx gold", accent: "#b8954a", bg: "#0e0e0e", ink: "#efe8d8" },
-    ],
-  },
-  {
-    re: /\b(mexican|tex[\s-]?mex|taco|cantina)\b/i,
-    options: [
-      { label: "fiesta", accent: "#e85d04", bg: "#fff8f0", ink: "#1f1610" },
-      { label: "agave", accent: "#2a9d8f", bg: "#f4faf8", ink: "#14201e" },
-    ],
-  },
-  {
-    re: /\b(indian|curry|tandoor|masala)\b/i,
-    options: [
-      { label: "saffron", accent: "#e09f3e", bg: "#fff8ef", ink: "#21180f" },
-      { label: "marigold", accent: "#d97706", bg: "#faf6f0", ink: "#1c1510" },
-      { label: "spice red", accent: "#c1121f", bg: "#fff5f2", ink: "#1f1212" },
-    ],
-  },
-  {
-    re: /\b(vegan|vegetarian|salad|healthy|organic)\b/i,
-    options: [
-      { label: "fresh leaf", accent: "#2d6a4f", bg: "#f4faf6", ink: "#14201a" },
-      { label: "citrus", accent: "#84a98c", bg: "#f7faf7", ink: "#1a211c" },
-    ],
-  },
-  {
-    re: /\b(seafood|oyster|fish|coastal)\b/i,
-    options: [
-      { label: "ocean", accent: "#1d6a8a", bg: "#f2f7fa", ink: "#122028" },
-      { label: "shell", accent: "#4a7c9b", bg: "#f5f8fb", ink: "#15202a" },
-    ],
-  },
-];
-
-const DEFAULT_PALETTE_OPTIONS: PaletteCandidate[] = [
-  { label: "warm steel", accent: "#8fa0b5", bg: "#f6f5f2", ink: "#1c1f24" },
-  { label: "soft coral", accent: "#ff684c", bg: "#fff8f5", ink: "#1f1916" },
-  { label: "forest", accent: "#3d5a40", bg: "#f5f7f4", ink: "#1a211c" },
 ];
 
 /**
@@ -175,40 +90,13 @@ export function paletteFromBrandColors(
 }
 
 /**
- * Invents a palette from HoReCa cuisine catalog (preferred) or legacy buckets.
- */
-export function inventPalette(
-  brief: Brief,
-  chatText: string,
-  seed: string,
-): CreativePalette {
-  const corpus = `${brief.category}\n${brief.businessName}\n${chatText}`;
-  const fromHoreca = inventPaletteFromHoreca(corpus, seed);
-  if (fromHoreca) return fromHoreca;
-
-  let options = DEFAULT_PALETTE_OPTIONS;
-  for (const bucket of PALETTE_BUCKETS) {
-    if (bucket.re.test(corpus)) {
-      options = bucket.options;
-      break;
-    }
-  }
-
-  const pick = options[stableHash(seed) % options.length] ?? options[0]!;
-  return {
-    accent: pick.accent,
-    accentContrast: contrastForAccent(pick.accent),
-    bg: pick.bg,
-    ink: pick.ink,
-  };
-}
-
-/**
  * Picks single-family component ids for key sections from the seed.
+ * Signature section prefers a non-01 variant when alternatives exist.
  */
 export function buildSectionVariantHints(
   family: PageFamily,
   seed: string,
+  signatureSection?: SectionType,
 ): Record<string, string> {
   const hints: Record<string, string> = {};
   const recentSuffixes: string[] = [];
@@ -218,7 +106,9 @@ export function buildSectionVariantHints(
     if (!variants.length) continue;
 
     let idx = stableHash(`${seed}:${section}`) % variants.length;
-    // Light anti-stick: avoid repeating the last suffix when alternatives exist
+    if (signatureSection === section && variants.length > 1) {
+      idx = (stableHash(`${seed}:${section}:sig`) % (variants.length - 1)) + 1;
+    }
     if (variants.length > 1 && recentSuffixes.length > 0) {
       const last = recentSuffixes[recentSuffixes.length - 1];
       const candidate = variants[idx]!;
@@ -316,18 +206,25 @@ export function runCreativeDirectorSync(args: {
     paletteSource = "creative_pick";
   }
 
-  const sectionVariantHints = buildSectionVariantHints(family, seed);
+  const archetype = inferArchetype(args.brief, args.chatText);
+  const signature = buildFixtureSignature(args.brief, archetype);
+  const sectionVariantHints = buildSectionVariantHints(
+    family,
+    seed,
+    signature.section,
+  );
   const heroHint = sectionVariantHints.hero ?? `${family}-hero-01`;
   const heroSuffix = heroHint.match(/-(\d+)$/)?.[1] ?? "01";
   const accentLabel = palette.accent;
 
-  const archetype = inferArchetype(args.brief, args.chatText);
   const sectionPlan = buildFixtureSectionPlan(
     args.brief,
     args.chatText,
     archetype,
   );
   const narrative = buildFixtureNarrative(args.brief);
+  const subject = buildFixtureSubject(args.brief);
+  const mode = inferMode(archetype, args.brief, args.chatText);
 
   const rationale =
     paletteSource === "client_brand"
@@ -344,11 +241,57 @@ export function runCreativeDirectorSync(args: {
     archetype,
     sectionPlan,
     narrative,
+    mode,
+    subject,
+    signature,
   };
 }
 
 /**
- * Creative Director — hash palette/seed plus optional LLM archetype/plan/narrative.
+ * Applies a type pair's fonts onto a creative palette.
+ */
+function applyTypePair(
+  palette: CreativePalette,
+  typePairId: string | undefined,
+): CreativePalette {
+  if (!typePairId) return palette;
+  const pair = getTypePairById(typePairId);
+  if (!pair) return palette;
+  return {
+    ...palette,
+    fontDisplay: fontStackFor(pair.headingFont) ?? palette.fontDisplay,
+    fontBody: fontStackFor(pair.bodyFont) ?? palette.fontBody,
+  };
+}
+
+/**
+ * Builds a CreativePalette from LLM hexes; returns null if accent will not parse.
+ */
+function paletteFromLlmPick(
+  pick: { accent: string; bg?: string; bgAlt?: string; ink?: string },
+  brief: Brief,
+  chatText: string,
+): CreativePalette | null {
+  const accent = resolveColor(pick.accent) ?? (/^#[0-9a-f]{6}$/i.test(pick.accent) ? pick.accent : null);
+  if (!accent) return null;
+  const bg = pick.bg ? resolveColor(pick.bg) ?? pick.bg : undefined;
+  const ink = pick.ink ? resolveColor(pick.ink) ?? pick.ink : undefined;
+  const bgAlt = pick.bgAlt ? resolveColor(pick.bgAlt) ?? pick.bgAlt : undefined;
+  const next: CreativePalette = {
+    accent,
+    accentContrast: contrastForAccent(accent),
+    ...(bg ? { bg } : {}),
+    ...(ink ? { ink } : {}),
+    ...(bgAlt ? { bgAlt } : {}),
+  };
+  if (!briefAllowsGenericLook(brief, chatText) && isGenericAiPalette(next)) {
+    return null;
+  }
+  return next;
+}
+
+/**
+ * Creative Director — hash palette/seed plus optional LLM direction (palette/type win).
  */
 export async function runCreativeDirector(args: {
   brief: Brief;
@@ -366,11 +309,47 @@ export async function runCreativeDirector(args: {
   });
   if (!llm) return base;
 
+  let palette = base.palette;
+  let paletteSource = base.paletteSource;
+  if (base.paletteSource !== "client_brand" && llm.palette) {
+    const fromLlm = paletteFromLlmPick(llm.palette, args.brief, args.chatText);
+    if (fromLlm) {
+      palette = applyTypePair(fromLlm, llm.typePairId);
+      paletteSource = "creative_pick";
+    }
+  } else if (palette && llm.typePairId) {
+    palette = applyTypePair(palette, llm.typePairId);
+  }
+
+  const signature = llm.signature ?? base.signature;
+  const sectionPlan = applySignatureToSectionPlan(
+    llm.sectionPlan,
+    signature ?? buildFixtureSignature(args.brief, llm.archetype),
+  );
+  const sectionVariantHints = signature
+    ? buildSectionVariantHints(base.family, base.seed, signature.section)
+    : base.sectionVariantHints;
+
   return {
     ...base,
+    palette,
+    paletteSource,
     archetype: llm.archetype,
-    sectionPlan: llm.sectionPlan,
+    sectionPlan,
     narrative: llm.narrative,
     rationale: llm.rationale || base.rationale,
+    mode: llm.mode ?? base.mode,
+    subject: llm.subject ?? base.subject,
+    signature,
+    typePairId: llm.typePairId ?? base.typePairId,
+    sectionVariantHints,
   };
 }
+
+export {
+  briefAllowsGenericLook,
+  inventPalette,
+  isCreamSurface,
+  isGenericAiPalette,
+  isTerracottaAccent,
+} from "./paletteDefaults.js";

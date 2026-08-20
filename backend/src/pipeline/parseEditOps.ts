@@ -17,7 +17,9 @@ import {
   resolveEditTarget,
 } from "./resolveEditTarget.js";
 import { parseStyleLayoutFixture } from "./parseStyleFixtures.js";
+import { parseTargetedEditOps } from "./parseTargetedEditOps.js";
 import { resolveThemeFamilyIntent } from "./resolveThemeIntent.js";
+import { extractEmailFromText } from "./applyEmailOp.js";
 
 /**
  * Fixture/regex parser for natural-language edit instructions (no LLM).
@@ -39,6 +41,11 @@ export function parseEditOpsFixture(
   }
 
   parseStyleLayoutFixture(text, ops);
+
+  const extractedEmail = extractEmailFromText(text);
+  if (extractedEmail && /\bemail\b/i.test(text)) {
+    ops.push({ op: "set_email", email: extractedEmail });
+  }
 
   const galleryCountMatch =
     lower.match(
@@ -206,7 +213,8 @@ function shouldPreferStyleLayoutFixture(ops: EditOp[]): boolean {
       op.op === "set_text_style" ||
       op.op === "remix_layout" ||
       op.op === "cycle_section_component" ||
-      op.op === "set_section_spacing",
+      op.op === "set_section_spacing" ||
+      op.op === "set_email",
   );
 }
 
@@ -235,7 +243,20 @@ export async function parseEditOps(args: {
   page: Page;
   brief: Brief;
   family: PageFamily;
+  targetSection?: SectionType;
+  targetField?: string;
 }): Promise<EditOpsResponse> {
+  if (args.targetSection) {
+    return parseTargetedEditOps({
+      instruction: args.instruction,
+      page: args.page,
+      brief: args.brief,
+      family: args.family,
+      targetSection: args.targetSection,
+      targetField: args.targetField,
+    });
+  }
+
   const fixture = parseEditOpsFixture(args.instruction, args.page);
   if (shouldPreferStyleLayoutFixture(fixture.ops)) {
     return {
@@ -267,6 +288,8 @@ Allowed ops:
 - set_section_spacing: section + paddingY tight|normal|roomy
 - remix_layout: salt nullable — ONLY for “surprise me” / “remix layout” / “different layouts” (global). Never for a single section.
 - cycle_section_component: section — including header|footer|contact|hero|about|… (“switch header layout”, “header not looking good”)
+- set_location: address, lat, lng, placeId (nullable), mapsUrl (nullable) — ONLY when the user already supplied coordinates. Never invent lat/lng.
+- set_email: email — restaurant Contact Us / reservation inbox the user stated (must contain @). NEVER invent. NEVER use set_copy for contact email. "email address" is an inbox, not a map pin.
 
 Critical section rules:
 - “Moments” = gallery section (not hero).

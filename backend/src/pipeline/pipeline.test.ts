@@ -45,19 +45,19 @@ describe("planSections", () => {
 describe("pickComponent", () => {
   it("maps each section type to a premium variant by default", () => {
     expect(pickComponent("hero")).toMatch(/^premium-hero-0[123]$/);
-    expect(pickComponent("menu")).toMatch(/^premium-menu-0[12]$/);
+    expect(pickComponent("menu")).toMatch(/^premium-menu-0[123]$/);
     expect(pickComponent("testimonials")).toMatch(
-      /^premium-testimonials-0[12]$/,
+      /^premium-testimonials-0[123]$/,
     );
   });
 
   it("maps section types to elegant variants when family is set", () => {
     expect(pickComponent("hero", "elegant")).toMatch(/^elegant-hero-0[123]$/);
     expect(pickComponent("gallery", "elegant")).toMatch(
-      /^elegant-gallery-0[12]$/,
+      /^elegant-gallery-0[123]$/,
     );
     expect(pickComponent("reservation", "elegant")).toMatch(
-      /^elegant-reservation-0[12]$/,
+      /^elegant-reservation-0[123]$/,
     );
   });
 
@@ -109,6 +109,52 @@ describe("pickComponent", () => {
     expect(pickComponent("header", "minimal", {
       preferComponentId: "premium-header-03",
     })).toBe("minimal-header-03");
+  });
+
+  it("exposes services/reservation/footer-03 across families", () => {
+    expect(
+      pickComponent("services", "minimal", {
+        preferComponentId: "premium-services-03",
+      }),
+    ).toBe("minimal-services-03");
+    expect(
+      pickComponent("reservation", "elegant", {
+        preferComponentId: "premium-reservation-03",
+      }),
+    ).toBe("elegant-reservation-03");
+    expect(
+      pickComponent("footer", "bold", {
+        preferComponentId: "premium-footer-03",
+      }),
+    ).toBe("bold-footer-03");
+    expect(
+      pickComponent("stats", "rustic", {
+        preferComponentId: "premium-stats-03",
+      }),
+    ).toBe("rustic-stats-03");
+  });
+
+  it("exposes about/menu/gallery/hero-03 across families", () => {
+    expect(
+      pickComponent("about", "minimal", {
+        preferComponentId: "premium-about-03",
+      }),
+    ).toBe("minimal-about-03");
+    expect(
+      pickComponent("menu", "elegant", {
+        preferComponentId: "premium-menu-03",
+      }),
+    ).toBe("elegant-menu-03");
+    expect(
+      pickComponent("gallery", "bold", {
+        preferComponentId: "premium-gallery-03",
+      }),
+    ).toBe("bold-gallery-03");
+    expect(
+      pickComponent("hero", "rustic", {
+        preferComponentId: "premium-hero-03",
+      }),
+    ).toBe("rustic-hero-03");
   });
 
   it("prefers story-forward about-02", () => {

@@ -91,8 +91,8 @@ describe("resolveColor", () => {
   });
 
   it("resolves fonts", () => {
-    expect(resolveFont("serif")).toContain("Instrument Serif");
-    expect(resolveFont("sans")).toContain("Geist");
+    expect(resolveFont("serif")).toContain("Playfair Display");
+    expect(resolveFont("sans")).toContain("DM Sans");
   });
 });
 
@@ -198,7 +198,7 @@ describe("style and layout ops", () => {
     });
     expect(note).toContain("accent");
     expect(page.themeOverrides?.accent).toBe("#22c55e");
-    expect(page.themeOverrides?.fontDisplay).toContain("Instrument Serif");
+    expect(page.themeOverrides?.fontDisplay).toContain("Playfair Display");
 
     const textNote = applyTextStyleOp(page, {
       op: "set_text_style",

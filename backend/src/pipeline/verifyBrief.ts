@@ -85,6 +85,18 @@ export function verifyBriefAgainstSource(brief: Brief, chatText: string): Brief 
       brief.address && addressInSource(brief.address, chatText)
         ? brief.address
         : null,
+    email:
+      brief.email && chatText.toLowerCase().includes(brief.email.toLowerCase())
+        ? brief.email
+        : null,
+    lat:
+      typeof brief.lat === "number" && /coordinates:\s*-?\d/i.test(chatText)
+        ? brief.lat
+        : null,
+    lng:
+      typeof brief.lng === "number" && /coordinates:\s*-?\d/i.test(chatText)
+        ? brief.lng
+        : null,
     menuItems: brief.menuItems.filter((item) => menuItemInSource(item, chatText)),
     photos: [],
     brandColors: brief.brandColors?.length ? brief.brandColors : null,

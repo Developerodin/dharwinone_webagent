@@ -7,8 +7,6 @@ import { resolveThemeFamilyIntent } from "./resolveThemeIntent.js";
 
 const UNSUPPORTED_PATTERNS: RegExp[] = [
   /\banimation\b/i,
-  /\bmap\s+embed\b/i,
-  /\bgoogle\s+maps?\b/i,
   /\bdrag[\s-]?resize\b/i,
   /\bcustom\s+font\s+upload\b/i,
   /\bmulti[\s-]?page\b/i,
@@ -31,6 +29,8 @@ const SUPPORTED_LIST = [
   "• Gallery count — “show 4 gallery images”",
   "• Themes — Premium, Elegant, Minimal, Rustic, Vibrant",
   "• Upload your own photos — attach Media in chat",
+  "• Location — “add location” / “update location” opens the map picker (Ask-classified, not email address)",
+  "• Contact email — “update email to you@studio.com” sets Contact / reservation inbox",
 ].join("\n");
 
 /**
@@ -43,7 +43,7 @@ export function formatUnsupportedEditMessage(kind: string): string {
     "For this test phase we support:",
     SUPPORTED_LIST,
     "",
-    "**Not available yet:** map embeds, multi-page sites, drag-resize spacing, custom font uploads.",
+    "**Not available yet:** multi-page sites, drag-resize spacing, custom font uploads.",
     "",
     "Try one of the supported edits above — thank you!",
   ].join("\n");

@@ -5,7 +5,9 @@ import { briefSchema, normalizeBrief, type Brief } from "../schemas/brief.schema
 const EXTRACT_SYSTEM = `You extract a structured restaurant business brief from a single chat message.
 Rules:
 - Only include facts explicitly stated by the user. NEVER invent.
-- Do NOT invent prices, phone numbers, addresses, hours, testimonials, team, awards, or USPs.
+- Do NOT invent prices, phone numbers, emails, addresses, coordinates, hours, testimonials, team, awards, or USPs.
+- email: only a real inbox the user stated (e.g. reservations@…). Otherwise null.
+- lat / lng / placeId: only if the user (or map picker dump) gave coordinates. Otherwise null.
 - businessName: ONLY set when the user clearly states a brand/restaurant name (e.g. "called Nonna Rosa", "my Chineeh Cafe", "Restaurant Name: Italinsa").
   Do NOT invent a name from cuisine alone. "italian pasta restaurant" / "X based restaurant" without a clear brand → leave businessName as "".
 - menuItems: only dishes with explicit names; price must be a number if stated, otherwise omit the item.

@@ -17,6 +17,7 @@ import { inferPageFamily } from "./inferPageFamily.js";
 import { mergeClarificationAnswers } from "./mergeClarifications.js";
 import { detectSkipIntent } from "./skipIntent.js";
 import { verifyBriefAgainstSource } from "./verifyBrief.js";
+import { isPlaceholderRestaurantEmail } from "../lib/leadValidation.js";
 import type { PageFamily } from "../config/pageFamily.js";
 
 const MAX_QUESTIONS = 3;
@@ -62,6 +63,7 @@ export type AssessBriefResult =
 const GAP_LABELS: Record<BriefGap, string> = {
   businessName: "business name",
   category: "restaurant type or cuisine",
+  email: "contact email for enquiries and reservations",
   usp: "what makes you different (one line a regular would say)",
   signatureDishes: "2–3 signature dishes you are known for",
   audience: "who usually sits at your tables (date nights, families, office lunch…)",
@@ -75,12 +77,16 @@ const GAP_LABELS: Record<BriefGap, string> = {
 };
 
 const GAP_QUESTIONS: Partial<Record<BriefGap, string>> = {
+  email:
+    "What email should receive Contact Us and reservation requests? (This inbox cannot be skipped.)",
+  address:
+    "Where are you located? Tap Select location on the map, or type the street address.",
+  hours: "What are your opening hours?",
   usp: "In one line — what would a regular say makes you different?",
   signatureDishes: "Which 2–3 dishes are you known for?",
   audience:
     "Who's usually at your tables — date nights, families, office lunches?",
   story: "How did the place start? (or what year did you open?)",
-  hours: "What are your opening hours?",
   neighbourhood: "Which neighbourhood or landmark are you near?",
 };
 
@@ -115,8 +121,9 @@ export async function generateClarificationQuestions(
           content: `You help clarify an incomplete restaurant website brief.
 Generate at most ${MAX_QUESTIONS} short, specific questions.
 Ask only about missing items. Do not ask what is already known.
-PRIORITY ORDER (ask higher first): USP / signature dishes / audience → story/hours/neighbourhood → phone/address/menu/brand colors.
-Prefer questions that improve copy uniqueness over contact details.
+PRIORITY ORDER (ask higher first): contact email → street address / map pin → opening hours → USP / signature dishes / audience → story/neighbourhood/phone/menu/brand colors.
+Contact email is required for Contact Us forms — always ask it before uniqueness questions.
+For address, tell them they can tap Select location on the map.
 For brand colors, mention they can reply with color names or #hex, or skip to use theme defaults.
 Return plain questions only — no numbering prefix.`,
         },
@@ -201,7 +208,8 @@ function refineReadiness(args: {
     // Critical still missing after max rounds — ask one combined required Q once more,
     // but if we already asked beyond max+1, proceed best-effort with what we have.
     if (critical.length > 0 && args.clarificationRound >= MAX_CLARIFICATION_ROUNDS + 1) {
-      if (nameOk && brief.category?.trim()) {
+      const emailOk = !isPlaceholderRestaurantEmail(brief.email ?? "");
+      if (nameOk && brief.category?.trim() && emailOk) {
         return { brief, readiness: { status: "ready" } };
       }
       readiness = {

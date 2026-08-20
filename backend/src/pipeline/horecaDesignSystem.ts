@@ -94,12 +94,71 @@ export function getHorecaDesignSystem(): HorecaDesignSystem {
   return cached;
 }
 
+/** Faces Impeccable flags as AI-monoculture — remap unless the brief named them. */
+const OVERUSED_FONT_REMAP: Record<string, string> = {
+  inter: "Karla",
+  fraunces: "Playfair Display",
+  geist: "DM Sans",
+  "geist variable": "DM Sans",
+  "geist sans": "DM Sans",
+  "instrument serif": "Playfair Display",
+  "instrument sans": "DM Sans",
+  "space grotesk": "Work Sans",
+  roboto: "Karla",
+  "plus jakarta sans": "Nunito Sans",
+};
+
+/**
+ * Swaps overused AI-default faces for distinctive catalog alternatives.
+ */
+export function distinctiveFontName(
+  fontName: string | null | undefined,
+): string | undefined {
+  if (!fontName?.trim()) return undefined;
+  const remapped = OVERUSED_FONT_REMAP[fontName.trim().toLowerCase()];
+  return remapped ?? fontName.trim();
+}
+
+/**
+ * True when a type-pair id uses an overused face we should not offer the LLM.
+ */
+export function isOverusedTypePair(pair: HorecaTypePair): boolean {
+  const faces = `${pair.headingFont} ${pair.bodyFont} ${pair.id}`.toLowerCase();
+  return /inter|fraunces|geist|instrument|space-grotesk|space grotesk/.test(
+    faces,
+  );
+}
+
+/**
+ * Distinctive type pairs the Creative Director LLM may pick from.
+ */
+export function listDistinctiveTypePairs(): HorecaTypePair[] {
+  return getHorecaDesignSystem().typePairs.filter((pair) => !isOverusedTypePair(pair));
+}
+
+/**
+ * Looks up a type pair by id, remapping overused faces on the way out.
+ */
+export function getTypePairById(id: string): HorecaTypePair | null {
+  const system = getHorecaDesignSystem();
+  const pair =
+    system.typePairs.find((item) => item.id === id) ??
+    listDistinctiveTypePairs()[0] ??
+    null;
+  if (!pair) return null;
+  return {
+    ...pair,
+    headingFont: distinctiveFontName(pair.headingFont) ?? pair.headingFont,
+    bodyFont: distinctiveFontName(pair.bodyFont) ?? pair.bodyFont,
+  };
+}
+
 /**
  * Builds a CSS font-family stack for a Google Font name from the catalog.
  */
 export function fontStackFor(fontName: string | null | undefined): string | undefined {
-  if (!fontName?.trim()) return undefined;
-  const name = fontName.trim();
+  const name = distinctiveFontName(fontName);
+  if (!name) return undefined;
   const fallback = /serif|garamond|playfair|fraunces|lora|cormorant|bodoni|cinzel|marcellus|spectral|yeseva|bitter/i.test(
     name,
   )

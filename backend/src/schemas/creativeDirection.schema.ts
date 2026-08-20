@@ -47,6 +47,23 @@ export const narrativeSchema = z.object({
   avoidPhrases: z.array(z.string()),
 });
 
+/** Visitor success mode for this surface (Impeccable: never Operate for restaurant marketing). */
+export const designModeSchema = z.enum(["persuade", "experience"]);
+
+/** One-line lock: what this place is, who it is for, what the page must do. */
+export const designSubjectSchema = z.object({
+  what: z.string().min(1),
+  audience: z.string().min(1),
+  pageJob: z.string().min(1),
+});
+
+/** Single memorable device — spend boldness here, keep the rest quiet. */
+export const designSignatureSchema = z.object({
+  kind: z.string().min(1),
+  section: sectionTypeSchema,
+  note: z.string().min(1),
+});
+
 export const creativePaletteSchema = z.object({
   accent: z.string().min(1),
   accentContrast: z.string().min(1),
@@ -79,6 +96,12 @@ export const creativeDirectionSchema = z.object({
   paletteId: z.string().optional(),
   /** Wave 3: typography pair id (e.g. "editorial-serif"). */
   typePairId: z.string().optional(),
+  /** Impeccable surface mode — persuade (default) or experience (gallery-led). */
+  mode: designModeSchema.optional(),
+  /** Subject lock used by copy + director. */
+  subject: designSubjectSchema.optional(),
+  /** One signature device driving emphasis and variant hints. */
+  signature: designSignatureSchema.optional(),
 });
 
 export type CreativePalette = z.infer<typeof creativePaletteSchema>;
@@ -86,3 +109,6 @@ export type CreativeDirection = z.infer<typeof creativeDirectionSchema>;
 export type Archetype = z.infer<typeof archetypeSchema>;
 export type SectionPlanItem = z.infer<typeof sectionPlanItemSchema>;
 export type Narrative = z.infer<typeof narrativeSchema>;
+export type DesignMode = z.infer<typeof designModeSchema>;
+export type DesignSubject = z.infer<typeof designSubjectSchema>;
+export type DesignSignature = z.infer<typeof designSignatureSchema>;

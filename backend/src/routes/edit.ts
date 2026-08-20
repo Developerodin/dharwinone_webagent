@@ -1,37 +1,13 @@
 import { Router } from "express";
 import { parsePageFamily, type PageFamily } from "../config/pageFamily.js";
-import { applyEditOps } from "../pipeline/applyEditOps.js";
-import {
-  checkUnsupportedEdit,
-  inferThemeFromColorLanguage,
-} from "../pipeline/checkEditCapability.js";
-import { checkThemeEditScope } from "../pipeline/checkScope.js";
-import {
-  parseEditOps,
-  parseEditOpsFixture,
-} from "../pipeline/parseEditOps.js";
-import { resolveThemeFamilyIntent } from "../pipeline/resolveThemeIntent.js";
-import {
-  defaultCopyField,
-  extractMaxWords,
-  isCycleSectionComponentIntent,
-  isRewriteCopyIntent,
-  resolveEditTarget,
-} from "../pipeline/resolveEditTarget.js";
+import { runEdit } from "../pipeline/runEdit.js";
 import { briefSchema, coerceBriefInput } from "../schemas/brief.schema.js";
 import {
   creativeDirectionSchema,
   type CreativeDirection,
 } from "../schemas/creativeDirection.schema.js";
-import {
-  editOpSchema,
-  type EditOp,
-} from "../schemas/editOps.schema.js";
-import {
-  pageSchema,
-  sectionTypeSchema,
-  type SectionType,
-} from "../schemas/page.schema.js";
+import { editOpSchema } from "../schemas/editOps.schema.js";
+import { pageSchema, sectionTypeSchema } from "../schemas/page.schema.js";
 import { z } from "zod";
 
 export const editRouter = Router();
@@ -47,137 +23,13 @@ type EditBody = {
   direction?: unknown;
 };
 
-const CONFIDENCE_ASK = 0.7;
-
 /**
- * Resolves ops from deterministic panel payload or natural-language parse.
- */
-async function resolveOps(args: {
-  instruction: string;
-  ops?: EditOp[];
-  targetSection?: SectionType;
-  targetField?: string;
-  page: z.infer<typeof pageSchema>;
-  brief: z.infer<typeof briefSchema>;
-  family: PageFamily;
-  useFixture: boolean;
-}): Promise<{
-  ops: EditOp[];
-  summary: string;
-  needsConfirmation?: {
-    question: string;
-    candidates: SectionType[];
-  };
-}> {
-  if (args.ops && args.ops.length > 0) {
-    return { ops: args.ops, summary: `Applied ${args.ops.length} edit(s).` };
-  }
-
-  if (!args.instruction) {
-    return { ops: [], summary: "No instruction or ops provided." };
-  }
-
-  const parsed = args.useFixture
-    ? parseEditOpsFixture(args.instruction, args.page)
-    : await parseEditOps({
-        instruction: args.instruction,
-        page: args.page,
-        brief: args.brief,
-        family: args.family,
-      });
-
-  const ops: EditOp[] = [...parsed.ops];
-
-  // When click-scoped, force section on rewrite/set/cycle ops and skip retargeting.
-  if (args.targetSection) {
-    for (let i = 0; i < ops.length; i += 1) {
-      const op = ops[i]!;
-      if (
-        "section" in op &&
-        typeof op.section === "string" &&
-        op.section !== args.targetSection
-      ) {
-        ops[i] = { ...op, section: args.targetSection } as EditOp;
-      }
-    }
-
-    if (ops.length === 0 && isCycleSectionComponentIntent(args.instruction)) {
-      ops.push({
-        op: "cycle_section_component",
-        section: args.targetSection,
-      });
-    }
-
-    if (ops.length === 0 && isRewriteCopyIntent(args.instruction)) {
-      const field =
-        args.targetField ??
-        defaultCopyField(args.targetSection, args.instruction);
-      ops.push({
-        op: "rewrite_copy",
-        section: args.targetSection,
-        field,
-        maxWords: extractMaxWords(args.instruction),
-        hint: args.instruction,
-      });
-    }
-
-    return { ops, summary: parsed.summary };
-  }
-
-  // Unscoped: theme intent (single inject path — not duplicated in route after parse).
-  const inferredTheme =
-    resolveThemeFamilyIntent(args.instruction) ??
-    inferThemeFromColorLanguage(args.instruction);
-  if (inferredTheme && !ops.some((op) => op.op === "set_theme")) {
-    ops.push({ op: "set_theme", family: inferredTheme });
-  }
-
-  if (ops.length === 0 && isCycleSectionComponentIntent(args.instruction)) {
-    const target = resolveEditTarget(args.instruction, args.page);
-    if (target.confidence < CONFIDENCE_ASK) {
-      return {
-        ops: [],
-        summary: parsed.summary,
-        needsConfirmation: {
-          question: `Did you mean the ${target.section} section?`,
-          candidates: [target.section],
-        },
-      };
-    }
-    ops.push({
-      op: "cycle_section_component",
-      section: target.section,
-    });
-  }
-
-  if (ops.length === 0 && isRewriteCopyIntent(args.instruction)) {
-    const target = resolveEditTarget(args.instruction, args.page);
-    if (target.confidence < CONFIDENCE_ASK) {
-      return {
-        ops: [],
-        summary: parsed.summary,
-        needsConfirmation: {
-          question: `Did you mean the ${target.section} section?`,
-          candidates: [target.section],
-        },
-      };
-    }
-    const field =
-      target.field ?? defaultCopyField(target.section, args.instruction);
-    ops.push({
-      op: "rewrite_copy",
-      section: target.section,
-      field,
-      maxWords: extractMaxWords(args.instruction),
-      hint: args.instruction,
-    });
-  }
-
-  return { ops, summary: parsed.summary };
-}
-
-/**
- * Applies natural-language or deterministic ops to an existing built page.
+ * Legacy edit endpoint: the client supplies the page and stores the result.
+ *
+ * Superseded by POST /api/projects/:id/edit, which loads the document from the
+ * database and appends a version. Kept working so the app keeps functioning
+ * during the migration; remove once nothing calls it.
+ *
  * Query ?fixture=1 uses regex parsing instead of OpenAI.
  */
 editRouter.post("/", async (req, res) => {
@@ -229,40 +81,7 @@ editRouter.post("/", async (req, res) => {
       return;
     }
 
-    if (instruction) {
-      const unsupported = checkUnsupportedEdit(instruction);
-      if (unsupported) {
-        res.status(200).json({
-          ok: true,
-          page: pageParsed.data,
-          brief: briefParsed.data,
-          family,
-          direction,
-          applied: [],
-          summary: unsupported,
-        });
-        return;
-      }
-
-      const themeScope = checkThemeEditScope(instruction);
-      if (!themeScope.ok) {
-        res.status(200).json({
-          ok: true,
-          page: pageParsed.data,
-          brief: briefParsed.data,
-          family,
-          direction,
-          applied: [],
-          summary: themeScope.message,
-        });
-        return;
-      }
-    }
-
-    const useFixture =
-      req.query.fixture === "1" || process.env.USE_FIXTURE_BRIEF === "true";
-
-    const resolved = await resolveOps({
+    const outcome = await runEdit({
       instruction,
       ops: directOps,
       targetSection,
@@ -270,57 +89,26 @@ editRouter.post("/", async (req, res) => {
       page: pageParsed.data,
       brief: briefParsed.data,
       family,
-      useFixture,
-    });
-
-    if (resolved.needsConfirmation) {
-      res.status(200).json({
-        ok: true,
-        needsConfirmation: true,
-        question: resolved.needsConfirmation.question,
-        candidates: resolved.needsConfirmation.candidates,
-        page: pageParsed.data,
-        brief: briefParsed.data,
-        family,
-        direction,
-        applied: [],
-        summary: resolved.needsConfirmation.question,
-      });
-      return;
-    }
-
-    if (resolved.ops.length === 0) {
-      res.status(200).json({
-        ok: true,
-        page: pageParsed.data,
-        brief: briefParsed.data,
-        family,
-        direction,
-        applied: [],
-        summary: resolved.summary,
-      });
-      return;
-    }
-
-    const result = await applyEditOps({
-      page: pageParsed.data,
-      brief: briefParsed.data,
-      family,
-      ops: resolved.ops,
       direction,
+      useFixture:
+        req.query.fixture === "1" || process.env.USE_FIXTURE_BRIEF === "true",
     });
-
-    const summary =
-      result.notes.length > 0 ? result.notes.join(" ") : resolved.summary;
 
     res.status(200).json({
       ok: true,
-      page: result.page,
-      brief: result.brief,
-      family: result.family,
-      direction: result.direction,
-      applied: result.applied,
-      summary,
+      ...(outcome.kind === "confirm"
+        ? {
+            needsConfirmation: true,
+            question: outcome.question,
+            candidates: outcome.candidates,
+          }
+        : {}),
+      page: outcome.page,
+      brief: outcome.brief,
+      family: outcome.family,
+      direction: outcome.direction,
+      applied: outcome.applied,
+      summary: outcome.summary,
     });
   } catch (error) {
     const message =

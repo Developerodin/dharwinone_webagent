@@ -33,6 +33,8 @@ import {
 } from "./pickImage.js";
 import { themeOverridesForFamily } from "./horecaDesignSystem.js";
 import { applyRemixSectionOp } from "./remixSection.js";
+import { applySetLocationOp } from "./applyLocationOp.js";
+import { applySetEmailOp } from "./applyEmailOp.js";
 import { namesFuzzyMatch } from "./resolveEditTarget.js";
 import { rewriteSectionCopy } from "./rewriteCopy.js";
 import { textFieldToPlain } from "./textRuns.js";
@@ -505,6 +507,7 @@ async function applyOneOp(
   family: PageFamily,
   op: EditOp,
   seed: string,
+  direction?: CreativeDirection | null,
 ): Promise<{ family: PageFamily; note: string | null }> {
   switch (op.op) {
     case "set_copy": {
@@ -529,6 +532,7 @@ async function applyOneOp(
         currentValue: current,
         instruction: op.hint ?? `Rewrite the ${op.field}`,
         maxWords: op.maxWords,
+        narrative: direction?.narrative,
       });
       section.content = { ...section.content, [op.field]: value };
       return {
@@ -742,6 +746,22 @@ async function applyOneOp(
         note: applyRemixSectionOp(page, op.section, salt),
       };
     }
+    case "set_location":
+      return {
+        family,
+        note: applySetLocationOp(page, brief, {
+          address: op.address,
+          lat: op.lat,
+          lng: op.lng,
+          placeId: op.placeId,
+          mapsUrl: op.mapsUrl,
+        }),
+      };
+    case "set_email":
+      return {
+        family,
+        note: applySetEmailOp(page, brief, op.email),
+      };
     default: {
       return { family, note: null };
     }
@@ -802,7 +822,7 @@ export async function applyEditOps(args: {
       };
 
   for (const op of args.ops) {
-    const result = await applyOneOp(page, brief, family, op, seed);
+    const result = await applyOneOp(page, brief, family, op, seed, args.direction);
     family = result.family;
     applied.push(op);
     if (result.note) notes.push(result.note);

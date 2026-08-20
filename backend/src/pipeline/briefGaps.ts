@@ -1,9 +1,11 @@
 import type { Brief } from "../schemas/brief.schema.js";
+import { isPlaceholderRestaurantEmail } from "../lib/leadValidation.js";
 
 /** Fields that may be missing or unclear in an extracted brief. */
 export type BriefGap =
   | "businessName"
   | "category"
+  | "email"
   | "usp"
   | "signatureDishes"
   | "audience"
@@ -15,17 +17,23 @@ export type BriefGap =
   | "address"
   | "brandColors";
 
-/** Required — cannot skip. */
-const CRITICAL_GAPS: BriefGap[] = ["businessName", "category"];
+/** Required — cannot skip (Build blocked). */
+const CRITICAL_GAPS: BriefGap[] = ["businessName", "category", "email"];
 
-/** Highest copy impact — ask before contact details. */
-const P1_GAPS: BriefGap[] = ["usp", "signatureDishes", "audience"];
+/** Visit facts we actually render — ask before USP. */
+const P1_GAPS: BriefGap[] = ["address", "hours"];
 
-/** Nice-to-have story / visit facts. */
-const P2_GAPS: BriefGap[] = ["story", "hours", "neighbourhood"];
+/** Copy uniqueness — skippable. */
+const P2_GAPS: BriefGap[] = ["usp", "signatureDishes", "audience"];
 
-/** Lowest impact for page uniqueness. */
-const P3_GAPS: BriefGap[] = ["menuItems", "phone", "address", "brandColors"];
+/** Lowest impact. */
+const P3_GAPS: BriefGap[] = [
+  "story",
+  "neighbourhood",
+  "menuItems",
+  "phone",
+  "brandColors",
+];
 
 const GENERIC_BUSINESS_NAMES = new Set([
   "restaurant",
@@ -153,15 +161,20 @@ export function detectBriefGaps(brief: Brief): BriefGap[] {
   if (!brief.category?.trim() || isVagueCategory(brief.category)) {
     gaps.push("category");
   }
+  if (isPlaceholderRestaurantEmail(brief.email ?? "")) {
+    gaps.push("email");
+  }
+  if (!brief.address?.trim() && brief.lat == null && brief.lng == null) {
+    gaps.push("address");
+  }
+  if (!brief.hours?.length) gaps.push("hours");
   if (!brief.usp?.trim()) gaps.push("usp");
   if (!brief.signatureDishes?.length) gaps.push("signatureDishes");
   if (!brief.audience?.trim()) gaps.push("audience");
   if (!brief.story?.trim() && brief.foundedYear == null) gaps.push("story");
-  if (!brief.hours?.length) gaps.push("hours");
   if (!brief.neighbourhood?.trim()) gaps.push("neighbourhood");
   if (brief.menuItems.length === 0) gaps.push("menuItems");
   if (!brief.phone?.trim()) gaps.push("phone");
-  if (!brief.address?.trim()) gaps.push("address");
   if (!brief.brandColors?.length) gaps.push("brandColors");
 
   return gaps.sort((a, b) => gapRank(a) - gapRank(b));
@@ -199,7 +212,7 @@ export type BriefReadiness =
 
 /**
  * Evaluates whether a brief is ready to build.
- * Ready when P0 filled AND (P1 mostly filled OR skip confirmed OR only P2/P3 remain).
+ * Ready when P0 (name, cuisine, email) is filled AND (no optional gaps or skip).
  */
 export function evaluateBriefReadiness(
   brief: Brief,
@@ -211,35 +224,8 @@ export function evaluateBriefReadiness(
   if (critical.length > 0) {
     return {
       status: "needs_clarification",
-      gaps: critical,
+      gaps,
       canSkip: false,
-    };
-  }
-
-  const p1Missing = optional.filter((g) => P1_GAPS.includes(g));
-  const p1Filled = P1_GAPS.length - p1Missing.length;
-
-  // Two good P1 answers are enough to build even if phone/address missing.
-  if (p1Filled >= 2 && p1Missing.length > 0) {
-    const onlyLowValue = optional.every(
-      (g) => P2_GAPS.includes(g) || P3_GAPS.includes(g) || P1_GAPS.includes(g),
-    );
-    if (onlyLowValue && p1Filled >= 2) {
-      // Still ask remaining P1 once unless skip — but allow ready if skip or rounds exhausted upstream.
-      if (options.skipConfirmed) return { status: "ready" };
-    }
-  }
-
-  if (p1Filled >= 2 && optional.every((g) => !P1_GAPS.includes(g))) {
-    // P1 done; P2/P3 optional — ready unless we want one more round (handled by rounds).
-    if (options.skipConfirmed || optional.length === 0) {
-      return { status: "ready" };
-    }
-    // Soft: treat P2/P3 as skippable clarification
-    return {
-      status: "needs_clarification",
-      gaps: optional,
-      canSkip: true,
     };
   }
 

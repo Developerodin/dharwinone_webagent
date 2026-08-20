@@ -33,6 +33,7 @@ const W2: Pick<
   | "team"
   | "dietary"
   | "socials"
+  | "email"
 > = {
   usp: null,
   story: null,
@@ -48,6 +49,7 @@ const W2: Pick<
   team: [],
   dietary: [],
   socials: null,
+  email: null,
 };
 
 describe("detectBriefGaps", () => {
@@ -68,6 +70,7 @@ describe("detectBriefGaps", () => {
     expect(gaps).toContain("menuItems");
     expect(gaps).toContain("phone");
     expect(gaps).toContain("address");
+    expect(gaps).toContain("email");
     expect(gaps).toContain("brandColors");
   });
 
@@ -83,7 +86,7 @@ describe("detectBriefGaps", () => {
     expect(detectBriefGaps(FIXTURE_BRIEF)).toEqual(["brandColors"]);
   });
 
-  it("gap ranking: usp appears before phone in gap list", () => {
+  it("gap ranking: email and address appear before usp", () => {
     const gaps = detectBriefGaps({
       ...W2,
       businessName: "Spice House",
@@ -94,11 +97,14 @@ describe("detectBriefGaps", () => {
       photos: [],
       brandColors: null,
     });
+    const emailIndex = gaps.indexOf("email");
+    const addressIndex = gaps.indexOf("address");
     const uspIndex = gaps.indexOf("usp");
-    const phoneIndex = gaps.indexOf("phone");
+    expect(emailIndex).toBeGreaterThanOrEqual(0);
+    expect(addressIndex).toBeGreaterThanOrEqual(0);
     expect(uspIndex).toBeGreaterThanOrEqual(0);
-    expect(phoneIndex).toBeGreaterThanOrEqual(0);
-    expect(uspIndex).toBeLessThan(phoneIndex);
+    expect(emailIndex).toBeLessThan(uspIndex);
+    expect(addressIndex).toBeLessThan(uspIndex);
   });
 });
 
@@ -217,11 +223,32 @@ describe("evaluateBriefReadiness", () => {
     }
   });
 
-  it("allows skip only for optional fields after name/cuisine exist", () => {
+  it("blocks skip when restaurant email is missing", () => {
     const partial: Brief = {
       ...W2,
       businessName: "Luigi's",
       category: "Italian restaurant",
+      phone: null,
+      address: null,
+      menuItems: [],
+      photos: [],
+      brandColors: null,
+    };
+
+    const skipped = evaluateBriefReadiness(partial, { skipConfirmed: true });
+    expect(skipped.status).toBe("needs_clarification");
+    if (skipped.status === "needs_clarification") {
+      expect(skipped.canSkip).toBe(false);
+      expect(skipped.gaps).toContain("email");
+    }
+  });
+
+  it("allows skip for optional fields after name, cuisine, and email exist", () => {
+    const partial: Brief = {
+      ...W2,
+      businessName: "Luigi's",
+      category: "Italian restaurant",
+      email: "owner@luigis.com",
       phone: null,
       address: null,
       menuItems: [],

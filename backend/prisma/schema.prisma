@@ -1,0 +1,393 @@
+// ProwPlus data model.
+// Migration history is intentionally split: 01 = auth/identity, 02 = projects.
+// See docs/AUTH-AND-ONBOARDING-PLAN.md and docs/PROJECT-PERSISTENCE-PLAN.md.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  runtime      = "nodejs"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────────
+// Identity
+// ─────────────────────────────────────────────────────────────
+
+model User {
+  id              String    @id @default(cuid())
+  /// The address we display and deliver to. Trimmed + lowercased.
+  email           String    @unique
+  /// Identity key used to detect duplicate accounts: additionally folds Gmail
+  /// dots and +tags, so a.b+x@gmail.com and ab@gmail.com cannot both register.
+  /// Unique at the database level — this is the real duplicate guard.
+  emailKey        String    @unique
+  emailVerifiedAt DateTime?
+  /// Null for accounts created via Google that have never set a password.
+  passwordHash    String?
+  name            String?
+  avatarUrl       String?
+  /// Staff accounts may skip onboarding gates.
+  isStaff         Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  lastLoginAt     DateTime?
+
+  // Brute-force counters. Reset on any successful password verify.
+  failedLoginCount Int       @default(0)
+  lockedUntil      DateTime?
+
+  oauthAccounts OAuthAccount[]
+  sessions      Session[]
+  otpCodes      OtpCode[]
+  onboarding    OnboardingProfile?
+  projects      Project[]
+  memberships   ProjectMember[]
+  assets        Asset[]
+}
+
+model OAuthAccount {
+  id String @id @default(cuid())
+
+  userId String
+  /// "google" today; the column generalises to more providers.
+  provider String
+  /// Google `sub`. Stable for the lifetime of the Google account — never key on email.
+  providerUserId String
+  email          String?
+  createdAt      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+  @@index([userId])
+}
+
+model Session {
+  id String @id @default(cuid())
+
+  userId String
+  /// Rotation chain id. Reuse of any token in a family revokes the whole family.
+  familyId String
+  /// When the family's first session was created. Carried forward across every
+  /// rotation so a rolling session still has an absolute expiry.
+  familyStartedAt DateTime @default(now())
+  /// sha256(raw refresh token) — a database leak is not a session leak.
+  refreshTokenHash String    @unique
+  userAgent        String?
+  ip               String?
+  createdAt        DateTime  @default(now())
+  lastUsedAt       DateTime  @default(now())
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  /// rotated | logout | logout_all | reuse_detected | password_reset
+  revokedReason String?
+  /// Set when this session was rotated out. Powers the rotation grace window.
+  replacedById String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+  @@index([expiresAt])
+}
+
+model OtpCode {
+  id String @id @default(cuid())
+
+  userId String
+  /// "verify_email" | "reset_password"
+  purpose     String
+  /// argon2 hash of the six digits.
+  codeHash    String
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(5)
+  expiresAt   DateTime
+  consumedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose])
+  @@index([expiresAt])
+}
+
+/// Single-use guard for password-reset tickets (JWT jti denylist).
+model ResetTicket {
+  jti        String    @id
+  userId     String
+  consumedAt DateTime?
+  expiresAt  DateTime
+  createdAt  DateTime  @default(now())
+
+  @@index([expiresAt])
+}
+
+model OnboardingProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  /// Step 1 — "light" | "dark"
+  themePref   String?
+  /// Step 2
+  fullName    String?
+  /// Step 3 — founder | product | designer | engineer | consultant | marketing_sales | operations | other
+  role        String?
+  /// Step 4 — solo | 2_20 | 21_200 | 200_plus
+  companySize String?
+  currentStep Int       @default(1)
+  completedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────────────────────────────────────────────
+// Projects
+//
+// A project's document is never updated in place. Every build, edit and revert
+// appends an immutable ProjectVersion, and `Project.currentVersionId` is the
+// only moving pointer. Undo, redo, audit, rollback and safe concurrency all
+// fall out of that one property.
+// ─────────────────────────────────────────────────────────────
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum VersionSource {
+  BUILD
+  EDIT
+  REVERT
+  DUPLICATE
+  IMPORT
+  MANUAL
+}
+
+enum MemberRole {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
+enum AssetKind {
+  IMAGE
+  VIDEO
+}
+
+enum AssetStatus {
+  PENDING
+  READY
+  FAILED
+}
+
+model Project {
+  id      String        @id @default(cuid())
+  ownerId String
+  name    String
+  /// URL-safe, unique per owner.
+  slug    String
+  status  ProjectStatus @default(DRAFT)
+  /// premium | elegant | bold | minimal | rustic | vibrant
+  pageFamily String
+
+  /// Points at the live document. The only mutable reference in the model.
+  currentVersionId String? @unique
+  /// Monotonic counter used for optimistic concurrency (compare-and-swap).
+  currentVersion   Int     @default(0)
+
+  /// Current brief/direction, duplicated from the head version so the hot read
+  /// path and the dashboard never need to join a large JSONB row.
+  brief            Json?
+  direction        Json?
+  /// ChatPhase from the client state machine.
+  phase            String  @default("idle")
+  enrichedChatText String  @default("") @db.Text
+  thumbnailAssetId String?
+
+  /// The client-side id this project was imported from, when it came out of a
+  /// browser's localStorage. Unique per owner, so signing in on a second device
+  /// re-imports the same work as a no-op rather than duplicating it.
+  sourceLocalId String?
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastOpenedAt DateTime?
+  /// Soft delete. Rows stay recoverable until purgeAfter passes.
+  deletedAt    DateTime?
+  purgeAfter   DateTime?
+
+  owner    User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  head     ProjectVersion?  @relation("ProjectHead", fields: [currentVersionId], references: [id], onDelete: SetNull)
+  versions ProjectVersion[] @relation("ProjectVersions")
+  messages ChatMessage[]
+  members  ProjectMember[]
+  assets   ProjectAsset[]
+  events   ProjectEvent[]
+
+  @@unique([ownerId, slug])
+  @@unique([ownerId, sourceLocalId])
+  @@index([ownerId, updatedAt(sort: Desc)])
+  @@index([ownerId, status, updatedAt(sort: Desc)])
+  @@index([purgeAfter])
+}
+
+model ProjectVersion {
+  id        String @id @default(cuid())
+  projectId String
+  /// 1-based, monotonic per project. Unique with projectId — the database-level
+  /// backstop that stops two concurrent writers both creating version 8.
+  version   Int
+
+  /// The full Page document. Capped at 1 MB and rejected if it contains a
+  /// data: URL — see projects/pageGuards.ts.
+  page       Json
+  brief      Json?
+  direction  Json?
+  pageFamily String
+
+  source VersionSource
+  /// Human-readable change description shown in the history UI.
+  summary String  @db.VarChar(280)
+  /// Null for pipeline-authored versions.
+  authorId String?
+  parentVersionId String?
+  /// The user's edit prompt, kept for audit and support.
+  instruction String? @db.Text
+  sizeBytes   Int
+  createdAt   DateTime @default(now())
+
+  project Project  @relation("ProjectVersions", fields: [projectId], references: [id], onDelete: Cascade)
+  headOf  Project? @relation("ProjectHead")
+
+  @@unique([projectId, version])
+  @@index([projectId, createdAt(sort: Desc)])
+}
+
+model ChatMessage {
+  id        String @id @default(cuid())
+  projectId String
+  /// Monotonic per project. Ordering never depends on timestamps, which can
+  /// collide or arrive out of order across instances.
+  seq       Int
+
+  /// user | assistant | agent
+  role    String
+  content String  @db.Text
+  /// brief | questions | actions | stage* fields from the client ChatMessage.
+  payload Json?
+  /// The version this message produced, when it produced one.
+  versionId String?
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, seq])
+  @@index([projectId, seq(sort: Desc)])
+}
+
+/// Collaborators. The UI is owner-only today; the table exists so that
+/// ownership queries do not have to be rewritten when sharing ships.
+model ProjectMember {
+  id        String     @id @default(cuid())
+  projectId String
+  userId    String
+  role      MemberRole @default(EDITOR)
+  createdAt DateTime   @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([userId])
+}
+
+model Asset {
+  id      String @id @default(cuid())
+  ownerId String
+
+  /// Content address. Unique per owner, so re-uploading the same photo across
+  /// projects stores one object and transfers zero bytes.
+  sha256     String
+  storageKey String @unique
+  cdnUrl     String
+
+  kind       AssetKind
+  mime       String
+  bytes      Int
+  width      Int?
+  height     Int?
+  durationMs Int?
+  /// Compact placeholder rendered before the image loads, so a hero never
+  /// causes layout shift.
+  blurhash   String?
+  /// { "webp": {"640": {...}}, "avif": {...} }
+  derivatives Json?
+  status      AssetStatus @default(PENDING)
+  createdAt   DateTime    @default(now())
+
+  owner User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  links ProjectAsset[]
+
+  @@unique([ownerId, sha256])
+  @@index([ownerId, createdAt(sort: Desc)])
+  @@index([status, createdAt])
+}
+
+/// Refcount between projects and assets.
+///
+/// A link exists for every asset referenced by ANY version of the project, not
+/// just the head — an old version must still render, so an asset dropped from
+/// the current page must not be garbage collected.
+model ProjectAsset {
+  projectId String
+  assetId   String
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  asset   Asset   @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, assetId])
+  @@index([assetId])
+}
+
+/// Audit trail. Answers "my site changed and I did not do it".
+model ProjectEvent {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String?
+  /// created | renamed | edited | reverted | duplicated | deleted | restored | purged
+  type      String
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt(sort: Desc)])
+}
+
+/// Replay cache for mutating requests.
+///
+/// Makes the auth layer's automatic 401-refresh-and-replay safe: without it a
+/// token expiring mid-build would run the pipeline twice and bill twice.
+model IdempotencyRecord {
+  key    String @id
+  userId String
+  route  String
+  /// sha256 of the request body. Same key with a different body is a client
+  /// bug, not a retry, and is rejected rather than served a wrong cached result.
+  requestHash String
+  status      Int
+  response    Json
+  /// Set once the handler completes. Null means still in flight.
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([createdAt])
+  @@index([userId, route])
+}

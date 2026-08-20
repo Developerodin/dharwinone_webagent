@@ -129,63 +129,63 @@ const SECTION_SPECS: SectionManifestSpec[] = [
     copyFields: ["headline", "subheading", "ctaLabel"],
     contentSchema: heroContentSchema,
     requiresImage: true,
-    variants: ["01", "02"],
+    variants: ["01", "02", "03"],
   },
   {
     sectionType: "about",
     copyFields: ["headline", "body"],
     contentSchema: aboutContentSchema,
     requiresImage: false,
-    variants: ["01", "02"],
+    variants: ["01", "02", "03"],
   },
   {
     sectionType: "services",
     copyFields: ["headline", "introText"],
     contentSchema: servicesContentSchema,
     requiresImage: false,
-    variants: ["01", "02"],
+    variants: ["01", "02", "03"],
   },
   {
     sectionType: "menu",
     copyFields: ["sectionTitle", "introText"],
     contentSchema: menuContentSchema,
     requiresImage: false,
-    variants: ["01", "02"],
+    variants: ["01", "02", "03"],
   },
   {
     sectionType: "stats",
     copyFields: ["headline"],
     contentSchema: statsContentSchema,
     requiresImage: false,
-    variants: ["01", "02"],
+    variants: ["01", "02", "03"],
   },
   {
     sectionType: "gallery",
     copyFields: ["headline", "caption"],
     contentSchema: galleryContentSchema,
     requiresImage: true,
-    variants: ["01", "02"],
+    variants: ["01", "02", "03"],
   },
   {
     sectionType: "testimonials",
     copyFields: ["headline", "introText"],
     contentSchema: testimonialsContentSchema,
     requiresImage: false,
-    variants: ["01", "02"],
+    variants: ["01", "02", "03"],
   },
   {
     sectionType: "team",
     copyFields: ["headline", "introText"],
     contentSchema: teamContentSchema,
     requiresImage: false,
-    variants: ["01", "02"],
+    variants: ["01", "02", "03"],
   },
   {
     sectionType: "reservation",
     copyFields: ["headline", "body", "ctaLabel"],
     contentSchema: reservationContentSchema,
     requiresImage: false,
-    variants: ["01", "02"],
+    variants: ["01", "02", "03"],
   },
   {
     sectionType: "location_map",
@@ -193,7 +193,7 @@ const SECTION_SPECS: SectionManifestSpec[] = [
     contentSchema: locationContentSchema,
     requiresImage: false,
     idSegment: "location",
-    variants: ["01", "02"],
+    variants: ["01", "02", "03"],
   },
   {
     sectionType: "contact",
@@ -207,7 +207,7 @@ const SECTION_SPECS: SectionManifestSpec[] = [
     copyFields: ["tagline", "copyright"],
     contentSchema: footerContentSchema,
     requiresImage: false,
-    variants: ["01", "02"],
+    variants: ["01", "02", "03"],
   },
 ];
 
@@ -229,13 +229,11 @@ function manifest(
  */
 function buildFamilyManifests(
   family: PageFamily,
-  heroVariants: readonly string[] = ["01", "02"],
 ): Record<string, ComponentManifest> {
   const entries: Record<string, ComponentManifest> = {};
 
   for (const spec of SECTION_SPECS) {
-    const variants =
-      spec.sectionType === "hero" ? heroVariants : spec.variants;
+    const variants = spec.variants;
     const segment = spec.idSegment ?? spec.sectionType;
     for (const variant of variants) {
       const componentId = `${family}-${segment}-${variant}`;
@@ -256,8 +254,8 @@ function buildFamilyManifests(
  * Registry of component manifests — multiple variants per section type.
  */
 export const COMPONENT_MANIFESTS: Record<string, ComponentManifest> = {
-  ...buildFamilyManifests("premium", ["01", "02", "03"]),
-  ...buildFamilyManifests("elegant", ["01", "02", "03"]),
+  ...buildFamilyManifests("premium"),
+  ...buildFamilyManifests("elegant"),
   ...buildFamilyManifests("minimal"),
   ...buildFamilyManifests("rustic"),
   ...buildFamilyManifests("vibrant"),

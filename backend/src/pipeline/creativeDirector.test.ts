@@ -196,6 +196,37 @@ describe("creativeDirectionSchema Wave 3 extensions", () => {
     expect(Array.isArray(direction.sectionPlan)).toBe(true);
     expect(direction.sectionPlan!.length).toBeGreaterThan(0);
     expect(direction.narrative).toBeDefined();
+    expect(direction.mode).toBe("persuade");
+    expect(direction.signature?.section).toBeDefined();
+    expect(direction.subject?.what).toContain("Nonna Rosa");
+  });
+
+  it("does not invent cream-terracotta for a free italian axis", () => {
+    const direction = runCreativeDirectorSync({
+      brief: italianBrief,
+      chatText: "Italian trattoria in Brooklyn",
+    });
+    expect(direction.palette?.bg).toBeTruthy();
+    expect(direction.palette?.bg?.toLowerCase()).not.toMatch(/^#faf6f1$|^#f8f1ea$|^#f4f1ea$/);
+  });
+
+  it("boosts menu emphasis for menu_forward briefs", () => {
+    const direction = runCreativeDirectorSync({
+      brief: {
+        ...italianBrief,
+        signatureDishes: ["Cacio e Pepe"],
+        menuItems: [
+          { name: "Cacio e Pepe", price: 18, description: null },
+          { name: "Carbonara", price: 20, description: null },
+          { name: "Amatriciana", price: 19, description: null },
+        ],
+      },
+      chatText: "pasta restaurant known for cacio e pepe",
+    });
+    expect(direction.archetype).toBe("menu_forward");
+    expect(direction.signature?.section).toBe("menu");
+    const menu = direction.sectionPlan?.find((item) => item.type === "menu");
+    expect(menu?.emphasis).toMatch(/major|hero/);
   });
 });
 

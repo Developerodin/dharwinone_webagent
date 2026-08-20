@@ -8,6 +8,10 @@ export const FIXTURE_BRIEF: Brief = {
   category: "Italian restaurant",
   phone: "(555) 234-8890",
   address: "42 Via Roma Street, Brooklyn, NY 11201",
+  email: "reservations@nonnarosa.com",
+  lat: 40.6782,
+  lng: -73.9442,
+  placeId: null,
   menuItems: [
     {
       name: "Margherita Pizza",

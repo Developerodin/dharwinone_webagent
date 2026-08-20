@@ -381,9 +381,9 @@
     },
     {
       "id": "fraunces-inter",
-      "headingFont": "Fraunces",
-      "bodyFont": "Inter",
-      "label": "Fraunces",
+      "headingFont": "Playfair Display",
+      "bodyFont": "Karla",
+      "label": "Playfair Display",
       "mood": "Contemporary premium editorial \u2014 modern fusion"
     },
     {
@@ -403,7 +403,7 @@
     {
       "id": "big-shoulders-display-space-grotesk",
       "headingFont": "Big Shoulders Display",
-      "bodyFont": "Space Grotesk",
+      "bodyFont": "Work Sans",
       "label": "Big Shoulders Display",
       "mood": "Industrial & loud \u2014 bars, breweries"
     },
@@ -424,7 +424,7 @@
     {
       "id": "sora-inter",
       "headingFont": "Sora",
-      "bodyFont": "Inter",
+      "bodyFont": "Karla",
       "label": "Sora",
       "mood": "Structured modern sans \u2014 multi-cuisine, concept"
     },
@@ -437,9 +437,9 @@
     },
     {
       "id": "fraunces-quicksand",
-      "headingFont": "Fraunces",
+      "headingFont": "Playfair Display",
       "bodyFont": "Quicksand",
-      "label": "Fraunces",
+      "label": "Playfair Display",
       "mood": "Tropical escape \u2014 tiki, poolside"
     },
     {
