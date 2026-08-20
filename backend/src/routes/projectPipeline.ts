@@ -1,7 +1,7 @@
 import { Router, type NextFunction, type Request, type Response } from "express";
 import { z } from "zod";
 import { parsePageFamily } from "../config/pageFamily.js";
-import { badRequest, notFound } from "../lib/httpError.js";
+import { badRequest, conflict, notFound } from "../lib/httpError.js";
 import { ok } from "../lib/respond.js";
 import { idempotent } from "../middleware/idempotency.js";
 import { requireAuth, requireVerified } from "../middleware/requireAuth.js";
@@ -218,7 +218,7 @@ projectPipelineRouter.post(
       body.expectedVersion !== undefined &&
       body.expectedVersion !== project.currentVersion
     ) {
-      throw badRequest("VERSION_CONFLICT", "This project was changed somewhere else.", {
+      throw conflict("VERSION_CONFLICT", "This project was changed somewhere else.", {
         currentVersion: project.currentVersion,
         yourVersion: body.expectedVersion,
       });

@@ -5,7 +5,7 @@ import {
 } from "@/lib/chatFormatters";
 import { consumeBuildStream } from "@/lib/consumeBuildStream";
 import { getAccessToken } from "@/lib/apiClient";
-import { createServerProject } from "@/lib/projectApi";
+import { createServerProject, newIntentKey } from "@/lib/projectApi";
 import {
   persistProjectState,
   syncPreviewPayload,
@@ -90,7 +90,9 @@ export async function runConfirmBuild(deps: ConfirmBuildDeps): Promise<void> {
           Authorization: `Bearer ${getAccessToken() ?? ""}`,
           // Guards against the auth layer replaying this request after a token
           // refresh — a build runs an LLM pipeline and must not run twice.
-          "Idempotency-Key": `build-${serverProjectId}-${enrichedChatText.length}`,
+          // A UUID, not a content hash: two different briefs of the same length
+          // would otherwise collide and the second would be rejected outright.
+          "Idempotency-Key": newIntentKey(),
         },
         body: JSON.stringify({
           chatText: enrichedChatText,

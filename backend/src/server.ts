@@ -16,6 +16,7 @@ import {
   purgeExpiredProjects,
 } from "./projects/maintenance.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { requireAuth, requireVerified } from "./middleware/requireAuth.js";
 import { pruneIdempotencyRecords } from "./middleware/idempotency.js";
 import { askRouter } from "./routes/ask.js";
 import { assetsRouter } from "./routes/assets.js";
@@ -94,12 +95,22 @@ function createApp() {
   // edit refactor.
   app.use(express.json({ limit: "80mb" }));
 
-  app.use("/api/intake", intakeRouter);
-  app.use("/api/build", buildRouter);
-  app.use("/api/edit", editRouter);
-  app.use("/api/ask", askRouter);
-  app.use("/api/upload", uploadRouter);
-  app.use("/api/maps", mapsRouter);
+  // Legacy pipeline routes. Superseded by the project-scoped equivalents, but
+  // still reachable, so they are gated: every one of these either spends OpenAI
+  // tokens or writes to disk, and an ungated LLM endpoint is someone else's
+  // bill. They are authenticated but NOT project-scoped, which is exactly why
+  // they should be deleted once nothing calls them.
+  const legacyPipeline = [requireAuth, requireVerified];
+
+  app.use("/api/intake", legacyPipeline, intakeRouter);
+  app.use("/api/build", legacyPipeline, buildRouter);
+  app.use("/api/edit", legacyPipeline, editRouter);
+  app.use("/api/ask", legacyPipeline, askRouter);
+  app.use("/api/upload", legacyPipeline, uploadRouter);
+
+  // Maps config/search is read-only and used by the location picker inside the
+  // authenticated builder; leads is a public form on published sites.
+  app.use("/api/maps", requireAuth, mapsRouter);
   app.use("/api/leads", leadsRouter);
 
   app.use(errorHandler);

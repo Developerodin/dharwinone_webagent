@@ -1,3 +1,4 @@
+import { getAccessToken } from "@/lib/apiClient";
 import type { Page } from "@/types/page";
 import {
   fileToUploadDataUrl,
@@ -7,6 +8,13 @@ import {
   MAX_VIDEO_BYTES,
   type ImageUploadTarget,
 } from "@/lib/uploadSectionImage";
+
+/**
+ * Bearer header for the media-library routes, which are authenticated now.
+ */
+function bearer(): Record<string, string> {
+  return { Authorization: `Bearer ${getAccessToken() ?? ""}` };
+}
 
 export type LibraryMediaItem = {
   imagePath: string;
@@ -46,7 +54,7 @@ async function readUploadJson(
  * Lists images and videos already stored under /images/uploads.
  */
 export async function listLibraryMedia(): Promise<LibraryMediaItem[]> {
-  const response = await fetch("/api/upload");
+  const response = await fetch("/api/upload", { headers: bearer() });
   const data = await readUploadJson(response);
   if (!response.ok || !data.ok || !Array.isArray(data.items)) {
     throw new Error(data.error ?? `Could not load media (HTTP ${response.status}).`);
@@ -78,7 +86,7 @@ export async function uploadToMediaLibrary(
   const dataUrl = await fileToUploadDataUrl(file);
   const response = await fetch("/api/upload", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...bearer() },
     body: JSON.stringify({ dataUrl }),
   });
   const data = await readUploadJson(response);
@@ -109,7 +117,7 @@ export async function applyLibraryMedia(args: {
 }): Promise<{ page: Page; imagePath: string; mediaKind: "image" | "video" }> {
   const response = await fetch("/api/upload/apply", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...bearer() },
     body: JSON.stringify({
       imagePath: args.imagePath,
       section: args.target.section,

@@ -1,3 +1,13 @@
+import { getAccessToken } from "@/lib/apiClient";
+
+/**
+ * Bearer header for the maps routes, authenticated now so the Google Maps key
+ * cannot be spent by anonymous callers.
+ */
+function bearer(): Record<string, string> {
+  return { Authorization: `Bearer ${getAccessToken() ?? ""}` };
+}
+
 export type PlacePrediction = {
   placeId: string;
   description: string;
@@ -29,7 +39,7 @@ async function readMapsJson<T>(response: Response): Promise<T> {
  * Fetches the browser Maps JavaScript API key from the backend.
  */
 export async function fetchMapsConfig(): Promise<{ mapsKey: string }> {
-  const response = await fetch("/api/maps/config");
+  const response = await fetch("/api/maps/config", { headers: bearer() });
   return readMapsJson<{ mapsKey: string }>(response);
 }
 
@@ -39,7 +49,7 @@ export async function fetchMapsConfig(): Promise<{ mapsKey: string }> {
 export async function searchMapPlaces(query: string): Promise<PlacePrediction[]> {
   const response = await fetch("/api/maps/places", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...bearer() },
     body: JSON.stringify({ query }),
   });
   const data = await readMapsJson<{ predictions: PlacePrediction[] }>(response);
@@ -52,7 +62,7 @@ export async function searchMapPlaces(query: string): Promise<PlacePrediction[]>
 export async function lookupMapPlace(placeId: string): Promise<PickedLocation> {
   const response = await fetch("/api/maps/place", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...bearer() },
     body: JSON.stringify({ placeId }),
   });
   const data = await readMapsJson<{ location: PickedLocation }>(response);
@@ -68,7 +78,7 @@ export async function reverseGeocodeMapPoint(
 ): Promise<PickedLocation> {
   const response = await fetch("/api/maps/geocode", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...bearer() },
     body: JSON.stringify({ lat, lng }),
   });
   const data = await readMapsJson<{ location: PickedLocation }>(response);

@@ -6,6 +6,17 @@ import type { Brief } from "@/types/intake";
 import type { Page, SectionType } from "@/types/page";
 
 /**
+ * Generates a dedupe key for one user intent.
+ *
+ * A UUID per intent, not a hash of the content: the auth layer replays a
+ * request after refreshing an expired token, and two genuinely different
+ * intents that happen to look alike must not collide into one stored result.
+ */
+export function newIntentKey(): string {
+  return crypto.randomUUID();
+}
+
+/**
  * Server-side project storage.
  *
  * The server owns the document now. The client sends intents — "build this
@@ -184,6 +195,8 @@ export async function editServerProject(args: {
   targetField?: string;
   expectedVersion: number;
   useFixture: boolean;
+  /** Dedupe key for this intent. Required: an edit runs a billed LLM call. */
+  idempotencyKey: string;
 }): Promise<EditResult> {
   const query = args.useFixture ? "?fixture=1" : "";
 
@@ -198,6 +211,7 @@ export async function editServerProject(args: {
         targetField: args.targetField,
         expectedVersion: args.expectedVersion,
       },
+      idempotencyKey: args.idempotencyKey,
     },
   );
 }
@@ -216,9 +230,12 @@ export async function saveServerVersion(args: {
   pageFamily: PageFamily;
   summary?: string;
   expectedVersion: number;
+  /** Dedupe key for this intent. */
+  idempotencyKey: string;
 }): Promise<{ version: number; project: ServerProject }> {
   return apiRequest(`/api/projects/${args.projectId}/versions`, {
     method: "POST",
+    idempotencyKey: args.idempotencyKey,
     body: {
       page: args.page,
       brief: args.brief ?? undefined,
@@ -237,9 +254,12 @@ export async function revertServerProject(args: {
   projectId: string;
   toVersion: number;
   expectedVersion: number;
+  /** Dedupe key for this intent. */
+  idempotencyKey: string;
 }): Promise<{ version: number; project: ServerProject }> {
   return apiRequest(`/api/projects/${args.projectId}/revert`, {
     method: "POST",
+    idempotencyKey: args.idempotencyKey,
     body: { toVersion: args.toVersion, expectedVersion: args.expectedVersion },
   });
 }

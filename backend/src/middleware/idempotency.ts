@@ -103,6 +103,21 @@ export function idempotent(routeName: string) {
         return;
       }
 
+      // A streamed original stored no body. Replaying an empty response would
+      // look like success with no result, so re-run instead — the caller is
+      // retrying something that already completed, and re-running is the
+      // honest outcome even though it costs tokens again.
+      const hasBody =
+        existing.response !== null &&
+        typeof existing.response === "object" &&
+        Object.keys(existing.response as object).length > 0;
+
+      if (!hasBody) {
+        await prisma.idempotencyRecord.delete({ where: { key: scopedKey } });
+        next();
+        return;
+      }
+
       res.status(existing.status).json(existing.response);
       return;
     }
@@ -127,14 +142,30 @@ export function idempotent(routeName: string) {
       return originalJson(body);
     };
 
-    // A failed handler must release the key, or a legitimate retry of a
-    // transient failure would be rejected as "already in flight" for 24 hours.
+    // Finalize on connection close, covering two cases res.json() misses:
+    //
+    //  - a failed handler must release the key, or a legitimate retry of a
+    //    transient failure is rejected as "already in flight" for 24 hours
+    //  - a streamed response (SSE build) never calls res.json at all, so
+    //    without this the key stays permanently reserved and the user cannot
+    //    retry that build for a day
     res.on("finish", () => {
       if (res.statusCode >= 500) {
         void prisma.idempotencyRecord
           .delete({ where: { key: scopedKey } })
           .catch(() => {});
+        return;
       }
+
+      // Mark complete only if res.json did not already do it. A streamed body
+      // cannot be replayed, so the stored response stays empty and a retry
+      // re-runs rather than returning a truncated cache hit.
+      void prisma.idempotencyRecord
+        .updateMany({
+          where: { key: scopedKey, completedAt: null },
+          data: { status: res.statusCode, completedAt: new Date() },
+        })
+        .catch(() => {});
     });
 
     next();

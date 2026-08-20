@@ -16,7 +16,7 @@ import { handleChatAction, useChatFlow } from "@/hooks/useChatFlow";
 import { useAppViewSync } from "@/hooks/useAppViewSync";
 import { composerPlaceholderForPick } from "@/lib/resolvePreviewPick";
 import { saveAndOpenPreview } from "@/lib/previewStorage";
-import { listProjects } from "@/lib/projectStorage";
+import { listProjects, loadProject } from "@/lib/projectStorage";
 import { hydrateProject, syncProjectsWithServer } from "@/lib/projectSync";
 import { BuilderLocationPicker } from "@/components/BuilderLocationPicker";
 import { ComponentGalleryPage } from "@/pages/ComponentGalleryPage";
@@ -200,24 +200,28 @@ export function ChatApp() {
    */
   const openProject = useCallback(
     async (id: string) => {
-      if (restoreProject(id)) {
+      const enterBuilder = () => {
         navigateView("builder");
         setMobilePane("chat");
         setChatCollapsed(false);
-      }
+      };
+
+      // Only open immediately when the cache actually holds the document.
+      // Navigating on a summary row shows an empty builder, then swaps in the
+      // real page a moment later — which reads as the app losing the project.
+      const cached = loadProject(id);
+      if (cached?.page && restoreProject(id)) enterBuilder();
 
       const hydrated = await hydrateProject(id);
 
       if (!hydrated) {
-        // Not on the server and not usable from cache: the list is stale.
-        refreshProjects();
+        // Nothing on the server and nothing usable cached: the list is stale.
+        if (!cached?.page) refreshProjects();
         return;
       }
 
       restoreProject(id);
-      navigateView("builder");
-      setMobilePane("chat");
-      setChatCollapsed(false);
+      enterBuilder();
       refreshProjects();
     },
     [navigateView, refreshProjects, restoreProject],

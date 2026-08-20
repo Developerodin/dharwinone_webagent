@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 import { createMessageId } from "@/lib/chatFormatters";
 import { performAsk, type AskResult } from "@/lib/performAsk";
 import { performPageEdit } from "@/lib/performPageEdit";
-import { saveServerVersion } from "@/lib/projectApi";
+import { newIntentKey, saveServerVersion } from "@/lib/projectApi";
 import {
   ensureProjectId,
   persistProjectState,
@@ -453,6 +453,7 @@ export async function runUploadImageFlow(
         pageFamily: pageFamily ?? "premium",
         summary: `Updated ${label}`,
         expectedVersion: serverVersion ?? 0,
+        idempotencyKey: newIntentKey(),
       });
       uploadedVersion = saved.version;
       deps.setServerVersion?.(saved.version);

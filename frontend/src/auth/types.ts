@@ -33,7 +33,11 @@ export type VerifyRequired = {
   emailDelayed?: boolean;
 };
 
-/** Stable error codes. Switch on these, never on message text. */
+/**
+ * Stable error codes. Switch on these, never on message text.
+ *
+ * Mirrors the server's `ErrorCode` union in backend/src/lib/httpError.ts.
+ */
 export type AuthErrorCode =
   | "VALIDATION_ERROR"
   | "INVALID_CREDENTIALS"
@@ -56,7 +60,24 @@ export type AuthErrorCode =
   | "INVITE_REQUIRED"
   | "PAYLOAD_TOO_LARGE"
   | "INTERNAL_ERROR"
-  | "NETWORK_ERROR";
+  | "NETWORK_ERROR"
+  // Projects and assets. Mirrors backend src/lib/httpError.ts — keep in sync.
+  | "PROJECT_NOT_FOUND"
+  | "VERSION_NOT_FOUND"
+  | "VERSION_CONFLICT"
+  | "PAGE_TOO_LARGE"
+  | "DATA_URL_REJECTED"
+  | "INVALID_PAGE"
+  | "INVALID_ASSET_REFERENCE"
+  | "QUOTA_EXCEEDED"
+  | "ASSET_NOT_READY"
+  | "ASSET_NOT_FOUND"
+  | "UNSUPPORTED_MEDIA_TYPE"
+  | "STORAGE_UNAVAILABLE"
+  | "IDEMPOTENCY_KEY_REUSED"
+  | "REQUEST_IN_FLIGHT"
+  | "NOT_FOUND"
+  | "FORBIDDEN";
 
 /**
  * An error carrying the server's stable code plus any structured detail
@@ -89,6 +110,12 @@ export class ApiError extends Error {
   /** Attempts left on an OTP, when the server reported one. */
   get attemptsRemaining(): number | null {
     const value = this.details.attemptsRemaining;
+    return typeof value === "number" ? value : null;
+  }
+
+  /** Server's current version, reported alongside VERSION_CONFLICT. */
+  get currentVersion(): number | null {
+    const value = this.details.currentVersion;
     return typeof value === "number" ? value : null;
   }
 }

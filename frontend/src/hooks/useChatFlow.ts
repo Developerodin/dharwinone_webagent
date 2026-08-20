@@ -34,6 +34,26 @@ import {
   sectionOnlyPick,
   type PreviewPick,
 } from "@/lib/resolvePreviewPick";
+import { getAccessToken } from "@/lib/apiClient";
+import {
+  loadServerProject,
+  newIntentKey,
+  revertServerProject,
+} from "@/lib/projectApi";
+
+/**
+ * Headers for a JSON request to an authenticated pipeline route.
+ *
+ * /api/intake requires a session now — it runs the brief-assessment LLM call,
+ * and an ungated LLM endpoint is someone else's bill.
+ */
+function authHeaders(): Record<string, string> {
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${getAccessToken() ?? ""}`,
+  };
+}
+
 
 export { handleChatAction } from "@/lib/chatActions";
 
@@ -167,7 +187,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
       const query = useFixture ? "?fixture=1" : "";
       const response = await fetch(`/api/intake${query}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders(),
         body: JSON.stringify({
           chatText,
           clarificationRound: round,
@@ -375,22 +395,47 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
   );
 
   /**
-   * Restores the previous page snapshot from edit history.
+   * Undoes the last edit by reverting the stored document.
+   *
+   * Reverting server-side rather than popping an in-memory stack: a local undo
+   * was invisible to the server, so a refresh brought the undone edit back and
+   * the next edit still carried the pre-undo version — leaving the user unable
+   * to save the state they had just asked for.
+   *
+   * The revert appends a new version rather than deleting one, so the undone
+   * edit is still in history and can be re-applied.
    */
-  const undoEdit = useCallback(() => {
-    if (history.length === 0) return;
-    const previous = history[history.length - 1];
-    if (!previous) return;
-    setHistory((current) => current.slice(0, -1));
-    setPage(previous.page as Page);
-    setBrief(previous.brief as Brief);
-    setPageFamily(previous.family as PageFamily);
-    if (previous.direction !== undefined) setDirection(previous.direction);
-    appendMessage({
-      role: "assistant",
-      content: `Undid: ${previous.summary}`,
-    });
-  }, [appendMessage, history]);
+  const undoEdit = useCallback(async () => {
+    if (!projectId || serverVersion < 2) return;
+
+    const target = serverVersion - 1;
+    setIsBusy(true);
+
+    try {
+      const result = await revertServerProject({
+        projectId,
+        toVersion: target,
+        expectedVersion: serverVersion,
+        idempotencyKey: newIntentKey(),
+      });
+
+      const restored = await loadServerProject(projectId);
+      if (restored.page) setPage(restored.page);
+      setServerVersion(result.version);
+      setHistory((current) => current.slice(0, -1));
+
+      appendMessage({
+        role: "assistant",
+        content: `Undid the last change — back to version ${target}.`,
+      });
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Could not undo that change.",
+      );
+    } finally {
+      setIsBusy(false);
+    }
+  }, [appendMessage, projectId, serverVersion]);
 
   /**
    * Applies a pending Ask proposal via the Editor.
@@ -754,6 +799,9 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
     setPageFamily(empty.pageFamily);
     setPage(empty.page);
     setProjectId(empty.projectId);
+    // Without this the next edit carries the previous project's version and
+    // conflicts against a document it has nothing to do with.
+    setServerVersion(empty.serverVersion ?? 0);
     setHistory([]);
     setDirection(null);
     setSelectedSectionType(null);

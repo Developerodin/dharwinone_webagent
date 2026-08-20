@@ -93,12 +93,49 @@ export async function syncProjectsWithServer(): Promise<SyncResult> {
 
   try {
     const projects = await listServerProjects();
-    const stored = projects.map(toStoredProject);
-    replaceProjects(stored);
-    return { imported, projects: stored };
+    const merged = mergeWithCache(projects);
+    replaceProjects(merged);
+    return { imported, projects: merged };
   } catch {
     return { imported, projects: listProjects() };
   }
+}
+
+/**
+ * Folds the server's project list into the cache without discarding documents.
+ *
+ * The list endpoint deliberately carries no page and no chat history, so
+ * overwriting cached rows with it would blank every document the user has
+ * already opened — turning "instant open" into a blank builder, and leaving
+ * anything that reads `project.page` looking at null.
+ *
+ * Server-owned fields (name, version, timestamps) win; locally cached
+ * documents are preserved until `hydrateProject` replaces them with fresh
+ * copies. Projects the server no longer lists are dropped: they were deleted
+ * elsewhere.
+ */
+function mergeWithCache(projects: ServerProject[]): StoredProject[] {
+  const cached = new Map(listProjects().map((project) => [project.id, project]));
+
+  return projects.map((project) => {
+    const existing = cached.get(project.id);
+    const summary = toStoredProject(project);
+
+    if (!existing) return summary;
+
+    return {
+      ...summary,
+      // Keep the cached document unless the server has moved past it, in which
+      // case the local copy is stale and must be refetched on open.
+      page:
+        existing.serverVersion === project.currentVersion ? existing.page : null,
+      messages:
+        existing.serverVersion === project.currentVersion
+          ? existing.messages
+          : [],
+      history: existing.history,
+    };
+  });
 }
 
 /**

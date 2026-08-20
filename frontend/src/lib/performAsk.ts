@@ -1,6 +1,19 @@
 import type { PageFamily } from "@/lib/pageFamily";
 import type { Brief } from "@/types/intake";
 import type { Page } from "@/types/page";
+import { getAccessToken } from "@/lib/apiClient";
+
+/**
+ * Headers for a JSON request to an authenticated pipeline route.
+ *
+ * /api/ask now requires a session; it runs an LLM call.
+ */
+function authHeaders(): Record<string, string> {
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${getAccessToken() ?? ""}`,
+  };
+}
 
 export type AskResult = {
   intent: "ask" | "edit";
@@ -23,7 +36,7 @@ export async function performAsk(args: {
   const query = args.useFixture ? "?fixture=1" : "";
   const response = await fetch(`/api/ask${query}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify({
       instruction: args.instruction,
       page: args.page,

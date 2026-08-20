@@ -1,4 +1,17 @@
 import type { Page, SectionType } from "@/types/page";
+import { getAccessToken } from "@/lib/apiClient";
+
+/**
+ * Headers for a JSON request to an authenticated pipeline route.
+ *
+ * /api/upload now requires a session; it writes to disk.
+ */
+function authHeaders(): Record<string, string> {
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${getAccessToken() ?? ""}`,
+  };
+}
 
 export type UploadableSection = Extract<
   SectionType,
@@ -152,7 +165,7 @@ export async function uploadSectionImage(args: {
 
   const response = await fetch("/api/upload", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify({
       dataUrl,
       section: args.target.section,

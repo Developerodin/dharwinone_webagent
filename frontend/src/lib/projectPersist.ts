@@ -1,6 +1,7 @@
 import {
   capHistory,
   createProjectId,
+  loadProject,
   saveProject,
   type HistoryEntry,
   type StoredProject,
@@ -90,44 +91,74 @@ export function persistProjectState(args: PersistProjectArgs): void {
   void syncMessages(args.id, args.nextMessages);
 }
 
-/** Messages already sent, per project, so each save pushes only what is new. */
-const sentMessageCounts = new Map<string, number>();
+/**
+ * Per-project mutex, so two saves in flight cannot both claim the same range.
+ */
+const syncLocks = new Map<string, Promise<void>>();
 
 /**
  * Pushes newly-added chat messages to the server.
  *
- * Only the tail is sent. Re-posting the whole thread on every keystroke-level
- * save would duplicate every message, because the server appends rather than
- * replaces.
+ * Correctness here is fiddly enough to be worth spelling out. The previous
+ * version tracked "how many messages we have sent" in process memory, which
+ * broke in four ways: a shrinking thread made the count exceed the array and
+ * silently synced nothing; two concurrent saves could each roll the count back
+ * over the other; sending was capped at 50 while the count claimed the full
+ * length, permanently stranding anything older; and a refresh reset the count
+ * to zero, re-appending the whole thread as new messages.
+ *
+ * So the marker is now the last synced *sequence number*, persisted with the
+ * project, and the whole pending batch is sent in chunks rather than truncated.
  */
 async function syncMessages(
   projectId: string,
   messages: PersistProjectArgs["nextMessages"],
 ): Promise<void> {
-  const alreadySent = sentMessageCounts.get(projectId) ?? 0;
-  const pending = messages.slice(alreadySent);
-  if (pending.length === 0) return;
+  const previous = syncLocks.get(projectId) ?? Promise.resolve();
 
-  // Claim the range before awaiting, so two saves in flight cannot both send
-  // the same messages.
-  sentMessageCounts.set(projectId, messages.length);
+  const run = previous
+    .catch(() => {})
+    .then(async () => {
+      const cached = loadProject(projectId);
+      const syncedCount = cached?.syncedMessageCount ?? 0;
 
-  try {
-    await saveServerMessages(projectId, pending);
-  } catch {
-    // Roll back the claim so the next save retries these messages.
-    sentMessageCounts.set(projectId, alreadySent);
-  }
+      // A shorter thread means it was reset or replaced, not appended to.
+      // Re-sending from zero would duplicate; the server thread is replaced on
+      // the next open instead.
+      if (messages.length < syncedCount) return;
+
+      const pending = messages.slice(syncedCount);
+      if (pending.length === 0) return;
+
+      // Chunked, because the endpoint accepts 50 at a time. Sending only the
+      // last 50 while marking the whole range synced is how messages went
+      // missing before.
+      let sent = syncedCount;
+      for (let i = 0; i < pending.length; i += 50) {
+        const batch = pending.slice(i, i + 50);
+        await saveServerMessages(projectId, batch);
+        sent += batch.length;
+
+        const current = loadProject(projectId);
+        if (current) {
+          saveProject({ ...current, syncedMessageCount: sent });
+        }
+      }
+    });
+
+  syncLocks.set(projectId, run);
+  await run;
 }
 
 /**
- * Resets message-sync bookkeeping for a project.
+ * Records how much of a project's thread the server already has.
  *
- * Called when a project is opened from the server, where the stored thread is
- * already complete and re-sending it would duplicate every message.
+ * Called after loading a project from the server, where the stored thread is
+ * complete and re-sending it would duplicate every message.
  */
 export function markMessagesSynced(projectId: string, count: number): void {
-  sentMessageCounts.set(projectId, count);
+  const cached = loadProject(projectId);
+  if (cached) saveProject({ ...cached, syncedMessageCount: count });
 }
 
 /**

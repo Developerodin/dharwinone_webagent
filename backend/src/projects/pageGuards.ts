@@ -9,10 +9,33 @@ import { pageSchema, type Page } from "../schemas/page.schema.js";
  * ProjectVersion row without passing through here.
  */
 
-/** Schemes that must never appear in a stored document. */
-const FORBIDDEN_SCHEMES = /^\s*(data|javascript|vbscript):/i;
+/**
+ * Schemes that must never appear in a stored document.
+ *
+ * Deliberately unanchored. A start-anchored pattern only catches a value that
+ * *is* the URL, and misses every way one can be embedded: `url(data:...)` in a
+ * CSS string, a zero-width space or NUL before the scheme, an `srcset` entry,
+ * a scheme buried mid-attribute. The scanner runs over every string in the
+ * document, so matching anywhere is both cheap and correct.
+ */
+const FORBIDDEN_SCHEMES = /(data|javascript|vbscript)\s*:/i;
 
-/** Paths we recognise as referring to one of our own assets. */
+/**
+ * Characters used to smuggle a scheme past a naive matcher.
+ *
+ * Zero-width spaces, NUL, and control characters are invisible in a rendered
+ * page but ignored by URL parsers, so `data\u0000:` resolves as `data:`.
+ */
+const INVISIBLE = /[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u2028\u2029\ufeff]/g;
+
+/**
+ * Values that refer to one of our own stored assets.
+ *
+ * Two shapes coexist: legacy local uploads served from /images/uploads, and
+ * CDN URLs from object storage. Collecting only the first meant the refcount
+ * never saw a single object-storage asset — and garbage collection would then
+ * have deleted assets that live pages were still using.
+ */
 const ASSET_PATH = /^\/images\/uploads\//;
 
 /**
@@ -55,7 +78,10 @@ export function assertNoDataUrls(page: unknown): void {
 
   forEachString(page, (text, path) => {
     if (offender) return;
-    if (FORBIDDEN_SCHEMES.test(text)) offender = path || "(root)";
+    // Strip invisibles before matching, or `data\u200b:` slips through.
+    if (FORBIDDEN_SCHEMES.test(text.replace(INVISIBLE, ""))) {
+      offender = path || "(root)";
+    }
   });
 
   if (offender) {
@@ -121,8 +147,11 @@ export function validatePage(input: unknown): ValidatedPage {
 export function extractAssetPaths(page: unknown): string[] {
   const found = new Set<string>();
 
+  const cdnBase = process.env.CDN_BASE_URL?.trim().replace(/\/+$/, "");
+
   forEachString(page, (text) => {
     if (ASSET_PATH.test(text)) found.add(text);
+    else if (cdnBase && text.startsWith(cdnBase)) found.add(text);
   });
 
   return [...found];

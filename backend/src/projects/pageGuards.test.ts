@@ -207,3 +207,102 @@ describe("resolveProjectName", () => {
     );
   });
 });
+
+describe("assertNoDataUrls — bypasses found in review", () => {
+  /**
+   * Each of these passed a start-anchored matcher. They are the reason the
+   * pattern is unanchored and strips invisible characters first.
+   */
+  const bypasses: Array<[string, string]> = [
+    ["css url() wrapper", "url(data:image/png;base64,AAAA)"],
+    ["zero-width space", "\u200bdata:image/png;base64,AAAA"],
+    ["NUL before colon", "data\u0000:image/png;base64,AAAA"],
+    ["leading text", "background: data:image/png;base64,AAAA"],
+    ["srcset entry", "/img/a.png 1x, data:image/png;base64,AAAA 2x"],
+    ["space before colon", "data :image/png;base64,AAAA"],
+    ["uppercase in css", "URL(DATA:image/png;base64,AA)"],
+    ["javascript in href", "  javascript:alert(1)"],
+    ["zero-width joiner", "java\u200dscript:alert(1)"],
+  ];
+
+  it.each(bypasses)("rejects %s", (_label, value) => {
+    const bad = page({
+      sections: [
+        {
+          type: "hero",
+          componentId: "X",
+          content: { bg: value },
+          assets: [],
+        },
+      ],
+    });
+    expect(guardError(() => assertNoDataUrls(bad))?.code).toBe(
+      "DATA_URL_REJECTED",
+    );
+  });
+
+  it("still allows ordinary prose containing the words", () => {
+    const fine = page({
+      sections: [
+        {
+          type: "about",
+          componentId: "X",
+          content: {
+            body: "Our data is javascript-free and the metadata is clean.",
+          },
+          assets: [],
+        },
+      ],
+    });
+    expect(guardError(() => assertNoDataUrls(fine))).toBeNull();
+  });
+});
+
+describe("extractAssetPaths — CDN URLs", () => {
+  it("collects object-storage URLs, not just legacy upload paths", () => {
+    // These were missed entirely, so ProjectAsset links were never created and
+    // garbage collection would have deleted assets still in use.
+    const original = process.env.CDN_BASE_URL;
+    process.env.CDN_BASE_URL = "https://cdn.example.com";
+
+    try {
+      const found = extractAssetPaths({
+        sections: [
+          {
+            type: "hero",
+            componentId: "X",
+            content: { bg: "https://cdn.example.com/users/u1/abc.jpg" },
+            assets: [{ key: "p", imagePath: "/images/uploads/legacy.jpg" }],
+          },
+        ],
+      });
+      expect(found.sort()).toEqual([
+        "/images/uploads/legacy.jpg",
+        "https://cdn.example.com/users/u1/abc.jpg",
+      ]);
+    } finally {
+      process.env.CDN_BASE_URL = original;
+    }
+  });
+
+  it("ignores URLs from other origins", () => {
+    const original = process.env.CDN_BASE_URL;
+    process.env.CDN_BASE_URL = "https://cdn.example.com";
+    try {
+      expect(
+        extractAssetPaths({
+          sections: [
+            {
+              type: "hero",
+              componentId: "X",
+              content: { bg: "https://evil.example/steal.jpg" },
+              assets: [],
+            },
+          ],
+        }),
+      ).toEqual([]);
+    } finally {
+      process.env.CDN_BASE_URL = original;
+    }
+  });
+});

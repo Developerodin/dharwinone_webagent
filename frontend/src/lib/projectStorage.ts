@@ -48,6 +48,13 @@ export type StoredProject = {
    * reject a stale write from another tab instead of silently overwriting it.
    */
   serverVersion?: number;
+  /**
+   * How many messages of this thread the server already holds.
+   *
+   * Persisted rather than kept in memory so a refresh does not re-append the
+   * entire thread as new messages.
+   */
+  syncedMessageCount?: number;
 };
 
 /**
@@ -175,5 +182,9 @@ function normalizeProject(raw: unknown): StoredProject | null {
     history,
     serverVersion:
       typeof value.serverVersion === "number" ? value.serverVersion : undefined,
+    syncedMessageCount:
+      typeof value.syncedMessageCount === "number"
+        ? value.syncedMessageCount
+        : undefined,
   };
 }

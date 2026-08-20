@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import type { Page, PageAsset, PageSection } from "@/types/page";
 import type { PageFamily } from "@/lib/pageFamily";
 import { loadProject, saveProject } from "@/lib/projectStorage";
-import { saveServerVersion } from "@/lib/projectApi";
+import { newIntentKey, saveServerVersion } from "@/lib/projectApi";
 import { savePreviewPayload } from "@/lib/previewStorage";
 import { uploadSectionImage } from "@/lib/uploadSectionImage";
 import {
@@ -58,8 +58,6 @@ export function PreviewInspector({
     const existing = loadProject(projectId);
     if (!existing) return;
 
-    let version = existing.serverVersion;
-
     try {
       const saved = await saveServerVersion({
         projectId,
@@ -69,24 +67,25 @@ export function PreviewInspector({
         pageFamily,
         summary: "Edited in inspector",
         expectedVersion: existing.serverVersion ?? 0,
+        idempotencyKey: newIntentKey(),
       });
-      version = saved.version;
+
+      // Cache only what the server accepted. Writing the page here on failure
+      // would leave the cache claiming a change the server never stored.
+      const current = loadProject(projectId) ?? existing;
+      saveProject({
+        ...current,
+        page: next,
+        updatedAt: Date.now(),
+        serverVersion: saved.version,
+      });
     } catch (saveError) {
-      // Surface it rather than failing silently: the user just made a change
-      // and needs to know it did not stick.
       setError(
         saveError instanceof Error
           ? `Couldn't save: ${saveError.message}`
           : "Couldn't save that change.",
       );
     }
-
-    saveProject({
-      ...existing,
-      page: next,
-      updatedAt: Date.now(),
-      serverVersion: version,
-    });
   }
 
   /**
