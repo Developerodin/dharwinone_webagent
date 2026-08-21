@@ -12,7 +12,7 @@ const LABELS: Record<PageFamily, string> = {
 const DESCRIPTIONS: Record<PageFamily, string> = {
   premium: "Warm exquisite layout — auto-selected from your brief",
   elegant: "Upscale dark/gold layout — auto-selected from your brief",
-  minimal: "Clean sparse modern layout — auto-selected from your brief",
+  minimal: "Black-and-white editorial layout — auto-selected from your brief",
   rustic: "Earthy farmhouse layout — auto-selected from your brief",
   vibrant: "Bold colorful layout — auto-selected from your brief",
   bold: "Casual burger/QSR energy — copper accent, playful script",
@@ -73,7 +73,7 @@ export function formatThemeSuggestions(current: PageFamily): string {
     `**Themes available** (current: ${currentLabel}):`,
     `• **Premium** — exquisite warm layout — say “use premium theme”`,
     `• **Elegant** — dark/gold upscale — say “use elegant theme”`,
-    `• **Minimal** — clean modern — say “use minimal theme”`,
+    `• **Minimal** — black-and-white editorial — say “use minimal theme”`,
     `• **Rustic** — earthy farmhouse — say “use rustic theme”`,
     `• **Vibrant** — bold colorful — say “use vibrant theme”`,
     `• **Bold** — casual burger/QSR energy — say “use bold theme”`,

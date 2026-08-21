@@ -329,9 +329,11 @@ function applyTheme(
   clearThemeStyleState(page);
   page.themeOverrides = themeOverridesForFamily(family);
 
-  // Client brand always wins over family defaults.
-  const brand = paletteFromBrandColors(brief.brandColors);
-  if (brand) applyCreativePalette(page, brand);
+  // Minimal is ink/paper only — brand palettes would reintroduce hue.
+  if (family !== "minimal") {
+    const brand = paletteFromBrandColors(brief.brandColors);
+    if (brand) applyCreativePalette(page, brand);
+  }
 
   ensureShellSections(page, family, brief);
   const category = brief.category;

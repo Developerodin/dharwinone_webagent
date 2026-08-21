@@ -33,10 +33,10 @@ function familyHeaderCtas(): {
 } {
   return {
     fill: headerCtaClasses(
-      `inline-flex ${CTA_SIZE} items-center justify-center rounded-full bg-[var(--theme-accent)] font-medium text-[var(--theme-accent-contrast)] transition-colors hover:bg-[var(--theme-accent-on-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]`,
+      `inline-flex ${CTA_SIZE} items-center justify-center rounded-[var(--theme-radius-control)] border border-[var(--theme-accent)] bg-[var(--theme-accent)] font-medium text-[var(--theme-accent-contrast)] transition-colors hover:bg-transparent hover:text-[var(--theme-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]`,
     ),
     outline: headerCtaClasses(
-      `inline-flex ${CTA_SIZE} items-center justify-center border border-[var(--theme-ink)] bg-transparent text-[var(--theme-ink)] transition-colors hover:bg-[var(--theme-bg-alt)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]`,
+      `inline-flex ${CTA_SIZE} items-center justify-center rounded-[var(--theme-radius-control)] border border-[var(--theme-ink)] bg-transparent text-[var(--theme-ink)] transition-colors hover:bg-[var(--theme-bg-alt)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]`,
     ),
     ghost: headerCtaClasses(
       "inline-flex min-h-9 w-auto max-w-[10.5rem] shrink-0 items-center justify-center truncate border-b border-[var(--theme-accent)]/70 px-1 py-2 text-xs text-[var(--theme-ink)] transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-accent)] @min-[640px]/page:max-w-none @min-[640px]/page:text-sm",

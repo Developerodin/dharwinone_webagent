@@ -11,6 +11,7 @@ import {
   SectionIntro,
   getBodyCopy,
   getBrandName,
+  ContactFactList,
   ContactFactValue,
   getContactFacts,
   getCopyrightLine,
@@ -60,9 +61,9 @@ function createContact01(tokens: ThemeTokens): SectionComponent {
             />
             <dl className="mt-8 divide-y divide-[var(--theme-line)]">
               {facts.map((fact) => (
-                <div key={fact.label} className="flex flex-col gap-2 py-4 first:pt-0 last:pb-0">
+                <div key={fact.label} className="flex min-w-0 flex-col gap-2 py-4 first:pt-0 last:pb-0">
                   <dt className={`text-sm ${tokens.body}`}>{fact.label}</dt>
-                  <dd className="text-sm leading-7 text-[var(--theme-ink)] @min-[640px]:text-base">
+                  <dd className="min-w-0 text-sm leading-7 text-[var(--theme-ink)] @min-[640px]:text-base">
                     <ContactFactValue fact={fact} />
                   </dd>
                 </div>
@@ -117,6 +118,7 @@ function createContact02(tokens: ThemeTokens): SectionComponent {
               title={headline}
               body={body}
               tokens={tokens}
+              align="center"
             />
             <SiteLeadForm
               content={content}
@@ -124,19 +126,16 @@ function createContact02(tokens: ThemeTokens): SectionComponent {
               kind="reservation"
               layout="reservation"
               submitLabel="Send Request"
+              align="center"
             />
           </div>
 
-          <dl className="mx-auto mt-8 max-w-5xl divide-y divide-white/10 @min-[640px]:grid @min-[640px]:grid-cols-3 @min-[640px]:divide-y-0 @min-[640px]:gap-8">
-            {facts.map((fact) => (
-              <div key={fact.label} className="py-4 first:pt-0 @min-[640px]:py-0">
-                <dt className={`text-sm ${tokens.mutedOnDark}`}>{fact.label}</dt>
-                <dd className={`mt-2 text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>
-                  <ContactFactValue fact={fact} onDark />
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <ContactFactList
+            facts={facts}
+            onDark
+            align="center"
+            className="mx-auto mt-10 flex w-full max-w-4xl min-w-0 flex-wrap justify-center gap-x-12 gap-y-8"
+          />
         </div>
       </section>
     );
@@ -156,40 +155,33 @@ function createFooter01(tokens: ThemeTokens): SectionComponent {
     const brandName = getBrandName(content);
     const tagline = getTagline(content);
     const navItems = getNavItems(content);
-    const facts = getContactFacts(content).slice(0, 3);
+    const facts = getContactFacts(content);
     const copyright = getCopyrightLine(content);
 
     return (
       <footer aria-label="Footer" className={`${tokens.sectionPad} ${tokens.sectionAlt} border-t border-[var(--theme-line)]`}>
-        <div className="mx-auto grid max-w-6xl gap-10 @min-[640px]:grid-cols-2 @min-[1024px]:grid-cols-[minmax(0,1.1fr)_minmax(0,0.8fr)_minmax(0,0.8fr)]">
+        <div className="mx-auto grid max-w-6xl min-w-0 grid-cols-1 gap-10 @min-[768px]:grid-cols-2 @min-[1024px]:grid-cols-3">
           <div className="min-w-0">
             <p className={`text-xl text-[var(--theme-ink)] ${tokens.heading}`}>{brandName}</p>
             <p className={`mt-3 max-w-md text-sm @min-[640px]:text-base ${tokens.body}`}>
               {tagline}
             </p>
           </div>
-          <nav aria-label="Footer navigation" className="flex flex-col items-start gap-2">
-              {navItems.map((item) => (
-                <button
-                  key={`${item.target}-${item.label}`}
-                  type="button"
-                  onClick={createScrollHandler(item.target)}
-                  className={`w-fit text-left text-sm ${tokens.body} transition hover:text-[var(--theme-ink)]`}
-                  aria-label={`Scroll to ${item.label}`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </nav>
-          <div>
-            <ul className="space-y-3" role="list">
-              {facts.map((fact) => (
-                <li key={fact.label} className={`text-sm @min-[640px]:text-base ${tokens.body}`}>
-                  <span className="text-[var(--theme-ink)]">{fact.label}:</span>{" "}
-                  <ContactFactValue fact={fact} />
-                </li>
-              ))}
-            </ul>
+          <nav aria-label="Footer navigation" className="flex min-w-0 flex-col items-start gap-2">
+            {navItems.map((item) => (
+              <button
+                key={`${item.target}-${item.label}`}
+                type="button"
+                onClick={createScrollHandler(item.target)}
+                className="w-fit text-left text-sm text-[var(--theme-ink)] transition hover:opacity-70"
+                aria-label={`Scroll to ${item.label}`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+          <div className="min-w-0 @min-[768px]:col-span-2 @min-[1024px]:col-span-1">
+            <ContactFactList facts={facts} />
           </div>
         </div>
         <p className={`mx-auto mt-10 max-w-6xl text-sm ${tokens.body}`}>{copyright}</p>
@@ -211,20 +203,20 @@ function createFooter02(tokens: ThemeTokens): SectionComponent {
     const brandName = getBrandName(content);
     const tagline = getTagline(content);
     const navItems = getNavItems(content);
-    const facts = getContactFacts(content).slice(0, 3);
+    const facts = getContactFacts(content);
     const copyright = getCopyrightLine(content);
 
     return (
       <footer aria-label="Footer" className={`${tokens.sectionPad} ${tokens.sectionDark}`}>
-        <div className="mx-auto max-w-6xl">
-          <div className="grid gap-8 @min-[768px]:grid-cols-[minmax(0,1fr)_auto_minmax(0,0.9fr)] @min-[768px]:items-start">
-            <div>
+        <div className="mx-auto max-w-6xl min-w-0">
+          <div className="grid min-w-0 grid-cols-1 gap-10 @min-[768px]:grid-cols-2 @min-[1024px]:grid-cols-3 @min-[1024px]:items-start">
+            <div className="min-w-0">
               <p className={`text-xl text-[var(--theme-on-dark)] ${tokens.heading}`}>{brandName}</p>
               <p className={`mt-3 max-w-md text-sm @min-[640px]:text-base ${tokens.mutedOnDark}`}>
                 {tagline}
               </p>
             </div>
-            <nav aria-label="Footer navigation" className="flex flex-wrap gap-x-5 gap-y-2">
+            <nav aria-label="Footer navigation" className="flex min-w-0 flex-col items-start gap-2">
               {navItems.map((item) => (
                 <button
                   key={`${item.target}-${item.label}`}
@@ -237,13 +229,8 @@ function createFooter02(tokens: ThemeTokens): SectionComponent {
                 </button>
               ))}
             </nav>
-            <div className="space-y-2">
-              {facts.map((fact) => (
-                <p key={fact.label} className={`text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>
-                  <span className="text-[var(--theme-on-dark)]">{fact.label}:</span>{" "}
-                  <ContactFactValue fact={fact} onDark />
-                </p>
-              ))}
+            <div className="min-w-0 @min-[768px]:col-span-2 @min-[1024px]:col-span-1">
+              <ContactFactList facts={facts} onDark />
             </div>
           </div>
           <p className={`mt-8 border-t border-white/10 pt-5 text-sm ${tokens.mutedOnDark}`}>

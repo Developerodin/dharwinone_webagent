@@ -1,3 +1,4 @@
+import { apiRequest } from "@/lib/apiClient";
 import { parsePageFamily, type PageFamily } from "./pageFamily";
 import type { Page } from "@/types/page";
 
@@ -45,6 +46,39 @@ export function loadPreviewPayload(): PreviewPayload | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * Absolute public preview URL anyone can open without signing in.
+ */
+export function publicPreviewUrl(projectId: string): string {
+  return `${window.location.origin}/preview.html?project=${encodeURIComponent(projectId)}`;
+}
+
+/**
+ * Loads the live page for a public preview. No session required.
+ */
+export async function loadPublicPreview(
+  projectId: string,
+): Promise<PreviewPayload> {
+  const data = await apiRequest<{
+    projectId: string;
+    page: Page;
+    pageFamily: string;
+    businessName?: string;
+  }>(`/api/preview/${encodeURIComponent(projectId)}`, { anonymous: true });
+
+  const pageFamily = parsePageFamily(data.pageFamily);
+  if (!data.page || !pageFamily) {
+    throw new Error("Invalid preview payload");
+  }
+
+  return {
+    page: data.page,
+    pageFamily,
+    businessName: data.businessName,
+    projectId: data.projectId,
+  };
 }
 
 /**

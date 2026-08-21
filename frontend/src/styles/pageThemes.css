@@ -5,6 +5,16 @@
  */
 
 /** Shared page family theme scopes for rendered restaurant pages. */
+
+/* Family-kit geometry. Minimal overrides to Impeccable-scale radii (2–4px). */
+.rustic-theme,
+.vibrant-theme {
+  --theme-radius-frame: 2rem;
+  --theme-radius-tile: 1.5rem;
+  --theme-radius-control: 999px;
+  --theme-media-shadow: 0 30px 60px rgb(0 0 0 / 0.12);
+}
+
 .elegant-theme {
   /* Formal fine-dining: near-black + classic warm gold (not twin of premium steel). */
   --eg-bg: #0a0a0a;
@@ -76,31 +86,42 @@
 }
 
 .minimal-theme {
-  --theme-bg: #f8f8f5;
-  --theme-bg-alt: #ffffff;
-  --theme-bg-dark: #101010;
-  --theme-card: #ffffff;
-  --theme-ink: #111111;
-  --theme-on-dark: #f7f7f3;
-  --theme-muted: #5e5e57;
-  --theme-muted-on-dark: rgba(247, 247, 243, 0.82);
-  --theme-line: #d8d8d2;
-  --theme-line-strong: #111111;
-  /* Near-black accent on light surfaces; light accent on dark bands/overlays. */
-  --theme-accent: #111111;
-  --theme-accent-on-dark: #e4e4de;
-  --theme-accent-contrast: #fdfdf9;
-  --theme-font-display: "DM Sans", system-ui, sans-serif;
-  --theme-font-body: "Work Sans", "DM Sans", system-ui, sans-serif;
+  /* Chroma-0 paper/ink. Tinted, never #000/#fff (Impeccable detector). */
+  --theme-bg: oklch(97% 0.004 95);
+  --theme-bg-alt: oklch(99% 0.002 95);
+  --theme-bg-dark: oklch(12% 0.006 95);
+  --theme-card: oklch(99.5% 0.001 95);
+  --theme-ink: oklch(18% 0.008 95);
+  --theme-on-dark: oklch(96% 0.004 95);
+  --theme-muted: oklch(32% 0.006 95);
+  --theme-muted-on-dark: oklch(82% 0.004 95 / 0.88);
+  --theme-line: oklch(88% 0.004 95);
+  --theme-line-strong: oklch(18% 0.008 95);
+  --theme-accent: oklch(18% 0.008 95);
+  --theme-accent-on-dark: oklch(94% 0.004 95);
+  --theme-accent-contrast: oklch(99% 0.002 95);
+  --theme-font-display: "Alumni Sans", "Albert Sans", system-ui, sans-serif;
+  --theme-font-body: "Albert Sans", "Geist Variable", system-ui, sans-serif;
+  --font-display: var(--theme-font-display);
+  --font-body: var(--theme-font-body);
+  --theme-radius-frame: 0.125rem;
+  --theme-radius-tile: 0.25rem;
+  --theme-radius-control: 0.125rem;
+  --theme-media-shadow: none;
   --ink: var(--theme-ink);
   --muted: var(--theme-muted);
   --accent: var(--theme-accent);
   --line: var(--theme-line);
   --surface: var(--theme-card);
   --paper: var(--theme-bg);
-  --accent-soft: color-mix(in srgb, var(--theme-accent) 18%, transparent);
+  --accent-soft: color-mix(in srgb, var(--theme-ink) 8%, transparent);
   background-color: var(--theme-bg);
   color: var(--theme-ink);
+}
+
+/* Strip AI color runs — this family is ink-only. */
+.minimal-theme :is(h1, h2, h3, h4) span[style] {
+  color: inherit !important;
 }
 
 .rustic-theme {

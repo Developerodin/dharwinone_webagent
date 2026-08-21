@@ -263,8 +263,8 @@ export function toMailHref(email: string): string {
 export function galleryEvenGridClass(count: number): string {
   if (count <= 1) return "grid-cols-1 mx-auto max-w-md";
   if (count === 2) return "mx-auto max-w-3xl grid-cols-1 @min-[480px]:grid-cols-2";
-  if (count === 3) return "grid-cols-1 @min-[640px]:grid-cols-3";
-  return "grid-cols-2 @min-[768px]:grid-cols-4";
+  if (count === 3) return "grid-cols-1 @min-[640px]:grid-cols-2 @min-[1024px]:grid-cols-3";
+  return "grid-cols-1 @min-[480px]:grid-cols-2 @min-[1024px]:grid-cols-4";
 }
 
 /**
@@ -274,7 +274,7 @@ export function galleryBentoGridClass(count: number): string {
   if (count <= 1) return "grid-cols-1 mx-auto max-w-lg";
   if (count === 2) return "mx-auto max-w-4xl grid-cols-1 @min-[480px]:grid-cols-2";
   if (count === 3) return "grid-cols-1 @min-[640px]:grid-cols-2 @min-[640px]:grid-rows-2";
-  return "grid-cols-2 @min-[768px]:grid-cols-4";
+  return "grid-cols-1 @min-[480px]:grid-cols-2 @min-[1024px]:grid-cols-4";
 }
 
 /**

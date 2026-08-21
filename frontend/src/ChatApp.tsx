@@ -18,7 +18,7 @@ import { handleChatAction, useChatFlow } from "@/hooks/useChatFlow";
 import { useCanvasTool } from "@/hooks/useCanvasTool";
 import { useAppViewSync } from "@/hooks/useAppViewSync";
 import { composerPlaceholderForPick } from "@/lib/resolvePreviewPick";
-import { saveAndOpenPreview } from "@/lib/previewStorage";
+import { publicPreviewUrl, saveAndOpenPreview } from "@/lib/previewStorage";
 import {
   listProjects,
   loadProject,
@@ -449,6 +449,11 @@ export function ChatApp() {
         onToggleChat={() => setChatCollapsed((current) => !current)}
         onOpenPreview={openFullPreview}
         canOpenPreview={Boolean(page)}
+        previewShareUrl={
+          projectId && page && serverVersion > 0
+            ? publicPreviewUrl(projectId)
+            : null
+        }
         onPublish={openFullPreview}
         onGoHome={goHome}
         canUndo={canUndo}

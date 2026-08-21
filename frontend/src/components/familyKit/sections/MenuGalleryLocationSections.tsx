@@ -188,7 +188,7 @@ function createGallery01(tokens: ThemeTokens): SectionComponent {
               role="list"
             >
               {images.map((image, index) => (
-                <li key={image} className="min-w-0 overflow-hidden rounded-[1.5rem]">
+                <li key={image} className="min-w-0 overflow-hidden rounded-[var(--theme-radius-tile)]">
                   <MediaPanel
                     src={image}
                     alt={`Gallery image ${index + 1}`}
@@ -228,7 +228,7 @@ function createGallery02(tokens: ThemeTokens): SectionComponent {
     return (
       <section aria-label="Gallery" className={`${tokens.sectionPad} ${tokens.section}`}>
         <div className="mx-auto max-w-6xl">
-          <SectionIntro title={headline} body={body} tokens={tokens} />
+          <SectionIntro title={headline} body={body} tokens={tokens} align="center" />
           {count === 0 ? (
             <p className={`mt-10 text-center text-sm @min-[640px]:mt-12 ${tokens.body}`}>
               No gallery images available for this build.
@@ -241,7 +241,7 @@ function createGallery02(tokens: ThemeTokens): SectionComponent {
               {images.map((image, index) => (
                 <li
                   key={image}
-                  className={`min-w-0 overflow-hidden rounded-[1.5rem] ${galleryBentoItemClass(count, index)}`}
+                  className={`min-w-0 overflow-hidden rounded-[var(--theme-radius-tile)] ${galleryBentoItemClass(count, index)}`}
                 >
                   <MediaPanel
                     src={image}
@@ -286,7 +286,7 @@ function createLocation01(tokens: ThemeTokens): SectionComponent {
     return (
       <section aria-label="Location" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
         <div className="mx-auto grid max-w-6xl gap-8 @min-[768px]:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] @min-[768px]:items-center @min-[768px]:gap-14">
-          <div className="min-w-0 overflow-hidden rounded-[2rem]">
+          <div className="min-w-0 overflow-hidden rounded-[var(--theme-radius-frame)]">
             <MediaPanel
               src={imagePath}
               alt={headline}
@@ -302,13 +302,13 @@ function createLocation01(tokens: ThemeTokens): SectionComponent {
                   <dt className={`text-[11px] uppercase tracking-[0.24em] ${tokens.accentText}`}>
                     {fact.label}
                   </dt>
-                  <dd className="mt-3 text-sm leading-7 text-[var(--theme-ink)] @min-[640px]:text-base">
+                  <dd className="mt-3 min-w-0 text-sm leading-7 text-[var(--theme-ink)] @min-[640px]:text-base">
                     <ContactFactValue fact={fact} />
                   </dd>
                 </div>
               ))}
             </dl>
-            <div className="mt-8 overflow-hidden rounded-[1.5rem] border border-[var(--theme-line)]">
+            <div className="mt-8 overflow-hidden rounded-[var(--theme-radius-tile)] border border-[var(--theme-line)]">
               <LocationMapEmbed point={point} label="Restaurant location map" />
             </div>
           </div>
@@ -344,8 +344,8 @@ function createLocation02(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Location" className={`${tokens.sectionPad} ${tokens.sectionDark}`}>
-        <div className="mx-auto grid max-w-6xl gap-8 rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-sm @min-[768px]:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] @min-[768px]:items-center @min-[768px]:gap-12 @min-[768px]:p-8">
-          <div className="min-w-0 overflow-hidden rounded-[1.75rem]">
+        <div className="mx-auto grid max-w-6xl gap-8 rounded-[var(--theme-radius-frame)] border border-white/10 bg-white/5 p-6 backdrop-blur-sm @min-[768px]:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] @min-[768px]:items-center @min-[768px]:gap-12 @min-[768px]:p-8">
+          <div className="min-w-0 overflow-hidden rounded-[var(--theme-radius-frame)]">
             <MediaPanel
               src={imagePath}
               alt={headline}
@@ -364,18 +364,18 @@ function createLocation02(tokens: ThemeTokens): SectionComponent {
               {facts.map((fact) => (
                 <div
                   key={fact.label}
-                  className="rounded-[1.25rem] border border-white/10 bg-black/10 p-4"
+                  className="rounded-[var(--theme-radius-tile)] border border-white/10 bg-black/10 p-4"
                 >
                   <p className={`text-[11px] uppercase tracking-[0.24em] ${tokens.accentTextOnDark}`}>
                     {fact.label}
                   </p>
-                  <p className={`mt-3 text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>
+                  <div className={`mt-3 min-w-0 text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>
                     <ContactFactValue fact={fact} onDark />
-                  </p>
+                  </div>
                 </div>
               ))}
             </div>
-            <div className="mt-6 overflow-hidden rounded-[1.25rem] border border-white/10">
+            <div className="mt-6 overflow-hidden rounded-[var(--theme-radius-tile)] border border-white/10">
               <LocationMapEmbed point={point} label="Restaurant location map" />
             </div>
           </div>

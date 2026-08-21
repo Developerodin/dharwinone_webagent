@@ -38,7 +38,8 @@ export function SectionIntro({
   align = "left",
   onDark = false,
 }: SectionIntroProps) {
-  const alignClass = align === "center" ? "text-center" : "text-left";
+  const isCenter = align === "center";
+  const alignClass = isCenter ? "mx-auto max-w-3xl text-center" : "text-left";
   const eyebrowClass = onDark ? tokens.eyebrowOnDark : tokens.eyebrow;
   const bodyClass = onDark ? tokens.mutedOnDark : tokens.body;
   // Inherit section text color on dark bands; force ink only on light surfaces.
@@ -49,10 +50,14 @@ export function SectionIntro({
   return (
     <div className={alignClass}>
       {eyebrow?.trim() ? <p className={eyebrowClass}>{eyebrow.trim()}</p> : null}
-      <h2 className={`${eyebrow?.trim() ? "mt-3" : ""} ${titleClass}`}>{title}</h2>
+      <h2 className={`${eyebrow?.trim() ? "mt-3" : ""} ${isCenter ? "text-balance" : ""} ${titleClass}`}>
+        {title}
+      </h2>
       {body ? (
         <p
-          className={`mt-4 text-sm @min-[640px]:mt-5 @min-[640px]:text-base @min-[768px]:text-lg ${bodyClass}`}
+          className={`mt-4 text-sm leading-7 @min-[640px]:mt-5 @min-[640px]:text-base @min-[768px]:text-lg ${
+            isCenter ? "mx-auto max-w-2xl text-pretty" : "max-w-prose"
+          } ${bodyClass}`}
         >
           {body}
         </p>
@@ -198,23 +203,33 @@ export function getContactFacts(content: Record<string, unknown>): ContactFact[]
 export function ContactFactValue({
   fact,
   onDark = false,
+  align = "start",
 }: {
   fact: ContactFact;
   onDark?: boolean;
+  align?: "start" | "center";
 }) {
+  const wrapClass =
+    fact.kind === "email"
+      ? "break-all"
+      : fact.kind === "hours"
+        ? "whitespace-pre-line break-words"
+        : "break-words";
+
   return (
     <>
       {fact.href ? (
-        <a href={fact.href} className="transition-opacity hover:opacity-75">
+        <a href={fact.href} className={`${wrapClass} transition-opacity hover:opacity-75`}>
           {fact.value}
         </a>
       ) : (
-        fact.value
+        <span className={wrapClass}>{fact.value}</span>
       )}
       {fact.kind === "address" ? (
         <AddressActions
           point={{ address: fact.value, lat: fact.lat, lng: fact.lng }}
           onDark={onDark}
+          align={align}
         />
       ) : null}
     </>
@@ -222,14 +237,61 @@ export function ContactFactValue({
 }
 
 /**
- * Reads hours from either a string field or an array of lines.
+ * Stacked contact facts so long addresses/hours get a full column, not a squeezed inline run.
+ */
+export function ContactFactList({
+  facts,
+  onDark = false,
+  align = "start",
+  className = "grid min-w-0 gap-5",
+}: {
+  facts: ContactFact[];
+  onDark?: boolean;
+  align?: "start" | "center";
+  className?: string;
+}) {
+  if (facts.length === 0) return null;
+
+  const isCenter = align === "center";
+  const labelClass = onDark
+    ? "text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--theme-on-dark)]"
+    : "text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--theme-ink)]";
+  const valueClass = onDark
+    ? "mt-1.5 text-sm leading-6 text-[var(--theme-on-dark)]/88"
+    : "mt-1.5 text-sm leading-6 text-[var(--theme-muted)]";
+
+  return (
+    <dl className={className}>
+      {facts.map((fact) => (
+        <div
+          key={fact.label}
+          className={`min-w-0 ${isCenter ? "max-w-sm flex-1 basis-[14rem] text-center" : ""}`}
+        >
+          <dt className={labelClass}>{fact.label}</dt>
+          <dd className={valueClass}>
+            <ContactFactValue fact={fact} onDark={onDark} align={align} />
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+/**
+ * Reads hours from a string or array. Pipe-separated days become separate lines.
  */
 export function getHoursText(content: Record<string, unknown>): string {
   const directHours = getString(content, "hours");
-  if (directHours) return directHours;
+  if (directHours) {
+    return directHours
+      .split(/\s*\|\s*|\n+/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .join("\n");
+  }
 
   const lines = getStringList(content, "hours");
-  if (lines.length > 0) return lines.join(" | ");
+  if (lines.length > 0) return lines.join("\n");
 
   return "";
 }

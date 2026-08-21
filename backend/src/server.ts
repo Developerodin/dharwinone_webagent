@@ -30,6 +30,7 @@ import { intakeRouter } from "./routes/intake.js";
 import { leadsRouter } from "./routes/leads.js";
 import { mapsRouter } from "./routes/maps.js";
 import { onboardingRouter } from "./routes/onboarding.js";
+import { previewRouter } from "./routes/preview.js";
 import { uploadRouter } from "./routes/upload.js";
 
 const PORT = Number(process.env.PORT ?? 4000);
@@ -78,6 +79,10 @@ function createApp() {
   app.use("/images", express.static(IMAGE_ROOT));
 
   app.use("/api/health", healthRouter);
+
+  // Shareable full-site preview. Ungated on purpose: the URL is the access
+  // control, and the payload is only the rendered page (no chat, no owner).
+  app.use("/api/preview", previewRouter);
 
   // Mounted before the 80mb parser so auth keeps its own tight limit.
   app.use("/api/auth/onboarding", express.json({ limit: AUTH_BODY_LIMIT }), onboardingRouter);

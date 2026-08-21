@@ -9,12 +9,18 @@ type AddressActionsProps = {
   point: MapPoint;
   /** Dark location/contact cards invert the link color. */
   onDark?: boolean;
+  /** Centers map links under a centered address block. */
+  align?: "start" | "center";
 };
 
 /**
  * Get Directions + View on Maps links for an address block.
  */
-export function AddressActions({ point, onDark = false }: AddressActionsProps) {
+export function AddressActions({
+  point,
+  onDark = false,
+  align = "start",
+}: AddressActionsProps) {
   const directions = directionsUrl(point);
   const view = viewOnMapsUrl(point);
   if (!directions && !view) return null;
@@ -24,7 +30,11 @@ export function AddressActions({ point, onDark = false }: AddressActionsProps) {
     : "inline-flex items-center gap-1.5 text-xs font-medium text-[var(--theme-accent)] underline-offset-4 transition hover:underline";
 
   return (
-    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2" role="group" aria-label="Map actions">
+    <div
+      className={`mt-3 flex flex-wrap gap-x-4 gap-y-2 ${align === "center" ? "justify-center" : ""}`}
+      role="group"
+      aria-label="Map actions"
+    >
       {directions ? (
         <a
           href={directions}

@@ -26,7 +26,7 @@ const brief: Brief = {
 describe("horecaDesignSystem", () => {
   it("loads palettes, type pairs, and cuisines from JSON", () => {
     const system = getHorecaDesignSystem();
-    expect(system.palettes.length).toBe(29);
+    expect(system.palettes.length).toBe(30);
     expect(system.typePairs.length).toBeGreaterThan(10);
     expect(system.cuisines.length).toBeGreaterThan(20);
     expect(system.componentGuidance.bySection.about).toBe("lightSection");
@@ -67,6 +67,15 @@ describe("horecaDesignSystem", () => {
       const inkLight = luminance(tokens.ink!) > 0.55;
       expect(bgLight).not.toBe(inkLight);
     }
+  });
+
+  it("minimal family is chroma-0 paper/ink, not taupe editorial-neutral", () => {
+    const tokens = themeOverridesForFamily("minimal");
+    expect(tokens.bgAlt?.toLowerCase()).not.toBe("#b49778");
+    expect(tokens.accent?.toLowerCase()).toBe(tokens.ink?.toLowerCase());
+    expect(luminance(tokens.muted ?? "#999")).toBeLessThan(0.35);
+    expect(luminance(tokens.bgDark ?? "#fff")).toBeLessThan(0.2);
+    expect(tokens.fontDisplay).toMatch(/Alumni Sans/);
   });
 
   it("creative inventPalette prefers HoReCa cuisine mapping", () => {

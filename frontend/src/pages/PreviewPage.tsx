@@ -1,8 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { BrandMark } from "@/components/BrandMark";
+import { Spinner } from "@/components/auth/fields";
 import { PageRenderer } from "@/render/PageRenderer";
 import { PreviewInspector } from "@/components/PreviewInspector";
-import { loadPreviewPayload } from "@/lib/previewStorage";
+import {
+  loadPreviewPayload,
+  loadPublicPreview,
+} from "@/lib/previewStorage";
 import { getPageFamilyLabel } from "@/lib/pageFamilyLabel";
 import { loadProject } from "@/lib/projectStorage";
 import type { Page } from "@/types/page";
@@ -13,13 +17,13 @@ type ResolvedPreview = {
   pageFamily: PageFamily;
   businessName?: string;
   projectId?: string;
-  source: "project" | "latest";
+  source: "public" | "project" | "latest";
 };
 
 /**
- * Resolves preview data from ?project=id or the latest saved payload.
+ * Resolves a same-browser fallback from ?project=id or the latest payload.
  */
-function resolvePreview(): ResolvedPreview | null {
+function resolveLocalPreview(): ResolvedPreview | null {
   const params = new URLSearchParams(window.location.search);
   const projectId = params.get("project");
 
@@ -49,14 +53,84 @@ function resolvePreview(): ResolvedPreview | null {
 }
 
 /**
- * Full-screen preview page — loads a saved project or the latest build.
+ * Reads the project id from the shareable preview query string.
+ */
+function readProjectId(): string | null {
+  const id = new URLSearchParams(window.location.search).get("project");
+  return id?.trim() ? id.trim() : null;
+}
+
+/**
+ * Full-screen preview page — public URL when ?project=id is present.
  */
 export function PreviewPage() {
+  const projectId = readProjectId();
   const [inspectorOpen, setInspectorOpen] = useState(true);
-  const [tick, setTick] = useState(0);
   const [pageOverride, setPageOverride] = useState<Page | null>(null);
-  const preview = useMemo(() => resolvePreview(), [tick]);
+  const [preview, setPreview] = useState<ResolvedPreview | null>(() =>
+    projectId ? null : resolveLocalPreview(),
+  );
+  const [loading, setLoading] = useState(Boolean(projectId));
+
+  useEffect(() => {
+    if (!projectId) return;
+
+    let cancelled = false;
+
+    /**
+     * Fetches the live page for anyone with the URL; falls back to this
+     * browser's cache so the owner's tab still works offline.
+     */
+    async function load() {
+      setLoading(true);
+      try {
+        const payload = await loadPublicPreview(projectId!);
+        if (cancelled) return;
+        setPreview({
+          page: payload.page,
+          pageFamily: payload.pageFamily,
+          businessName: payload.businessName,
+          projectId: payload.projectId,
+          source: "public",
+        });
+      } catch (error) {
+        console.error("Public preview failed", error);
+        if (cancelled) return;
+        setPreview(resolveLocalPreview());
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId]);
+
+  useEffect(() => {
+    if (!preview) return;
+    const previous = document.title;
+    document.title = preview.businessName
+      ? `${preview.businessName} · Preview`
+      : "Site preview";
+    return () => {
+      document.title = previous;
+    };
+  }, [preview]);
+
   const page = pageOverride ?? preview?.page ?? null;
+  const isPublic = preview?.source === "public";
+
+  if (loading) {
+    return (
+      <div className="builder-shell flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
+        <BrandMark className="size-12" labelled />
+        <Spinner size={22} />
+        <p className="text-sm text-[var(--muted)]">Loading preview…</p>
+      </div>
+    );
+  }
 
   if (!preview || !page) {
     return (
@@ -66,19 +140,27 @@ export function PreviewPage() {
           className="text-3xl text-[var(--ink)]"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          No preview available
+          Preview unavailable
         </h1>
         <p className="max-w-md text-sm leading-relaxed text-[var(--muted)]">
-          Build a page from chat first, then use{" "}
-          <strong className="font-medium text-[var(--ink)]">Open preview</strong>{" "}
-          to open the full site here.
+          This preview link is invalid, or the site has not been built yet.
         </p>
+      </div>
+    );
+  }
+
+  if (isPublic) {
+    return (
+      <div className="min-h-screen bg-[var(--paper)]">
         <a
-          href="/#home"
-          className="inline-flex min-h-10 items-center rounded-lg bg-[var(--ink)] px-4 text-sm font-medium text-white transition hover:bg-[var(--accent)]"
+          href="#page-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-3 focus:py-2"
         >
-          Back to dashboard
+          Skip to page content
         </a>
+        <div id="page-content">
+          <PageRenderer page={page} animate />
+        </div>
       </div>
     );
   }
@@ -103,17 +185,6 @@ export function PreviewPage() {
           </span>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              setPageOverride(null);
-              setTick((value) => value + 1);
-            }}
-            className="inline-flex min-h-8 items-center rounded-lg px-2.5 font-medium text-[var(--muted)] transition hover:bg-[var(--paper)] hover:text-[var(--ink)]"
-            aria-label="Reload preview from storage"
-          >
-            Reload
-          </button>
           <a
             href="/#home"
             className="inline-flex min-h-8 items-center rounded-lg bg-[var(--accent)] px-3 font-medium text-white transition hover:opacity-90"

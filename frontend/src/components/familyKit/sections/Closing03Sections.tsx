@@ -47,14 +47,14 @@ function createReservation03(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Reservation" className={`${tokens.sectionPad} ${tokens.section}`}>
-        <div className="mx-auto flex max-w-6xl flex-col gap-8 border-t border-[var(--theme-line)] pt-10 @min-[768px]:flex-row @min-[768px]:items-end @min-[768px]:justify-between">
+        <div className="mx-auto flex max-w-6xl min-w-0 flex-col gap-8 border-t border-[var(--theme-line)] pt-10 @min-[768px]:flex-row @min-[768px]:items-end @min-[768px]:justify-between">
           <div className="min-w-0 max-w-2xl">
             <h2 className={`text-[var(--theme-ink)] ${tokens.heading} ${tokens.headingSection}`}>
               {headline}
             </h2>
-            {body ? <p className={`mt-4 text-sm ${tokens.body}`}>{body}</p> : null}
+            {body ? <p className={`mt-4 text-sm leading-7 ${tokens.body}`}>{body}</p> : null}
           </div>
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex shrink-0 flex-wrap items-center gap-4">
             <button
               type="button"
               className={tokens.primaryButton}
@@ -112,7 +112,7 @@ function createLocation03(tokens: ThemeTokens): SectionComponent {
             {addressFact ? <AddressActions point={point} /> : null}
           </div>
           {hoursFact ? (
-            <p className={`mt-8 text-xl leading-snug text-[var(--theme-ink)] @min-[640px]:text-2xl ${tokens.heading}`}>
+            <p className={`mt-8 whitespace-pre-line text-xl leading-snug text-[var(--theme-ink)] @min-[640px]:text-2xl ${tokens.heading}`}>
               {hoursFact.value}
             </p>
           ) : null}
@@ -154,13 +154,13 @@ function createFooter03(tokens: ThemeTokens): SectionComponent {
               <p className={`text-xl text-[var(--theme-ink)] ${tokens.heading}`}>{brandName}</p>
               {tagline ? <p className={`mt-2 max-w-md text-sm ${tokens.body}`}>{tagline}</p> : null}
             </div>
-            <nav aria-label="Footer navigation" className="flex flex-wrap gap-x-5 gap-y-2">
+            <nav aria-label="Footer navigation" className="flex min-w-0 flex-col gap-2 @min-[640px]:flex-row @min-[640px]:flex-wrap @min-[640px]:gap-x-5">
               {navItems.map((item) => (
                 <button
                   key={`${item.target}-${item.label}`}
                   type="button"
                   onClick={() => scrollToSection(item.target)}
-                  className={`text-sm ${tokens.body} hover:text-[var(--theme-ink)]`}
+                  className="w-fit text-left text-sm text-[var(--theme-ink)] hover:opacity-70"
                 >
                   {item.label}
                 </button>
@@ -169,9 +169,13 @@ function createFooter03(tokens: ThemeTokens): SectionComponent {
           </div>
           <div className={`flex flex-col gap-2 border-t border-[var(--theme-line)] pt-5 text-sm ${tokens.body} @min-[640px]:flex-row @min-[640px]:justify-between`}>
             <p>{copyright}</p>
-            <p className="flex flex-wrap gap-x-4">
+            <p className="flex min-w-0 flex-wrap gap-x-4">
               {phone ? <a href={toTelHref(phone)}>{phone}</a> : null}
-              {email ? <a href={toMailHref(email)}>{email}</a> : null}
+              {email ? (
+                <a className="break-all" href={toMailHref(email)}>
+                  {email}
+                </a>
+              ) : null}
             </p>
           </div>
         </div>

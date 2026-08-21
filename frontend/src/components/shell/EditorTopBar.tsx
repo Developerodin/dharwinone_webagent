@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   ChevronDown,
   Code2,
@@ -45,6 +46,8 @@ type EditorTopBarProps = {
   canvasTool?: CanvasTool;
   onToggleSelect?: () => void;
   onToggleText?: () => void;
+  /** Public preview URL copied by Share. Absent until the project is saved. */
+  previewShareUrl?: string | null;
 };
 
 /**
@@ -85,7 +88,30 @@ export function EditorTopBar({
   canvasTool = "off",
   onToggleSelect,
   onToggleText,
+  previewShareUrl = null,
 }: EditorTopBarProps) {
+  const [shareCopied, setShareCopied] = useState(false);
+
+  useEffect(() => {
+    if (!shareCopied) return;
+    const timer = window.setTimeout(() => setShareCopied(false), 2000);
+    return () => window.clearTimeout(timer);
+  }, [shareCopied]);
+
+  /**
+   * Copies the public preview URL so anyone can open the site.
+   */
+  async function handleShare() {
+    if (!previewShareUrl) return;
+    try {
+      await navigator.clipboard.writeText(previewShareUrl);
+      setShareCopied(true);
+    } catch (error) {
+      console.error("Failed to copy preview URL", error);
+      window.prompt("Copy this preview URL", previewShareUrl);
+    }
+  }
+
   return (
     <header
       className="builder-header flex shrink-0 items-center gap-2 px-2 sm:gap-3 sm:px-3"
@@ -273,7 +299,8 @@ export function EditorTopBar({
             onClick={onOpenPreview}
             disabled={!canOpenPreview}
             className="inline-flex size-7 items-center justify-center rounded-lg text-[var(--lovable-text-muted)] transition hover:bg-[var(--lovable-hover)] hover:text-[var(--lovable-text)] disabled:opacity-35"
-            aria-label="Open full preview in new tab"
+            aria-label="Open shareable preview in new tab"
+            title="Open shareable preview"
           >
             <ExternalLink className="size-3.5" aria-hidden="true" />
           </button>
@@ -329,12 +356,21 @@ export function EditorTopBar({
 
         <button
           type="button"
-          disabled
-          title="Coming soon"
-          className="hidden min-h-8 cursor-not-allowed items-center rounded-lg border border-[var(--lovable-border)] px-2.5 text-[12px] font-medium text-[var(--lovable-text-muted)] opacity-40 sm:inline-flex"
-          aria-label="Share project"
+          onClick={() => {
+            void handleShare();
+          }}
+          disabled={!previewShareUrl}
+          title={
+            previewShareUrl
+              ? "Copy public preview URL"
+              : "Build the site first to get a shareable preview link"
+          }
+          className="inline-flex min-h-8 items-center rounded-lg border border-[var(--lovable-border)] px-2.5 text-[12px] font-medium text-[var(--lovable-text-muted)] transition hover:bg-[var(--lovable-hover)] hover:text-[var(--lovable-text)] disabled:cursor-not-allowed disabled:opacity-40"
+          aria-label={
+            shareCopied ? "Preview URL copied" : "Copy public preview URL"
+          }
         >
-          Share
+          <span aria-live="polite">{shareCopied ? "Copied" : "Share"}</span>
         </button>
 
         <button

@@ -55,8 +55,8 @@ function createTestimonials01(tokens: ThemeTokens): SectionComponent {
             align="center"
           />
           {featured ? (
-            <figure className="mx-auto mt-10 max-w-4xl @min-[640px]:mt-14">
-              <blockquote className={`text-xl leading-relaxed text-[var(--theme-ink)] @min-[640px]:text-2xl @min-[768px]:text-3xl ${tokens.heading}`}>
+            <figure className="mx-auto mt-10 max-w-4xl text-center @min-[640px]:mt-14">
+              <blockquote className={`text-pretty text-xl leading-relaxed text-[var(--theme-ink)] @min-[640px]:text-2xl @min-[768px]:text-3xl ${tokens.heading}`}>
                 “{featured.quote}”
               </blockquote>
               <figcaption className="mt-6">
@@ -70,10 +70,10 @@ function createTestimonials01(tokens: ThemeTokens): SectionComponent {
           {rest.length > 0 ? (
             <ul className="mt-6 grid gap-5 @min-[768px]:grid-cols-2" role="list">
               {rest.map((item) => (
-                <li
-                  key={item.name}
-                  className="border-t border-[var(--theme-line)] pt-6"
-                >
+                  <li
+                    key={item.name}
+                    className="border-t border-[var(--theme-line)] pt-6 text-center"
+                  >
                   <p className={`text-sm leading-7 ${tokens.body}`}>“{item.quote}”</p>
                   <p className="mt-4 text-base font-medium text-[var(--theme-ink)]">{item.name}</p>
                   <p className={`mt-1 text-sm ${tokens.accentText}`}>
@@ -113,7 +113,7 @@ function createTestimonials02(tokens: ThemeTokens): SectionComponent {
           />
           <ul className="mt-8 grid gap-5 @min-[640px]:grid-cols-2 @min-[1024px]:grid-cols-3" role="list">
             {items.map((item) => (
-              <li key={item.name} className="border-t border-white/10 pt-5">
+              <li key={item.name} className="border-t border-white/10 pt-5 text-center">
                 <p className={`text-sm leading-7 @min-[640px]:text-base ${tokens.mutedOnDark}`}>
                   “{item.quote}”
                 </p>
@@ -158,8 +158,8 @@ function createTeam01(tokens: ThemeTokens): SectionComponent {
           />
           <ul className="mt-10 grid gap-6 @min-[640px]:mt-14 @min-[640px]:grid-cols-2 @min-[1024px]:grid-cols-3" role="list">
             {members.map((member, index) => (
-              <li key={member.name} className="min-w-0">
-                <div className="overflow-hidden rounded-[1.75rem]">
+              <li key={member.name} className="min-w-0 text-center">
+                <div className="overflow-hidden rounded-[var(--theme-radius-frame)]">
                   <MediaPanel
                     src={getIndexedAsset(assets, `team-${index}`, index)}
                     alt={member.name}
@@ -205,7 +205,7 @@ function createTeam02(tokens: ThemeTokens): SectionComponent {
           <SectionIntro title={headline} tokens={tokens} />
           {leadMember ? (
             <div className="mt-10 grid gap-8 @min-[768px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] @min-[768px]:items-center">
-              <div className="overflow-hidden rounded-[2rem]">
+              <div className="overflow-hidden rounded-[var(--theme-radius-frame)]">
                 <MediaPanel
                   src={getIndexedAsset(assets, "team-0", 0)}
                   alt={leadMember.name}
@@ -233,7 +233,7 @@ function createTeam02(tokens: ThemeTokens): SectionComponent {
               {rest.map((member, index) => (
                 <li
                   key={member.name}
-                  className="rounded-[1.5rem] border border-[var(--theme-line)] bg-[var(--theme-card)] p-5"
+                  className="rounded-[var(--theme-radius-tile)] border border-[var(--theme-line)] bg-[var(--theme-card)] p-5"
                 >
                   <p className="text-lg font-medium text-[var(--theme-ink)]">{member.name}</p>
                   <p className={`mt-2 text-sm ${tokens.accentText}`}>
@@ -245,8 +245,8 @@ function createTeam02(tokens: ThemeTokens): SectionComponent {
                   <MediaPanel
                     src={getIndexedAsset(assets, `team-${index + 1}`, index + 1)}
                     alt={member.name}
-                    className="mt-4 aspect-[4/3] h-auto w-full rounded-[1.25rem] object-cover"
-                    fallbackClassName="mt-4 aspect-[4/3] w-full rounded-[1.25rem] bg-[var(--theme-bg)]"
+                    className="mt-4 aspect-[4/3] h-auto w-full rounded-[var(--theme-radius-tile)] object-cover"
+                    fallbackClassName="mt-4 aspect-[4/3] w-full rounded-[var(--theme-radius-tile)] bg-[var(--theme-bg)]"
                   />
                 </li>
               ))}

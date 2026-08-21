@@ -13,6 +13,7 @@ import {
 import { extractBrief } from "./extractBrief.js";
 import { factCheck } from "./factCheck.js";
 import { pickComponent } from "./pickComponent.js";
+import { themeOverridesForFamily } from "./horecaDesignSystem.js";
 import {
   orientationForSection,
   pickGalleryImages,
@@ -514,8 +515,10 @@ export async function runPipeline(input: PipelineInput): Promise<PipelineResult>
   const assembleStart = Date.now();
   emitStage(stages, "Assembler", "running", onStage);
   const page = assemblePage(sections, brief);
-  // Creative palette wins (client brand or invented); brief seed is fallback only.
-  if (direction.palette) {
+  // Minimal stays ink/paper. Other families take the creative/brand palette.
+  if (family === "minimal") {
+    page.themeOverrides = themeOverridesForFamily("minimal");
+  } else if (direction.palette) {
     applyCreativePalette(page, direction.palette);
   }
   pruneNavToPresentSections(page);

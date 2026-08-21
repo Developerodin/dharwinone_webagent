@@ -84,6 +84,19 @@ function overlayRectFor(
 }
 
 /**
+ * True when the event originated in a native form control.
+ * Select-mode section handlers must not steal Space/Enter/clicks from these.
+ */
+function isFormFieldTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false;
+  return Boolean(
+    target.closest(
+      "form, label, input, textarea, select, button, option, [contenteditable='true']",
+    ),
+  );
+}
+
+/**
  * Detects the page family from the first recognizable component id.
  */
 function resolvePageFamily(sections: PageSection[]): PageFamily {
@@ -96,6 +109,7 @@ function resolvePageFamily(sections: PageSection[]): PageFamily {
 
 /**
  * Maps page themeOverrides to CSS custom properties (incl. derived surfaces).
+ * Minimal family ignores these — chroma-0 paper/ink lives in `.minimal-theme`.
  */
 function themeOverrideStyle(overrides?: ThemeOverrides): CSSProperties | undefined {
   if (!overrides) return undefined;
@@ -174,7 +188,10 @@ export function PageRenderer({
 }: PageRendererProps) {
   const family = resolvePageFamily(page.sections);
   const themeClass = themeClassForFamily(family);
-  const overrideStyle = themeOverrideStyle(page.themeOverrides);
+  const overrideStyle =
+    family === "minimal"
+      ? undefined
+      : themeOverrideStyle(page.themeOverrides);
   const rootRef = useRef<HTMLDivElement>(null);
   const [hoverRect, setHoverRect] = useState<PickOverlayRect | null>(null);
 
@@ -271,8 +288,9 @@ function SectionSlot({
 }: SectionSlotProps) {
   const Component = pageComponentRegistry[section.componentId];
   const rootRef = useRef<HTMLDivElement>(null);
+  const family = getFamilyFromComponentId(section.componentId);
   const { style: overrideStyle, paddingClass } = sectionOverrideStyle(
-    section.styleOverrides,
+    family === "minimal" ? { paddingY: section.styleOverrides?.paddingY } : section.styleOverrides,
   );
 
   if (!Component) {
@@ -291,6 +309,7 @@ function SectionSlot({
    * Keyboard handler: Enter / Space attaches the whole section.
    */
   function handleKeyDown(e: KeyboardEvent) {
+    if (isFormFieldTarget(e.target)) return;
     if (e.key !== "Enter" && e.key !== " ") return;
     e.preventDefault();
     const pick = sectionOnlyPick(section.type);
@@ -303,6 +322,7 @@ function SectionSlot({
    */
   function handleClickCapture(e: ReactMouseEvent<HTMLDivElement>) {
     if (!selectable) return;
+    if (isFormFieldTarget(e.target)) return;
     e.preventDefault();
     e.stopPropagation();
     e.nativeEvent.preventDefault();

@@ -1,38 +1,42 @@
 import type { ThemeTokens } from "@/components/shared/themeTokens";
 
-/** Tailwind token bundle for the restrained minimal family. */
+/**
+ * Black-and-white token bundle for the minimal family.
+ * Geometry follows Impeccable kit (xs radii, hairline rules, no decorative shadow).
+ * Palette is chroma-0 — no gold, patina, or accent hue.
+ */
 export const mn: ThemeTokens = {
-  section: "overflow-x-hidden bg-[var(--theme-bg)] text-[var(--theme-ink)]",
-  sectionAlt: "overflow-x-hidden bg-[var(--theme-bg-alt)] text-[var(--theme-ink)]",
-  sectionDark: "overflow-x-hidden bg-[var(--theme-bg-dark)] text-[var(--theme-on-dark)]",
+  section: "min-w-0 bg-[var(--theme-bg)] text-[var(--theme-ink)]",
+  sectionAlt: "min-w-0 bg-[var(--theme-bg-alt)] text-[var(--theme-ink)]",
+  sectionDark: "min-w-0 bg-[var(--theme-bg-dark)] text-[var(--theme-on-dark)]",
   sectionPad:
-    "px-4 py-14 @min-[640px]:px-6 @min-[640px]:py-18 @min-[768px]:px-10 @min-[768px]:py-24",
+    "px-4 py-16 @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:px-10 @min-[768px]:py-28",
   eyebrow:
-    "text-[10px] font-medium uppercase tracking-[0.28em] text-[var(--theme-accent)] @min-[640px]:text-xs",
+    "font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-[var(--theme-ink)]",
   eyebrowOnDark:
-    "text-[10px] font-medium uppercase tracking-[0.28em] text-[var(--theme-accent-on-dark)] @min-[640px]:text-xs",
-  // Color inherited from section / parent — avoids black-on-black vs text-white fights.
-  heading: "wrap-break-word font-[family-name:var(--theme-font-display)]",
+    "font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-[var(--theme-on-dark)]",
+  heading:
+    "wrap-break-word font-[family-name:var(--theme-font-display)] font-normal tracking-[-0.01em]",
   headingHero:
-    "wrap-break-word text-[2rem] leading-[1.04] @min-[640px]:text-5xl @min-[768px]:text-6xl @min-[1024px]:text-7xl",
+    "wrap-break-word text-[1.75rem] font-light leading-[1.12] @min-[640px]:text-4xl @min-[768px]:text-5xl @min-[1024px]:text-[4rem]",
   headingSection:
-    "wrap-break-word text-[1.75rem] leading-[1.08] @min-[640px]:text-[2.4rem] @min-[768px]:text-[3rem]",
-  body: "font-[family-name:var(--theme-font-body)] leading-relaxed text-[var(--theme-muted)]",
-  rule: "h-px w-14 bg-[var(--theme-line-strong)]",
-  ruleOnDark: "h-px w-14 bg-[var(--theme-accent-on-dark)]",
+    "wrap-break-word text-[1.5rem] font-light leading-[1.14] @min-[640px]:text-[2rem] @min-[768px]:text-[2.75rem]",
+  body: "font-[family-name:var(--theme-font-body)] text-[1rem] leading-[1.7] text-[var(--theme-muted)]",
+  rule: "h-px w-10 bg-[var(--theme-line-strong)]",
+  ruleOnDark: "h-px w-10 bg-[var(--theme-on-dark)]",
   primaryButton:
-    "inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--theme-ink)] bg-[var(--theme-ink)] px-6 py-3 text-sm font-medium text-[var(--theme-accent-contrast)] transition-colors duration-200 hover:bg-transparent hover:text-[var(--theme-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-ink)] @min-[640px]:px-8",
+    "inline-flex min-h-11 items-center justify-center rounded-[var(--theme-radius-control)] border border-[var(--theme-ink)] bg-[var(--theme-ink)] px-8 py-3 text-sm font-medium tracking-[0.02em] text-[var(--theme-accent-contrast)] transition-colors duration-200 hover:bg-transparent hover:text-[var(--theme-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-ink)]",
   primaryButtonOnDark:
-    "inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--theme-on-dark)] bg-[var(--theme-on-dark)] px-6 py-3 text-sm font-medium text-[var(--theme-bg-dark)] transition-colors duration-200 hover:bg-transparent hover:text-[var(--theme-on-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-on-dark)] @min-[640px]:px-8",
+    "inline-flex min-h-11 items-center justify-center rounded-[var(--theme-radius-control)] border border-[var(--theme-on-dark)] bg-[var(--theme-on-dark)] px-8 py-3 text-sm font-medium tracking-[0.02em] text-[var(--theme-bg-dark)] transition-colors duration-200 hover:bg-transparent hover:text-[var(--theme-on-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-on-dark)]",
   navLink:
-    "inline-flex min-h-10 items-center rounded-full px-4 py-2 text-sm text-[var(--theme-muted)] transition-colors hover:bg-[var(--theme-bg-alt)] hover:text-[var(--theme-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]",
+    "inline-flex min-h-10 items-center px-1 py-2 text-sm text-[var(--theme-muted)] transition-colors hover:text-[var(--theme-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-ink)]",
   navLinkOnDark:
-    "inline-flex min-h-10 items-center rounded-full px-4 py-2 text-sm text-[var(--theme-muted-on-dark)] transition-colors hover:bg-white/10 hover:text-[var(--theme-on-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent-on-dark)]",
+    "inline-flex min-h-10 items-center px-1 py-2 text-sm text-[var(--theme-muted-on-dark)] transition-colors hover:text-[var(--theme-on-dark)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-on-dark)]",
   input:
-    "min-h-11 w-full rounded-[1rem] border border-[var(--theme-line)] bg-[var(--theme-card)] px-4 py-3 text-sm text-[var(--theme-ink)] placeholder:text-[var(--theme-muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]",
+    "min-h-11 w-full rounded-[var(--theme-radius-tile)] border border-[var(--theme-line)] bg-[var(--theme-card)] px-4 py-3 text-sm text-[var(--theme-ink)] placeholder:text-[var(--theme-muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-ink)]",
   formCard:
-    "rounded-[2rem] border border-[var(--theme-line)] bg-[var(--theme-card)] shadow-[0_24px_60px_rgba(15,23,42,0.06)]",
-  accentText: "text-[var(--theme-accent)]",
-  accentTextOnDark: "text-[var(--theme-accent-on-dark)]",
+    "rounded-[var(--theme-radius-tile)] border border-[var(--theme-line)] bg-[var(--theme-card)] shadow-none",
+  accentText: "text-[var(--theme-ink)]",
+  accentTextOnDark: "text-[var(--theme-on-dark)]",
   mutedOnDark: "text-[var(--theme-muted-on-dark)]",
 };

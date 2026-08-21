@@ -55,7 +55,7 @@ function createAbout01(tokens: ThemeTokens): SectionComponent {
         className={`${tokens.sectionPad} ${tokens.section}`}
       >
         <div className="mx-auto grid max-w-6xl gap-8 @min-[768px]:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] @min-[768px]:items-center @min-[768px]:gap-14">
-          <div className="min-w-0 overflow-hidden rounded-[2rem]">
+          <div className="min-w-0 overflow-hidden rounded-[var(--theme-radius-frame)]">
             <MediaPanel
               src={imagePath}
               alt={headline}
@@ -104,7 +104,7 @@ function createAbout02(tokens: ThemeTokens): SectionComponent {
               align="center"
             />
           </div>
-          <div className="mt-10 overflow-hidden rounded-[2rem] @min-[640px]:mt-14">
+          <div className="mt-10 overflow-hidden rounded-[var(--theme-radius-frame)] @min-[640px]:mt-14">
             <MediaPanel
               src={imagePath}
               alt={headline}
@@ -151,7 +151,7 @@ function createServices01(tokens: ThemeTokens): SectionComponent {
             {items.map((item) => (
               <li
                 key={item.title}
-                className="border-t border-[var(--theme-line)] pt-5"
+                className="border-t border-[var(--theme-line)] pt-5 text-center"
               >
                 <h3 className="text-lg font-medium text-[var(--theme-ink)] @min-[640px]:text-xl">
                   {item.title}
@@ -234,7 +234,7 @@ function createStats01(tokens: ThemeTokens): SectionComponent {
             {stats.map((item) => (
               <li
                 key={item.label}
-                className="rounded-[1.5rem] border border-[var(--theme-line)] bg-[var(--theme-card)] px-6 py-8 text-center"
+                className="rounded-[var(--theme-radius-tile)] border border-[var(--theme-line)] bg-[var(--theme-card)] px-6 py-8 text-center"
               >
                 <p className={`text-3xl @min-[640px]:text-4xl text-[var(--theme-ink)] ${tokens.heading} ${tokens.accentText}`}>
                   {item.value}
@@ -288,7 +288,7 @@ function createStats02(tokens: ThemeTokens): SectionComponent {
             ))}
           </ul>
           {highlights.length > 0 ? (
-            <p className={`mt-8 text-sm ${tokens.mutedOnDark}`}>
+            <p className={`mt-8 text-center text-sm ${tokens.mutedOnDark}`}>
               {highlights.join(" · ")}
             </p>
           ) : null}

@@ -301,10 +301,30 @@ export function creativePaletteFromHoreca(args: {
 }
 
 /**
+ * Locked chroma-0 paper/ink for the minimal family.
+ * Catalog `editorial-neutral` used taupe `#B49778` as bgAlt — unreadable muted text.
+ */
+export const MINIMAL_THEME_OVERRIDES: ThemeOverrides = {
+  accent: "#1c1c1c",
+  accentContrast: "#f7f7f7",
+  bg: "#f6f5f3",
+  bgAlt: "#fafafa",
+  bgDark: "#141413",
+  card: "#fcfcfc",
+  ink: "#1c1c1c",
+  muted: "#3d3d3b",
+  onDark: "#f2f2f0",
+  fontDisplay: '"Alumni Sans", "Albert Sans", system-ui, sans-serif',
+  fontBody: '"Albert Sans", system-ui, sans-serif',
+};
+
+/**
  * Resolves family default tokens from the HoReCa catalog for theme switches.
  * Respects light/dark surface mode so ink never lands white-on-cream.
  */
 export function themeOverridesForFamily(family: PageFamily): ThemeOverrides {
+  if (family === "minimal") return { ...MINIMAL_THEME_OVERRIDES };
+
   const system = getHorecaDesignSystem();
   const def = system.familyDefaults[family] ?? system.familyDefaults.premium;
   const palette =

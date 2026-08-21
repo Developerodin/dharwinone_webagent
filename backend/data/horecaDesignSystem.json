@@ -59,8 +59,8 @@
       "surfaceMode": "dark"
     },
     "minimal": {
-      "paletteId": "editorial-neutral",
-      "typePairId": "dm-sans-work-sans",
+      "paletteId": "ink-paper",
+      "typePairId": "alumni-sans-albert-sans",
       "surfaceMode": "light"
     },
     "rustic": {
@@ -209,6 +209,16 @@
       "accent": "#8C3B2A",
       "background": "#F7F3EA",
       "text": "#241F1B"
+    },
+    {
+      "id": "ink-paper",
+      "name": "Ink Paper",
+      "mood": "Chroma-0 editorial \u2014 ink on paper, no hue",
+      "primary": "#1C1C1B",
+      "secondary": "#FAFAFA",
+      "accent": "#1C1C1B",
+      "background": "#F6F5F3",
+      "text": "#1C1C1B"
     },
     {
       "id": "roastery-warm",
@@ -385,6 +395,13 @@
       "bodyFont": "Karla",
       "label": "Playfair Display",
       "mood": "Contemporary premium editorial \u2014 modern fusion"
+    },
+    {
+      "id": "alumni-sans-albert-sans",
+      "headingFont": "Alumni Sans",
+      "bodyFont": "Albert Sans",
+      "label": "Alumni Sans",
+      "mood": "Black-and-white editorial \u2014 thin display, geometric body"
     },
     {
       "id": "dm-sans-work-sans",

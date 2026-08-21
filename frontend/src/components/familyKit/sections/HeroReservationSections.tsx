@@ -76,17 +76,17 @@ function createHero01(tokens: ThemeTokens): SectionComponent {
           aria-hidden="true"
           className="absolute inset-0 z-[1] bg-gradient-to-t from-black/78 via-black/48 to-black/22"
         />
-        <div className="relative z-[2] mx-auto flex min-h-[68svh] max-w-6xl flex-col justify-center px-4 py-16 @min-[640px]:min-h-[76svh] @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:min-h-[88svh] @min-[768px]:px-10 @min-[768px]:py-24">
-          <h2 className={`max-w-4xl text-[var(--theme-on-dark)] ${tokens.heading} ${tokens.headingHero}`}>
+        <div className="relative z-[2] mx-auto flex min-h-[68svh] max-w-6xl flex-col items-center justify-center px-4 py-16 text-center @min-[640px]:min-h-[76svh] @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:min-h-[88svh] @min-[768px]:px-10 @min-[768px]:py-24">
+          <h2 className={`max-w-4xl text-balance text-[var(--theme-on-dark)] ${tokens.heading} ${tokens.headingHero}`}>
             {headline}
           </h2>
-          <p className={`mt-5 max-w-2xl text-base leading-relaxed @min-[640px]:text-lg @min-[768px]:text-xl ${tokens.mutedOnDark}`}>
+          <p className={`mt-5 max-w-2xl text-pretty text-base leading-relaxed @min-[640px]:text-lg @min-[768px]:text-xl ${tokens.mutedOnDark}`}>
             {body}
           </p>
-          <div className="mt-8 flex justify-start">
+          <div className="mt-8 flex w-full justify-center">
             <button
               type="button"
-              className={tokens.primaryButtonOnDark}
+              className={`${tokens.primaryButtonOnDark} h-auto max-w-full whitespace-normal text-balance`}
               onClick={() => scrollToSection("menu")}
             >
               {ctaLabel}
@@ -143,7 +143,7 @@ function createHero02(tokens: ThemeTokens): SectionComponent {
               </button>
               <button
                 type="button"
-                className={`inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--theme-line)] px-6 py-3 text-sm text-[var(--theme-ink)] transition-colors hover:bg-[var(--theme-bg-alt)]`}
+                className={`inline-flex min-h-11 items-center justify-center rounded-[var(--theme-radius-control)] border border-[var(--theme-line)] px-6 py-3 text-sm text-[var(--theme-ink)] transition-colors hover:bg-[var(--theme-bg-alt)]`}
                 onClick={() => scrollToSection("menu")}
               >
                 View Signature Dishes
@@ -153,13 +153,13 @@ function createHero02(tokens: ThemeTokens): SectionComponent {
           <div className="relative min-w-0 pl-3 pt-3 @min-[640px]:pl-4 @min-[640px]:pt-4">
             <div
               aria-hidden="true"
-              className="absolute inset-0 rounded-[2rem] border border-[var(--theme-line-strong)]"
+              className="absolute inset-0 rounded-[var(--theme-radius-frame)] border border-[var(--theme-line-strong)]"
             />
-            <div className="relative min-h-0 overflow-hidden rounded-[2rem]">
+            <div className="relative min-h-0 overflow-hidden rounded-[var(--theme-radius-frame)]">
               <MediaPanel
                 src={imagePath}
                 alt={headlinePlain}
-                className="relative aspect-[4/5] w-full object-cover shadow-[0_30px_60px_rgba(0,0,0,0.12)]"
+                className="relative aspect-[4/5] w-full object-cover shadow-[var(--theme-media-shadow)]"
                 fallbackClassName="relative aspect-[4/5] w-full bg-[var(--theme-bg-alt)]"
               />
             </div>
@@ -194,11 +194,12 @@ function createReservation01(tokens: ThemeTokens): SectionComponent {
             title={headline}
             body={body}
             tokens={tokens}
+            align="center"
           />
-          <div className="mt-7">
+          <div className="mt-7 flex justify-center">
             <button
               type="button"
-              className={tokens.primaryButton}
+              className={`${tokens.primaryButton} h-auto max-w-full whitespace-normal text-balance`}
               onClick={() => scrollToSection("contact")}
             >
               {ctaLabel}
