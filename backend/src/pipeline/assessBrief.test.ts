@@ -8,6 +8,7 @@ import {
   sanitizeClarificationQuestions,
 } from "./assessBrief.js";
 import {
+  applyIntakeRoundCap,
   briefNeedsClarification,
   detectBriefGaps,
   enrichVagueCategory,
@@ -288,6 +289,45 @@ describe("evaluateBriefReadiness", () => {
   });
 });
 
+describe("applyIntakeRoundCap", () => {
+  const p0Ok = {
+    nameOk: true,
+    categoryOk: true,
+    emailOk: true,
+    addressMissing: true,
+  };
+
+  it("does not auto-skip a missing map pin at the round cap", () => {
+    const capped = applyIntakeRoundCap(
+      {
+        status: "needs_clarification",
+        gaps: ["address", "hours", "usp"],
+        canSkip: true,
+      },
+      3,
+      p0Ok,
+    );
+    expect(capped).toEqual({
+      status: "needs_clarification",
+      gaps: ["address"],
+      canSkip: true,
+    });
+  });
+
+  it("still auto-skips hours/USP once the pin is known", () => {
+    const capped = applyIntakeRoundCap(
+      {
+        status: "needs_clarification",
+        gaps: ["hours", "usp", "audience"],
+        canSkip: true,
+      },
+      3,
+      { ...p0Ok, addressMissing: false },
+    );
+    expect(capped).toEqual({ status: "ready" });
+  });
+});
+
 describe("mergeClarificationAnswers", () => {
   it("appends answers to the original chat dump", () => {
     const merged = mergeClarificationAnswers("I want a restaurant website", {
@@ -332,6 +372,12 @@ describe("selectGapsForRound", () => {
     expect(selectGapsForRound(["address", "hours", "usp"])).toEqual([
       "address",
     ]);
+  });
+
+  it("asks location next even if name/cuisine are still missing", () => {
+    expect(
+      selectGapsForRound(["businessName", "category", "address", "hours"]),
+    ).toEqual(["address"]);
   });
 
   it("batches non-location gaps after the pin is known", () => {
@@ -382,6 +428,17 @@ describe("sanitizeClarificationQuestions", () => {
       "What is the contact email for enquiries?",
       "What are your opening hours?",
     ]);
+  });
+
+  it("fills dropped P0 questions so name/cuisine are not skipped", () => {
+    const questions = sanitizeClarificationQuestions(
+      ["What is the contact email for enquiries and reservations?"],
+      ["businessName", "category", "email"],
+    );
+    expect(questions).toHaveLength(3);
+    expect(questions[0]).toMatch(/business name/i);
+    expect(questions[1]).toMatch(/cuisine|restaurant type/i);
+    expect(questions[2]).toMatch(/email/i);
   });
 });
 

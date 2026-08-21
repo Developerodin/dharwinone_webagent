@@ -4,12 +4,12 @@ import { FIXTURE_BRIEF } from "../data/fixtureBrief.js";
 import { getModelFor, getOpenAIClient } from "../lib/openai.js";
 import type { Brief } from "../schemas/brief.schema.js";
 import {
+  applyIntakeRoundCap,
   enrichVagueCategory,
   evaluateBriefReadiness,
   isGenericBusinessName,
   MAX_CLARIFICATION_QUESTIONS,
   selectGapsForRound,
-  splitGaps,
   type BriefGap,
 } from "./briefGaps.js";
 import { checkScope } from "./checkScope.js";
@@ -23,8 +23,6 @@ import { isPlaceholderRestaurantEmail } from "../lib/leadValidation.js";
 import type { PageFamily } from "../config/pageFamily.js";
 
 const MAX_QUESTIONS = MAX_CLARIFICATION_QUESTIONS;
-/** After this many clarification rounds, stop re-asking optional gaps. */
-const MAX_CLARIFICATION_ROUNDS = 3;
 
 const LOCATION_QUESTION_RE =
   /\b(street address|where are you located|select location|map pin|nearest landmark)\b/i;
@@ -95,6 +93,22 @@ const GAP_QUESTIONS: Partial<Record<BriefGap, string>> = {
   neighbourhood: "Which neighbourhood or landmark are you near?",
 };
 
+const GAP_QUESTION_HINTS: Record<BriefGap, RegExp> = {
+  businessName: /business name|restaurant name|called/i,
+  category: /cuisine|restaurant (type|style)|what kind/i,
+  email: /email|inbox/i,
+  address: /located|street address|select location|map pin|nearest landmark/i,
+  hours: /hours|open/i,
+  usp: /different|unique|regular/i,
+  signatureDishes: /dish|known for|signature/i,
+  audience: /tables|who(?:'s| is) usually|date night|families/i,
+  story: /start|found|open(?:ed)?/i,
+  neighbourhood: /neighbourhood|neighborhood|landmark/i,
+  menuItems: /menu item|price/i,
+  phone: /phone/i,
+  brandColors: /brand color|hex/i,
+};
+
 /**
  * True when a clarification question is the map-pin / street-address ask.
  */
@@ -103,16 +117,28 @@ export function isLocationClarificationQuestion(question: string): boolean {
 }
 
 /**
- * Builds deterministic fallback questions when the LLM is unavailable.
+ * Picks the canned question for a gap when the LLM skipped it.
  */
-export function buildFallbackQuestions(gaps: BriefGap[]): string[] {
-  return gaps.slice(0, MAX_QUESTIONS).map(
-    (gap) => GAP_QUESTIONS[gap] ?? `What is the ${GAP_LABELS[gap]}?`,
-  );
+function fallbackQuestionForGap(gap: BriefGap): string {
+  return GAP_QUESTIONS[gap] ?? `What is the ${GAP_LABELS[gap]}?`;
 }
 
 /**
- * Keeps location as a solo turn: one map-pin question, never mixed with others.
+ * True when a generated question is clearly about this gap.
+ */
+function questionCoversGap(question: string, gap: BriefGap): boolean {
+  return GAP_QUESTION_HINTS[gap].test(question);
+}
+
+/**
+ * Builds deterministic fallback questions when the LLM is unavailable.
+ */
+export function buildFallbackQuestions(gaps: BriefGap[]): string[] {
+  return gaps.slice(0, MAX_QUESTIONS).map(fallbackQuestionForGap);
+}
+
+/**
+ * Keeps location as a solo turn, and fills any asked gap the LLM dropped.
  */
 export function sanitizeClarificationQuestions(
   questions: string[],
@@ -127,12 +153,23 @@ export function sanitizeClarificationQuestions(
     return [loc];
   }
 
-  const withoutLocation = questions.filter(
+  const unused = questions.filter(
     (question) => !isLocationClarificationQuestion(question),
   );
-  if (withoutLocation.length > 0) {
-    return withoutLocation.slice(0, MAX_QUESTIONS);
+  const needed = askedGaps.filter((gap) => gap !== "address");
+  const filled: string[] = [];
+  for (const gap of needed) {
+    if (filled.length >= MAX_QUESTIONS) break;
+    const matchIndex = unused.findIndex((question) =>
+      questionCoversGap(question, gap),
+    );
+    if (matchIndex >= 0) {
+      filled.push(unused.splice(matchIndex, 1)[0]!);
+    } else {
+      filled.push(fallbackQuestionForGap(gap));
+    }
   }
+  if (filled.length > 0) return filled;
   return buildFallbackQuestions(askedGaps);
 }
 
@@ -157,11 +194,10 @@ export async function generateClarificationQuestions(
           role: "system",
           content: `You help clarify an incomplete restaurant website brief.
 Generate at most ${MAX_QUESTIONS} short, specific questions.
-Ask only about the Missing items listed. Do not ask what is already known.
+Ask every Missing item listed this turn. Do not defer a Missing item to a later turn.
 NEVER combine street address / map pin with any other question. Location is always its own dedicated turn.
 If Missing is only street address, ask exactly one location question and tell them to tap Select location on the map (or type the address).
-PRIORITY ORDER across turns (not in one message): contact email → dedicated map-pin turn → opening hours → USP / signature dishes / audience → story/neighbourhood/phone/menu/brand colors.
-Contact email is required for Contact Us forms — always ask it before uniqueness questions.
+Contact email is required for Contact Us forms.
 For brand colors, mention they can reply with color names or #hex, or skip to use theme defaults.
 Return plain questions only — no numbering prefix.`,
         },
@@ -237,29 +273,12 @@ function refineReadiness(args: {
     }
   }
 
-  // Hard stop: after enough rounds, auto-skip optional gaps.
-  if (
-    readiness.status === "needs_clarification" &&
-    args.clarificationRound >= MAX_CLARIFICATION_ROUNDS
-  ) {
-    const { critical, optional } = splitGaps(readiness.gaps);
-    if (critical.length === 0 && optional.length > 0) {
-      return { brief, readiness: { status: "ready" } };
-    }
-    // Critical still missing after max rounds — ask one combined required Q once more,
-    // but if we already asked beyond max+1, proceed best-effort with what we have.
-    if (critical.length > 0 && args.clarificationRound >= MAX_CLARIFICATION_ROUNDS + 1) {
-      const emailOk = !isPlaceholderRestaurantEmail(brief.email ?? "");
-      if (nameOk && brief.category?.trim() && emailOk) {
-        return { brief, readiness: { status: "ready" } };
-      }
-      readiness = {
-        status: "needs_clarification",
-        gaps: critical,
-        canSkip: false,
-      };
-    }
-  }
+  readiness = applyIntakeRoundCap(readiness, args.clarificationRound, {
+    nameOk,
+    categoryOk: Boolean(brief.category?.trim()),
+    emailOk: !isPlaceholderRestaurantEmail(brief.email ?? ""),
+    addressMissing: !brief.address?.trim() && brief.lat == null && brief.lng == null,
+  });
 
   return { brief, readiness };
 }

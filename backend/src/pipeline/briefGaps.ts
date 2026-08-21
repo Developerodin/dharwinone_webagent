@@ -38,6 +38,9 @@ const P3_GAPS: BriefGap[] = [
 /** Max questions per non-location clarification turn. */
 export const MAX_CLARIFICATION_QUESTIONS = 3;
 
+/** After this many rounds, drop skippable optionals — never the map pin. */
+export const MAX_CLARIFICATION_ROUNDS = 3;
+
 const GENERIC_BUSINESS_NAMES = new Set([
   "restaurant",
   "my business",
@@ -160,27 +163,26 @@ export function isLocationGap(gap: BriefGap): boolean {
 }
 
 /**
- * Picks gaps for one clarification turn. Address is always a solo map-pin
- * step — never batched with email, hours, or anything else.
+ * Picks gaps for one clarification turn.
+ * Order: remaining P0 including email → dedicated map pin → everything else.
+ * Location never waits on name/cuisine, and never batches with other questions.
  */
 export function selectGapsForRound(
   gaps: BriefGap[],
   maxQuestions = MAX_CLARIFICATION_QUESTIONS,
 ): BriefGap[] {
   if (gaps.length === 0) return [];
-  if (!gaps.some(isLocationGap)) {
-    return gaps.slice(0, maxQuestions);
+
+  if (gaps.includes("email")) {
+    const p0 = gaps.filter((gap) => CRITICAL_GAPS.includes(gap));
+    return p0.slice(0, maxQuestions);
   }
 
-  const addressRank = gapRank("address");
-  const beforeAddress = gaps.filter(
-    (gap) =>
-      !isLocationGap(gap) && gap !== "neighbourhood" && gapRank(gap) < addressRank,
-  );
-  if (beforeAddress.length > 0) {
-    return beforeAddress.slice(0, maxQuestions);
+  if (gaps.some(isLocationGap)) {
+    return ["address"];
   }
-  return ["address"];
+
+  return gaps.slice(0, maxQuestions);
 }
 
 /**
@@ -243,6 +245,54 @@ export type BriefReadiness =
       /** When true, user may reply "skip for now" for remaining optional fields. */
       canSkip: boolean;
     };
+
+/**
+ * True when this gap must be asked at least once (user may still skip it).
+ */
+export function isMustAskBeforeBuild(gap: BriefGap): boolean {
+  return gap === "address";
+}
+
+/**
+ * Round-cap policy: auto-skip USP/hours/etc, but keep asking for the map pin.
+ */
+export function applyIntakeRoundCap(
+  readiness: BriefReadiness,
+  clarificationRound: number,
+  options: {
+    nameOk: boolean;
+    categoryOk: boolean;
+    emailOk: boolean;
+    addressMissing: boolean;
+    maxRounds?: number;
+  },
+): BriefReadiness {
+  if (readiness.status !== "needs_clarification") return readiness;
+  const maxRounds = options.maxRounds ?? MAX_CLARIFICATION_ROUNDS;
+  if (clarificationRound < maxRounds) return readiness;
+
+  const { critical, optional } = splitGaps(readiness.gaps);
+  const mustAsk = optional.filter(isMustAskBeforeBuild);
+
+  if (critical.length === 0) {
+    if (mustAsk.length > 0) {
+      return { status: "needs_clarification", gaps: mustAsk, canSkip: true };
+    }
+    if (optional.length > 0) return { status: "ready" };
+    return readiness;
+  }
+
+  if (clarificationRound < maxRounds + 1) return readiness;
+
+  if (options.nameOk && options.categoryOk && options.emailOk) {
+    if (options.addressMissing) {
+      return { status: "needs_clarification", gaps: ["address"], canSkip: true };
+    }
+    return { status: "ready" };
+  }
+
+  return { status: "needs_clarification", gaps: critical, canSkip: false };
+}
 
 /**
  * Evaluates whether a brief is ready to build.
