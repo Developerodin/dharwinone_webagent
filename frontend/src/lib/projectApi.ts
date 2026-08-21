@@ -1,4 +1,4 @@
-import { apiRequest } from "@/lib/apiClient";
+import { apiRequest, getAccessToken } from "@/lib/apiClient";
 import type { PageFamily } from "@/lib/pageFamily";
 import type { StoredProject } from "@/lib/projectStorage";
 import type { ChatMessage } from "@/types/chat";
@@ -262,6 +262,186 @@ export async function revertServerProject(args: {
     idempotencyKey: args.idempotencyKey,
     body: { toVersion: args.toVersion, expectedVersion: args.expectedVersion },
   });
+}
+
+export type BuildJobSummary = {
+  jobId: string;
+  status: "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED" | "CANCELLED";
+  stages: Array<Record<string, unknown>>;
+  version: number | null;
+  error: string | null;
+  chatText: string | null;
+  startedAt: string;
+  finishedAt: string | null;
+};
+
+/**
+ * Reports the most recent build for a project.
+ *
+ * Asked on open: it is the difference between "your build is still running"
+ * and an editor that silently forgets the user pressed Build a minute ago.
+ */
+export async function latestBuildJob(
+  projectId: string,
+): Promise<BuildJobSummary | null> {
+  const data = await apiRequest<{ job: BuildJobSummary | null }>(
+    `/api/projects/${projectId}/jobs/latest`,
+  );
+  return data.job;
+}
+
+/**
+ * Opens a stream that reattaches to a running build.
+ *
+ * Returns the raw response so the caller can feed it to the same SSE reader
+ * the live build uses — a resumed build and a fresh one render identically.
+ */
+export async function openBuildJobStream(
+  projectId: string,
+  jobId: string,
+): Promise<Response> {
+  const response = await fetch(
+    `/api/projects/${projectId}/jobs/${jobId}/events`,
+    {
+      headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` },
+      credentials: "include",
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Could not reattach to that build (HTTP ${response.status}).`);
+  }
+
+  return response;
+}
+
+export type PlaceMediaResult = {
+  page: Page;
+  imagePath: string;
+  mediaKind: "image" | "video";
+  assetKey: string;
+  version: number;
+  project: ServerProject;
+};
+
+/**
+ * Places an uploaded asset into a section slot.
+ *
+ * The asset id travels, not the page: the server patches its own copy of the
+ * document, so swapping one photo can no longer carry a stale page along with
+ * it — and the version write links the asset, which is what keeps garbage
+ * collection from deleting a file the page is using.
+ */
+export async function placeServerMedia(args: {
+  projectId: string;
+  assetId: string;
+  section: string;
+  assetKey?: string;
+  expectedVersion: number;
+  idempotencyKey: string;
+}): Promise<PlaceMediaResult> {
+  return apiRequest<PlaceMediaResult>(`/api/projects/${args.projectId}/media`, {
+    method: "POST",
+    idempotencyKey: args.idempotencyKey,
+    body: {
+      assetId: args.assetId,
+      section: args.section,
+      assetKey: args.assetKey,
+      expectedVersion: args.expectedVersion,
+    },
+  });
+}
+
+export type ServerVersion = {
+  id: string;
+  version: number;
+  source: "BUILD" | "EDIT" | "REVERT" | "DUPLICATE" | "IMPORT" | "MANUAL";
+  summary: string;
+  instruction: string | null;
+  pageFamily: string;
+  sizeBytes: number;
+  createdAt: string;
+};
+
+/**
+ * Lists a project's version history, newest first.
+ */
+export async function listServerVersions(
+  id: string,
+  limit = 50,
+): Promise<ServerVersion[]> {
+  const data = await apiRequest<{ versions: ServerVersion[] }>(
+    `/api/projects/${id}/versions?limit=${limit}`,
+  );
+  return data.versions;
+}
+
+/**
+ * Loads one stored version's document, for previewing before reverting.
+ */
+export async function loadServerVersion(
+  id: string,
+  version: number,
+): Promise<{
+  version: number;
+  page: Page;
+  brief?: Brief | null;
+  direction?: unknown;
+  pageFamily: PageFamily;
+  summary: string;
+  createdAt: string;
+}> {
+  return apiRequest(`/api/projects/${id}/versions/${version}`);
+}
+
+/**
+ * Renames a project.
+ */
+export async function renameServerProject(
+  id: string,
+  name: string,
+): Promise<ServerProject> {
+  const data = await apiRequest<{ project: ServerProject }>(
+    `/api/projects/${id}`,
+    { method: "PATCH", body: { name } },
+  );
+  return data.project;
+}
+
+/**
+ * Copies a project, including its history.
+ */
+export async function duplicateServerProject(
+  id: string,
+): Promise<ServerProject> {
+  const data = await apiRequest<{ project: ServerProject }>(
+    `/api/projects/${id}/duplicate`,
+    { method: "POST", idempotencyKey: newIntentKey() },
+  );
+  return data.project;
+}
+
+/**
+ * Restores a soft-deleted project from the trash.
+ */
+export async function restoreServerProject(
+  id: string,
+): Promise<ServerProject> {
+  const data = await apiRequest<{ project: ServerProject }>(
+    `/api/projects/${id}/restore`,
+    { method: "POST" },
+  );
+  return data.project;
+}
+
+/**
+ * Lists soft-deleted projects still inside the retention window.
+ */
+export async function listTrashedProjects(): Promise<ServerProject[]> {
+  const data = await apiRequest<{ projects: ServerProject[] }>(
+    "/api/projects?trashed=true&limit=50",
+  );
+  return data.projects;
 }
 
 export async function deleteServerProject(id: string): Promise<void> {

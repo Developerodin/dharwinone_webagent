@@ -10,14 +10,32 @@ import {
   formatLastSaved,
 } from "@/components/shell/EditorTopBar";
 import { HomeDashboard } from "@/components/shell/HomeDashboard";
+import { VersionHistoryPanel } from "@/components/shell/VersionHistoryPanel";
+import { AssetsPanel } from "@/components/shell/AssetsPanel";
 import { PromptComposer } from "@/components/shell/PromptComposer";
 import { ComposerTargetChip } from "@/components/shell/ComposerTargetChip";
 import { handleChatAction, useChatFlow } from "@/hooks/useChatFlow";
+import { useCanvasTool } from "@/hooks/useCanvasTool";
 import { useAppViewSync } from "@/hooks/useAppViewSync";
 import { composerPlaceholderForPick } from "@/lib/resolvePreviewPick";
 import { saveAndOpenPreview } from "@/lib/previewStorage";
-import { listProjects, loadProject } from "@/lib/projectStorage";
-import { hydrateProject, syncProjectsWithServer } from "@/lib/projectSync";
+import {
+  listProjects,
+  loadProject,
+  type StoredProject,
+} from "@/lib/projectStorage";
+import {
+  duplicateProject,
+  renameProject,
+  trashProject,
+  untrashProject,
+} from "@/lib/projectActions";
+import {
+  hydrateProject,
+  syncProjectsWithServer,
+  toStoredProject,
+} from "@/lib/projectSync";
+import { listTrashedProjects } from "@/lib/projectApi";
 import { BuilderLocationPicker } from "@/components/BuilderLocationPicker";
 import { ComponentGalleryPage } from "@/pages/ComponentGalleryPage";
 
@@ -47,7 +65,8 @@ export function ChatApp() {
   const [editorViewMode, setEditorViewMode] =
     useState<EditorViewMode>("preview");
   const [savedAt, setSavedAt] = useState<number | null>(null);
-  const [sectionEditMode, setSectionEditMode] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [trashed, setTrashed] = useState<StoredProject[]>([]);
 
   // Reconcile with the server once the shell mounts: hand over anything this
   // browser built before sign-in, then replace the cache with what the server
@@ -82,13 +101,16 @@ export function ChatApp() {
     pageFamily,
     brief,
     projectId,
+    serverVersion,
     restoreProject,
+    resumeBuild,
     applyPendingEdit,
     dismissPendingEdit,
     selectedSectionType,
     selectedPick,
     setSelectedSectionType,
     setSelectedPick,
+    commitInlineCopy,
     undoEdit,
     canUndo,
     locationPicker,
@@ -96,6 +118,21 @@ export function ChatApp() {
     closeLocationPicker,
     openLocationPicker,
   } = useChatFlow({ useFixture: false });
+
+  const {
+    tool: canvasTool,
+    textSession,
+    textHint,
+    toggleSelect,
+    toggleText,
+    resetCanvasTool,
+    startTextEdit,
+    cancelTextEdit,
+  } = useCanvasTool({
+    selectedPick,
+    setSelectedPick,
+    setSelectedSectionType,
+  });
 
   /**
    * Refreshes the project list from localStorage.
@@ -105,9 +142,23 @@ export function ChatApp() {
     setSavedAt(Date.now());
   }, []);
 
+  /**
+   * Reattaches to a build after the router restores a project.
+   *
+   * Memoised because the hook keeps it in an effect's dependency list — an
+   * inline arrow would resubscribe the hashchange listener on every render.
+   */
+  const handleProjectRestored = useCallback(
+    (id: string) => {
+      void resumeBuild(id);
+    },
+    [resumeBuild],
+  );
+
   const { view, navigateView } = useAppViewSync({
     restoreProject,
     refreshProjects,
+    onProjectRestored: handleProjectRestored,
   });
 
   /**
@@ -137,7 +188,7 @@ export function ChatApp() {
   const canUploadImage = Boolean(page);
   const pickPlaceholder = composerPlaceholderForPick(
     selectedPick,
-    sectionEditMode && Boolean(page),
+    canvasTool === "select" && Boolean(page),
   );
   const placeholder =
     phase === "clarifying"
@@ -166,11 +217,11 @@ export function ChatApp() {
    */
   const startFreshHome = useCallback(() => {
     resetChat();
-    setSectionEditMode(false);
+    resetCanvasTool();
     refreshProjects();
     navigateView("home");
     setChatCollapsed(false);
-  }, [navigateView, refreshProjects, resetChat]);
+  }, [navigateView, refreshProjects, resetCanvasTool, resetChat]);
 
   /**
    * Starts a new build from the home dashboard (new session, then intake).
@@ -180,14 +231,14 @@ export function ChatApp() {
       const trimmed = text.trim();
       if (!trimmed) return;
       resetChat();
-      setSectionEditMode(false);
+      resetCanvasTool();
       navigateView("builder");
       setMobilePane("chat");
       setChatCollapsed(false);
       void sendMessage(trimmed);
       refreshProjects();
     },
-    [navigateView, refreshProjects, resetChat, sendMessage],
+    [navigateView, refreshProjects, resetCanvasTool, resetChat, sendMessage],
   );
 
   /**
@@ -223,39 +274,13 @@ export function ChatApp() {
       restoreProject(id);
       enterBuilder();
       refreshProjects();
-    },
-    [navigateView, refreshProjects, restoreProject],
-  );
 
-  /**
-   * Turns manual section-edit mode on or off. Off clears any selected section
-   * so scrolling the preview cannot reopen the action panel.
-   */
-  const setSectionEditModeOn = useCallback(
-    (on: boolean) => {
-      setSectionEditMode(on);
-      if (!on) setSelectedSectionType(null);
+      // A build started in another tab — or before a reload — is still running
+      // server-side. Reattaching is what stops that work from looking lost.
+      void resumeBuild(id);
     },
-    [setSelectedSectionType],
+    [navigateView, refreshProjects, restoreProject, resumeBuild],
   );
-
-  /**
-   * Clears section selection when Esc is pressed. Second Esc exits edit mode.
-   */
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key !== "Escape") return;
-      if (selectedSectionType) {
-        setSelectedSectionType(null);
-        return;
-      }
-      if (sectionEditMode) {
-        setSectionEditMode(false);
-      }
-    }
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [sectionEditMode, selectedSectionType, setSelectedSectionType]);
 
   /**
    * Focuses the home prompt composer (used by sidebar Search).
@@ -277,7 +302,96 @@ export function ChatApp() {
   }
 
   const sidebarProjects =
-    projectFilter === "starred" || projectFilter === "shared" ? [] : projects;
+    projectFilter === "trash"
+      ? trashed
+      : projectFilter === "starred" || projectFilter === "shared"
+        ? []
+        : projects;
+
+  /**
+   * Renames a project on the server, then refreshes the list.
+   */
+  const handleRenameProject = useCallback(
+    async (id: string, name: string) => {
+      await renameProject(id, name);
+      refreshProjects();
+    },
+    [refreshProjects],
+  );
+
+  /**
+   * Copies a project and refreshes the list so the copy appears.
+   */
+  const handleDuplicateProject = useCallback(
+    async (id: string) => {
+      await duplicateProject(id);
+      refreshProjects();
+    },
+    [refreshProjects],
+  );
+
+  /**
+   * Moves a project to the trash.
+   *
+   * Deleting the project that is currently open would leave the builder
+   * showing a document that no longer exists, so that case returns home.
+   */
+  const handleDeleteProject = useCallback(
+    async (id: string) => {
+      await trashProject(id);
+      if (projectId === id) {
+        resetChat();
+        navigateView("home");
+      }
+      refreshProjects();
+    },
+    [navigateView, projectId, refreshProjects, resetChat],
+  );
+
+  /**
+   * Reloads the builder after a version restore.
+   *
+   * The restore happens server-side, so the local copy is a version behind
+   * until it is refetched — showing the old page with the new version number
+   * would make the next edit conflict for no visible reason.
+   */
+  const handleReverted = useCallback(async () => {
+    if (!projectId) return;
+    await hydrateProject(projectId);
+    restoreProject(projectId);
+    refreshProjects();
+  }, [projectId, refreshProjects, restoreProject]);
+
+  /**
+   * Loads the trash when that filter is opened.
+   *
+   * Fetched on demand rather than kept in sync: deleted projects are a rare
+   * detour, and paying for them on every dashboard render would be waste.
+   */
+  const loadTrash = useCallback(async () => {
+    try {
+      setTrashed((await listTrashedProjects()).map(toStoredProject));
+    } catch {
+      setTrashed([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (projectFilter === "trash") void loadTrash();
+  }, [loadTrash, projectFilter]);
+
+  /**
+   * Restores a project from the trash and returns it to the live list.
+   */
+  const handleRestoreProject = useCallback(
+    async (id: string) => {
+      await untrashProject(id);
+      await loadTrash();
+      const result = await syncProjectsWithServer();
+      setProjects(result.projects);
+    },
+    [loadTrash],
+  );
 
   const workspaceNav = {
     projects: sidebarProjects,
@@ -290,6 +404,11 @@ export function ChatApp() {
       | "gallery",
     activeProjectId: projectId,
     onSearch: focusHomePrompt,
+    onRenameProject: handleRenameProject,
+    onDuplicateProject: handleDuplicateProject,
+    onDeleteProject: handleDeleteProject,
+    onRestoreProject: handleRestoreProject,
+    trashView: projectFilter === "trash",
   };
 
   if (view === "home" || view === "gallery") {
@@ -334,17 +453,31 @@ export function ChatApp() {
         onGoHome={goHome}
         canUndo={canUndo}
         onUndo={undoEdit}
-        editMode={sectionEditMode}
-        onEditModeChange={setSectionEditModeOn}
+        onOpenHistory={
+          projectId && serverVersion > 0
+            ? () => setHistoryOpen((current) => !current)
+            : undefined
+        }
+        historyOpen={historyOpen}
+        canvasTool={canvasTool}
+        onToggleSelect={toggleSelect}
+        onToggleText={toggleText}
       />
 
       <div
-        className={`grid min-h-0 min-w-0 flex-1 ${
+        className={`relative grid min-h-0 min-w-0 flex-1 ${
           chatCollapsed
             ? "grid-cols-1"
             : "grid-cols-1 lg:grid-cols-[minmax(320px,var(--lovable-chat-w))_minmax(0,1fr)]"
         }`}
       >
+        <VersionHistoryPanel
+          open={historyOpen}
+          projectId={projectId}
+          currentVersion={serverVersion}
+          onClose={() => setHistoryOpen(false)}
+          onReverted={handleReverted}
+        />
         <aside
           aria-label="AI builder chat"
           className={`flex min-h-0 min-w-0 flex-col overflow-hidden border-[var(--lovable-border)] bg-[var(--lovable-panel)] lg:border-r ${
@@ -369,6 +502,9 @@ export function ChatApp() {
               messages={messages}
               isBusy={isBusy}
               phase={phase}
+              onSuggestion={(text) => {
+                void sendMessage(text);
+              }}
               onAction={(action) => {
                 handleChatAction(action, {
                   confirmBuild: async () => {
@@ -398,15 +534,20 @@ export function ChatApp() {
           </div>
 
           <div className="shrink-0 space-y-2 border-t border-[var(--lovable-border)] bg-[var(--lovable-panel)] px-3 py-3 sm:px-4">
-            {sectionEditMode && selectedPick ? (
+            {canvasTool === "select" && selectedPick ? (
               <ComposerTargetChip
                 pick={selectedPick}
                 onClear={() => setSelectedPick(null)}
               />
             ) : null}
-            {sectionEditMode && !selectedPick ? (
+            {canvasTool === "select" && !selectedPick ? (
               <p className="px-0.5 text-[11px] text-[var(--lovable-text-faint)]">
                 Click any text, button, or section — then say the change
+              </p>
+            ) : null}
+            {canvasTool === "text" && !textSession ? (
+              <p className="px-0.5 text-[11px] text-[var(--lovable-text-faint)]">
+                Click a headline, button, or paragraph to edit it
               </p>
             ) : null}
             {error ? (
@@ -430,8 +571,8 @@ export function ChatApp() {
                   onUploadImage={(file, target) =>
                     void uploadImage(file, target)
                   }
-                  onApplyLibraryMedia={(imagePath, target) =>
-                    void applyLibraryMedia(imagePath, target)
+                  onApplyLibraryMedia={(item, target) =>
+                    void applyLibraryMedia(item, target)
                   }
                   page={page}
                   allowImageUpload={canUploadImage}
@@ -477,6 +618,15 @@ export function ChatApp() {
           <div className="flex min-h-0 flex-1 flex-col">
             {/* SectionActionPanel used to open above the preview on pick.
                 Element picker + composer chip is the edit surface now. */}
+            {editorViewMode === "assets" ? (
+              <AssetsPanel
+                page={page}
+                busy={isBusy}
+                onApplyToSection={(item, target) =>
+                  void applyLibraryMedia(item, target)
+                }
+              />
+            ) : (
             <LivePreviewPane
               page={page}
               pageFamily={pageFamily}
@@ -485,14 +635,25 @@ export function ChatApp() {
               isBusy={isBusy}
               deviceMode={deviceMode}
               showCodePlaceholder={editorViewMode === "code"}
-              selectable={Boolean(page) && sectionEditMode}
+              selectable={Boolean(page) && canvasTool !== "off"}
               selectedSectionType={selectedSectionType}
               onSelectSection={(type) =>
                 setSelectedSectionType(type as typeof selectedSectionType)
               }
-              onPick={setSelectedPick}
-              editMode={sectionEditMode}
-              onEditModeChange={setSectionEditModeOn}
+              onPick={canvasTool === "select" ? setSelectedPick : undefined}
+              canvasTool={canvasTool}
+              onToggleSelect={toggleSelect}
+              onToggleText={toggleText}
+              textSession={textSession}
+              textHint={textHint}
+              onStartTextEdit={startTextEdit}
+              onCommitTextEdit={(value) => {
+                const session = textSession;
+                cancelTextEdit();
+                if (!session) return;
+                void commitInlineCopy(session.pick, value);
+              }}
+              onCancelTextEdit={cancelTextEdit}
               activeStageLabel={(() => {
                 const running = messages.find(
                   (msg) =>
@@ -502,6 +663,7 @@ export function ChatApp() {
                 return running.stageDetail ?? running.stageName ?? null;
               })()}
             />
+            )}
           </div>
         </div>
       </div>

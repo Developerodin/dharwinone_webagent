@@ -63,6 +63,16 @@ export function publicUrl(storageKey: string): string {
   return `${config.cdnBaseUrl}/${storageKey}`;
 }
 
+/** Cache header signed into every upload; content-addressed keys never change. */
+const UPLOAD_CACHE_CONTROL = "public, max-age=31536000, immutable";
+
+export type PresignedUpload = {
+  url: string;
+  /** Headers the browser must send with the PUT for the signature to match. */
+  headers: Record<string, string>;
+  expiresInSeconds: number;
+};
+
 /**
  * Issues a short-lived presigned PUT.
  *
@@ -78,8 +88,17 @@ export async function presignUpload(args: {
   mime: string;
   bytes: number;
   sha256: string;
-}): Promise<{ url: string; expiresInSeconds: number }> {
+}): Promise<PresignedUpload> {
   const { client: s3Client, config } = s3();
+
+  // Every header signed here must be replayed byte-for-byte by the browser or
+  // the signature check fails, so they are returned alongside the URL rather
+  // than left for the client to reconstruct from memory.
+  const headers: Record<string, string> = {
+    "Content-Type": args.mime,
+    "Cache-Control": UPLOAD_CACHE_CONTROL,
+    "x-amz-meta-sha256": args.sha256,
+  };
 
   const command = new PutObjectCommand({
     Bucket: config.bucket,
@@ -87,15 +106,21 @@ export async function presignUpload(args: {
     ContentType: args.mime,
     ContentLength: args.bytes,
     // Content-addressed keys never change, so they are safe to cache forever.
-    CacheControl: "public, max-age=31536000, immutable",
+    CacheControl: UPLOAD_CACHE_CONTROL,
     Metadata: { sha256: args.sha256 },
   });
 
   const url = await getSignedUrl(s3Client, command, {
     expiresIn: config.presignTtlSeconds,
+    // The presigner hoists `x-amz-*` headers into the query string by default,
+    // which leaves the browser sending a header S3 never signed — and S3
+    // rejects the whole PUT for it. Keeping it unhoisted and signable is what
+    // lets the checksum travel with the object.
+    unhoistableHeaders: new Set(["x-amz-meta-sha256"]),
+    signableHeaders: new Set(["x-amz-meta-sha256"]),
   });
 
-  return { url, expiresInSeconds: config.presignTtlSeconds };
+  return { url, headers, expiresInSeconds: config.presignTtlSeconds };
 }
 
 export type ObjectHead = {

@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import { FIXTURE_BRIEF } from "../data/fixtureBrief.js";
 import type { Brief } from "../schemas/brief.schema.js";
 import { coerceBriefInput } from "../schemas/brief.schema.js";
-import { assessBrief, buildFallbackQuestions } from "./assessBrief.js";
+import {
+  assessBrief,
+  buildFallbackQuestions,
+  sanitizeClarificationQuestions,
+} from "./assessBrief.js";
 import {
   briefNeedsClarification,
   detectBriefGaps,
@@ -10,6 +14,7 @@ import {
   evaluateBriefReadiness,
   isGenericBusinessName,
   isVagueCategory,
+  selectGapsForRound,
 } from "./briefGaps.js";
 import { mergeClarificationAnswers } from "./mergeClarifications.js";
 
@@ -307,6 +312,76 @@ describe("buildFallbackQuestions", () => {
     ]);
     expect(questions.length).toBeLessThanOrEqual(3);
     expect(questions[0]).toMatch(/business name/i);
+  });
+
+  it("uses the map-pin copy for a solo address gap", () => {
+    const questions = buildFallbackQuestions(["address"]);
+    expect(questions).toHaveLength(1);
+    expect(questions[0]).toMatch(/select location/i);
+  });
+});
+
+describe("selectGapsForRound", () => {
+  it("asks email before a dedicated location turn", () => {
+    expect(
+      selectGapsForRound(["email", "address", "hours", "usp"]),
+    ).toEqual(["email"]);
+  });
+
+  it("asks only address when location is next (never with hours)", () => {
+    expect(selectGapsForRound(["address", "hours", "usp"])).toEqual([
+      "address",
+    ]);
+  });
+
+  it("batches non-location gaps after the pin is known", () => {
+    expect(selectGapsForRound(["hours", "usp", "audience", "story"])).toEqual([
+      "hours",
+      "usp",
+      "audience",
+    ]);
+  });
+
+  it("keeps critical name/cuisine/email together and defers the pin", () => {
+    expect(
+      selectGapsForRound([
+        "businessName",
+        "category",
+        "email",
+        "address",
+        "hours",
+      ]),
+    ).toEqual(["businessName", "category", "email"]);
+  });
+});
+
+describe("sanitizeClarificationQuestions", () => {
+  it("collapses a location round to a single map question", () => {
+    const questions = sanitizeClarificationQuestions(
+      [
+        "What is the contact email?",
+        "Where are you located? Tap Select location on the map.",
+        "What are your opening hours?",
+      ],
+      ["address"],
+    );
+    expect(questions).toHaveLength(1);
+    expect(questions[0]).toMatch(/select location/i);
+  });
+
+  it("strips location questions from a non-location round", () => {
+    const questions = sanitizeClarificationQuestions(
+      [
+        "What is the contact email for enquiries?",
+        "What is the street address or nearest landmark (tap Select location)?",
+        "What are your opening hours?",
+      ],
+      ["email", "hours"],
+    );
+    expect(questions).toEqual([
+      "What is the contact email for enquiries?",
+      "What are your opening hours?",
+    ]);
   });
 });
 

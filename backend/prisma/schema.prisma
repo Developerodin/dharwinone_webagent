@@ -52,9 +52,9 @@ model User {
 model OAuthAccount {
   id String @id @default(cuid())
 
-  userId String
+  userId         String
   /// "google" today; the column generalises to more providers.
-  provider String
+  provider       String
   /// Google `sub`. Stable for the lifetime of the Google account — never key on email.
   providerUserId String
   email          String?
@@ -69,12 +69,12 @@ model OAuthAccount {
 model Session {
   id String @id @default(cuid())
 
-  userId String
+  userId           String
   /// Rotation chain id. Reuse of any token in a family revokes the whole family.
-  familyId String
+  familyId         String
   /// When the family's first session was created. Carried forward across every
   /// rotation so a rolling session still has an absolute expiry.
-  familyStartedAt DateTime @default(now())
+  familyStartedAt  DateTime  @default(now())
   /// sha256(raw refresh token) — a database leak is not a session leak.
   refreshTokenHash String    @unique
   userAgent        String?
@@ -84,9 +84,9 @@ model Session {
   expiresAt        DateTime
   revokedAt        DateTime?
   /// rotated | logout | logout_all | reuse_detected | password_reset
-  revokedReason String?
+  revokedReason    String?
   /// Set when this session was rotated out. Powers the rotation grace window.
-  replacedById String?
+  replacedById     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -98,7 +98,7 @@ model Session {
 model OtpCode {
   id String @id @default(cuid())
 
-  userId String
+  userId      String
   /// "verify_email" | "reset_password"
   purpose     String
   /// argon2 hash of the six digits.
@@ -175,6 +175,14 @@ enum MemberRole {
   VIEWER
 }
 
+enum JobStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
 enum AssetKind {
   IMAGE
   VIDEO
@@ -187,12 +195,12 @@ enum AssetStatus {
 }
 
 model Project {
-  id      String        @id @default(cuid())
-  ownerId String
-  name    String
+  id         String        @id @default(cuid())
+  ownerId    String
+  name       String
   /// URL-safe, unique per owner.
-  slug    String
-  status  ProjectStatus @default(DRAFT)
+  slug       String
+  status     ProjectStatus @default(DRAFT)
   /// premium | elegant | bold | minimal | rustic | vibrant
   pageFamily String
 
@@ -222,13 +230,14 @@ model Project {
   deletedAt    DateTime?
   purgeAfter   DateTime?
 
-  owner    User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  head     ProjectVersion?  @relation("ProjectHead", fields: [currentVersionId], references: [id], onDelete: SetNull)
-  versions ProjectVersion[] @relation("ProjectVersions")
-  messages ChatMessage[]
-  members  ProjectMember[]
-  assets   ProjectAsset[]
-  events   ProjectEvent[]
+  owner     User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  head      ProjectVersion?  @relation("ProjectHead", fields: [currentVersionId], references: [id], onDelete: SetNull)
+  versions  ProjectVersion[] @relation("ProjectVersions")
+  messages  ChatMessage[]
+  members   ProjectMember[]
+  assets    ProjectAsset[]
+  events    ProjectEvent[]
+  buildJobs BuildJob[]
 
   @@unique([ownerId, slug])
   @@unique([ownerId, sourceLocalId])
@@ -251,22 +260,59 @@ model ProjectVersion {
   direction  Json?
   pageFamily String
 
-  source VersionSource
+  source          VersionSource
   /// Human-readable change description shown in the history UI.
-  summary String  @db.VarChar(280)
+  summary         String        @db.VarChar(280)
   /// Null for pipeline-authored versions.
-  authorId String?
+  authorId        String?
   parentVersionId String?
   /// The user's edit prompt, kept for audit and support.
-  instruction String? @db.Text
-  sizeBytes   Int
-  createdAt   DateTime @default(now())
+  instruction     String?       @db.Text
+  sizeBytes       Int
+  createdAt       DateTime      @default(now())
 
   project Project  @relation("ProjectVersions", fields: [projectId], references: [id], onDelete: Cascade)
   headOf  Project? @relation("ProjectHead")
 
   @@unique([projectId, version])
   @@index([projectId, createdAt(sort: Desc)])
+}
+
+/// A build the pipeline is running or has run.
+///
+/// The row exists so a build survives the request that started it: a closed
+/// laptop, a dropped connection, or a redeploy mid-pipeline all leave a record
+/// the client can reattach to instead of a spinner that never resolves.
+model BuildJob {
+  id        String    @id @default(cuid())
+  projectId String
+  userId    String
+  status    JobStatus @default(QUEUED)
+
+  /// Stage events emitted so far, in order — replayed to a reconnecting client.
+  stages Json @default("[]")
+
+  /// What produced this build, echoed back so a resumed client can label it.
+  chatText   String? @db.Text
+  pageFamily String?
+
+  /// Set once the build succeeded.
+  versionId String?
+  version   Int?
+  /// Set once it failed. User-facing text, not a stack trace.
+  error     String? @db.Text
+
+  startedAt   DateTime  @default(now())
+  /// Bumped on every stage. A stale one on a RUNNING row means the process died.
+  heartbeatAt DateTime  @default(now())
+  finishedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([status, heartbeatAt])
 }
 
 model ChatMessage {
@@ -277,10 +323,10 @@ model ChatMessage {
   seq       Int
 
   /// user | assistant | agent
-  role    String
-  content String  @db.Text
+  role      String
+  content   String   @db.Text
   /// brief | questions | actions | stage* fields from the client ChatMessage.
-  payload Json?
+  payload   Json?
   /// The version this message produced, when it produced one.
   versionId String?
   createdAt DateTime @default(now())
@@ -317,15 +363,15 @@ model Asset {
   storageKey String @unique
   cdnUrl     String
 
-  kind       AssetKind
-  mime       String
-  bytes      Int
-  width      Int?
-  height     Int?
-  durationMs Int?
+  kind        AssetKind
+  mime        String
+  bytes       Int
+  width       Int?
+  height      Int?
+  durationMs  Int?
   /// Compact placeholder rendered before the image loads, so a hero never
   /// causes layout shift.
-  blurhash   String?
+  blurhash    String?
   /// { "webp": {"640": {...}}, "avif": {...} }
   derivatives Json?
   status      AssetStatus @default(PENDING)
@@ -376,9 +422,9 @@ model ProjectEvent {
 /// Makes the auth layer's automatic 401-refresh-and-replay safe: without it a
 /// token expiring mid-build would run the pipeline twice and bill twice.
 model IdempotencyRecord {
-  key    String @id
-  userId String
-  route  String
+  key         String    @id
+  userId      String
+  route       String
   /// sha256 of the request body. Same key with a different body is a client
   /// bug, not a retry, and is rejected rather than served a wrong cached result.
   requestHash String

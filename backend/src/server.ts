@@ -10,6 +10,7 @@ import { printPreflight, runPreflight } from "./config/preflight.js";
 import { pruneOtpCodes } from "./auth/otp.js";
 import { pruneSessions } from "./auth/sessions.js";
 import { collectOrphanAssets } from "./assets/service.js";
+import { reconcileStaleJobs } from "./jobs/buildJobs.js";
 import {
   pruneAllProjectVersions,
   pruneChatMessages,
@@ -139,6 +140,10 @@ function startMaintenance(): void {
         versions: await pruneAllProjectVersions(),
         messages: await pruneChatMessages(),
         assets: await collectOrphanAssets(),
+        // Builds whose process died mid-pipeline. Without this a crash leaves
+        // rows that claim to be running forever, and every client that
+        // reattaches waits on a pipeline nobody is executing.
+        staleBuilds: await reconcileStaleJobs(),
       };
 
       const removed = Object.entries(counts).filter(([, n]) => n > 0);

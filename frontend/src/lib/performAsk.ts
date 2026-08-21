@@ -15,12 +15,18 @@ function authHeaders(): Record<string, string> {
   };
 }
 
+export type AskHistoryTurn = {
+  role: "user" | "assistant";
+  content: string;
+};
+
 export type AskResult = {
   intent: "ask" | "edit";
   message: string;
   proposedEdit: string | null;
   specialist: "style" | "layout" | "copy" | "general" | null;
   openLocationPicker: boolean;
+  suggestions: string[];
 };
 
 /**
@@ -32,6 +38,7 @@ export async function performAsk(args: {
   brief: Brief;
   family: PageFamily;
   useFixture?: boolean;
+  history?: AskHistoryTurn[];
 }): Promise<AskResult> {
   const query = args.useFixture ? "?fixture=1" : "";
   const response = await fetch(`/api/ask${query}`, {
@@ -42,6 +49,7 @@ export async function performAsk(args: {
       page: args.page,
       brief: args.brief,
       family: args.family,
+      history: args.history ?? [],
     }),
   });
 
@@ -60,5 +68,6 @@ export async function performAsk(args: {
     proposedEdit: data.proposedEdit ?? null,
     specialist: data.specialist ?? null,
     openLocationPicker: Boolean(data.openLocationPicker),
+    suggestions: Array.isArray(data.suggestions) ? data.suggestions : [],
   };
 }

@@ -88,13 +88,22 @@ export type RunEditFlowDeps = {
   setDirection?: (dir: unknown) => void;
   /** Opens the map picker when Ask classifies a location-pin request. */
   openLocationPicker?: (prefill: string) => void;
+  /** Recent user/assistant turns for Ask context (no agent stages). */
+  historyTurns?: Array<{ role: "user" | "assistant"; content: string }>;
 };
 
 export type UploadImageFlowDeps = {
   /** Fresh file from disk/browse. Mutually exclusive with libraryImagePath. */
   file?: File;
-  /** Existing /images/uploads path from the media library. */
+  /** Existing library media URL (CDN asset or legacy /images/uploads path). */
   libraryImagePath?: string;
+  /**
+   * Asset id behind `libraryImagePath`, when the item came from object storage.
+   *
+   * With one, placement sends an id and the server patches its own document;
+   * without one the legacy route patches the page the client sends.
+   */
+  libraryAssetId?: string;
   target: ImageUploadTarget;
   page: Page;
   brief: Brief | null;
@@ -152,6 +161,7 @@ export async function runAskThenEditFlow(deps: RunEditFlowDeps): Promise<void> {
     brief,
     family,
     useFixture,
+    history: deps.historyTurns,
   });
 
   if (ask.openLocationPicker) {
@@ -199,6 +209,8 @@ export async function runAskThenEditFlow(deps: RunEditFlowDeps): Promise<void> {
     content: ask.message || "How can I help with your page?",
     timestamp: Date.now(),
     pageFamily: family,
+    suggestions:
+      ask.suggestions.length > 0 ? ask.suggestions : undefined,
     actions: ask.proposedEdit
       ? [
           { label: "Apply with Editor", action: "apply_edit", variant: "primary" },
@@ -326,10 +338,6 @@ export async function runEditFlow(deps: RunEditFlowDeps): Promise<void> {
       content: result.message,
       timestamp: Date.now(),
       pageFamily: result.family,
-      actions: [
-        { label: "Open preview ↗", action: "preview", variant: "primary" },
-        { label: "Build another", action: "reset", variant: "outline" },
-      ],
     };
 
     setMessages((current) => {
@@ -380,6 +388,7 @@ export async function runUploadImageFlow(
   const {
     file,
     libraryImagePath,
+    libraryAssetId,
     target,
     page,
     brief,
@@ -432,19 +441,32 @@ export async function runUploadImageFlow(
 
   try {
     const result = file
-      ? await uploadSectionImage({ file, page, target })
-      : await applyLibraryMedia({
-          imagePath: libraryImagePath!,
+      ? await uploadSectionImage({
+          file,
           page,
           target,
+          projectId,
+          expectedVersion: serverVersion,
+        })
+      : await applyLibraryMedia({
+          imagePath: libraryImagePath!,
+          assetId: libraryAssetId,
+          page,
+          target,
+          projectId,
+          expectedVersion: serverVersion,
         });
 
-    // The upload endpoint returns a modified page but stores nothing, so this
-    // change has to be committed as a version explicitly. Without it the new
-    // image lives only in the local cache and vanishes on the next reload,
-    // when the server's copy of the page is fetched back.
-    let uploadedVersion = serverVersion;
-    if (projectId) {
+    // Object storage places the asset server-side and returns the version it
+    // was written as, so there is nothing left to save. The legacy route only
+    // returns a modified page and stores nothing, so that path still has to
+    // commit a version explicitly — without it the new image lives only in the
+    // local cache and vanishes when the server's page is fetched back.
+    let uploadedVersion = result.version ?? serverVersion;
+
+    if (result.version !== undefined) {
+      deps.setServerVersion?.(result.version);
+    } else if (projectId) {
       const saved = await saveServerVersion({
         projectId,
         page: result.page,

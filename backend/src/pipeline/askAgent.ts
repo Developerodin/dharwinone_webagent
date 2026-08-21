@@ -4,6 +4,12 @@ import type { PageFamily } from "../config/pageFamily.js";
 import { getOpenAIClient, getOpenAIModel } from "../lib/openai.js";
 import type { Brief } from "../schemas/brief.schema.js";
 import type { Page } from "../schemas/page.schema.js";
+import { formatAskClock } from "./askClock.js";
+import {
+  sanitizeAskHistory,
+  type AskHistoryTurn,
+} from "./askHistory.js";
+import { buildAskSystemPrompt } from "./askSystemPrompt.js";
 import { listNamedColors } from "./colorResolve.js";
 import {
   inferEditSection,
@@ -23,7 +29,16 @@ export type AskAgentResult = {
   specialist: "style" | "layout" | "copy" | "general" | null;
   /** When true, UI opens the map picker instead of running Editor. */
   openLocationPicker: boolean;
+  /** Chip labels the user can send as the next chat turn. */
+  suggestions: string[];
 };
+
+/** Fallback copy used only when the LLM is unavailable for builder questions. */
+export const CANNED_BUILDER_HELP = [
+  "I can help with colors, fonts, section spacing, add/remove sections, copy, images, and themes.",
+  "",
+  "Ask anything — or tell me a change like “make Bite! red” / “switch header layout” / “surprise me”.",
+].join("\n");
 
 const askResponseSchema = z.object({
   intent: z.enum(["ask", "edit"]),
@@ -31,17 +46,40 @@ const askResponseSchema = z.object({
   proposedEdit: z.string().nullable(),
   specialist: z.enum(["style", "layout", "copy", "general"]).nullable(),
   openLocationPicker: z.boolean(),
+  suggestions: z.array(z.string()).max(6),
 });
 
 /**
- * Fills Ask result defaults so every branch sets openLocationPicker.
+ * Caps and cleans chip labels from the model or heuristic.
+ */
+function sanitizeSuggestions(raw: string[] | undefined): string[] {
+  if (!raw) return [];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const item of raw) {
+    const label = item.replace(/\s+/g, " ").trim().slice(0, 80);
+    if (!label || seen.has(label.toLowerCase())) continue;
+    seen.add(label.toLowerCase());
+    out.push(label);
+    if (out.length >= 6) break;
+  }
+  return out;
+}
+
+/**
+ * Fills Ask result defaults so every branch sets openLocationPicker + suggestions.
  */
 function askResult(
-  result: Omit<AskAgentResult, "openLocationPicker"> & {
+  result: Omit<AskAgentResult, "openLocationPicker" | "suggestions"> & {
     openLocationPicker?: boolean;
+    suggestions?: string[];
   },
 ): AskAgentResult {
-  return { openLocationPicker: false, ...result };
+  return {
+    openLocationPicker: false,
+    ...result,
+    suggestions: sanitizeSuggestions(result.suggestions),
+  };
 }
 
 /**
@@ -121,6 +159,43 @@ export function isClearEditHeuristic(instruction: string): boolean {
 }
 
 /**
+ * True for greetings, math, trivia — must hit the LLM, not canned builder help.
+ */
+export function isGeneralConversationHeuristic(instruction: string): boolean {
+  const text = instruction.trim();
+  if (!text) return false;
+  if (/^(hi|hey|hello|yo|sup|howdy)([!.\s]|$)/i.test(text)) return true;
+  if (/\d+\s*[+\-*/x×÷]\s*\d+/.test(text)) return true;
+  if (/^(who|when|where|why)\b/i.test(text)) return true;
+  if (
+    /^what\s+(is|are|was|were|'s)\b/i.test(text) &&
+    !/\b(theme|themes|color|colors|font|fonts|section|sections|layout)\b/i.test(
+      text,
+    )
+  ) {
+    return true;
+  }
+  if (/^(what'?s|whats)\s+the\s+time\b/i.test(text)) return true;
+  if (/^what\s+(time|day|date)\b/i.test(text)) return true;
+  return false;
+}
+
+/**
+ * True when Ask should skip the LLM (clear edit, map pin, theme list, fixture).
+ */
+export function shouldShortCircuitAsk(
+  instruction: string,
+  useFixture = false,
+): boolean {
+  if (useFixture) return true;
+  if (isThemeInquiryIntent(instruction)) return true;
+  if (wantsLocationPicker(instruction)) return true;
+  if (isClearEditHeuristic(instruction)) return true;
+  if (isGeneralConversationHeuristic(instruction)) return false;
+  return classifyIntentHeuristic(instruction).intent === "edit";
+}
+
+/**
  * Heuristic intent classification when LLM is unavailable or skipped.
  */
 export function classifyIntentHeuristic(instruction: string): AskAgentResult {
@@ -180,6 +255,16 @@ export function classifyIntentHeuristic(instruction: string): AskAgentResult {
       message: "",
       proposedEdit: `switch ${section} layout`,
       specialist: "layout",
+    });
+  }
+
+  if (isGeneralConversationHeuristic(text)) {
+    return askResult({
+      intent: "ask",
+      message:
+        "I can answer that — or tell me what you want to change on the site.",
+      proposedEdit: null,
+      specialist: "general",
     });
   }
 
@@ -247,11 +332,7 @@ export function classifyIntentHeuristic(instruction: string): AskAgentResult {
           ]
             .filter(Boolean)
             .join("\n")
-        : [
-            "I can help with colors, fonts, section spacing, add/remove sections, copy, images, and themes.",
-            "",
-            "Ask anything — or tell me a change like “make Bite! red” / “switch header layout” / “surprise me”.",
-          ].join("\n"),
+        : CANNED_BUILDER_HELP,
       proposedEdit: proposal,
       specialist,
     });
@@ -301,15 +382,12 @@ export async function runAskAgent(args: {
   brief: Brief;
   family: PageFamily;
   useFixture?: boolean;
+  history?: AskHistoryTurn[];
 }): Promise<AskAgentResult> {
+  const useFixture =
+    Boolean(args.useFixture) || process.env.USE_FIXTURE_BRIEF === "true";
   const heuristic = classifyIntentHeuristic(args.instruction);
-  if (
-    args.useFixture ||
-    process.env.USE_FIXTURE_BRIEF === "true" ||
-    isClearEditHeuristic(args.instruction) ||
-    heuristic.intent === "edit" ||
-    heuristic.openLocationPicker
-  ) {
+  if (shouldShortCircuitAsk(args.instruction, useFixture)) {
     // For cycle intents, pass proposedEdit so confirm CTAs have a clean string
     if (
       heuristic.intent === "edit" &&
@@ -325,6 +403,9 @@ export async function runAskAgent(args: {
     return heuristic;
   }
 
+  const history = sanitizeAskHistory(args.history);
+  const clock = formatAskClock();
+
   try {
     const client = getOpenAIClient();
     const completion = await client.chat.completions.parse({
@@ -332,32 +413,12 @@ export async function runAskAgent(args: {
       messages: [
         {
           role: "system",
-          content: `You are the Ask agent for a restaurant website builder.
-You NEVER mutate the page. You answer questions, suggest options, and optionally propose an edit instruction for the Editor.
-
-When suggesting visual options: name one signature change (which section leads, a specific palette, or a type pair). Never say "make it more modern" or propose cream-and-terracotta defaults.
-
-Return intent:
-- "edit" for clear imperatives: rewrite one headline, color a word, set accent/bg, named theme switch, "surprise me"/"remix layout", "switch header layout" / cycle one section, set/update contact email inbox.
-- "ask" for questions, vague asks, add/remove section, multi-target palettes needing confirmation.
-
-Set openLocationPicker true ONLY when the user wants a street/map/pin for the restaurant (e.g. "update the location", "drop a pin"). Then intent should be ask, proposedEdit null.
-Set openLocationPicker false for "email address" / an @inbox — that is a contact email edit, NEVER a map pin.
-
-CRITICAL:
-- "surprise me" / "remix layout" → intent edit (never ask clarifying questions).
-- Header/nav/footer “different component / not looking good / switch it” → intent edit; proposedEdit like "switch header layout". NEVER remix_layout for a single section.
-- remix_layout only when user says surprise/remix/different layouts (global).
-- Contact email / "email address" / an @gmail inbox → intent edit, openLocationPicker false.
-- Restaurant location / map / pin / street address (not email) → openLocationPicker true.
-
-When intent is ask and a concrete change is requested, set proposedEdit to the exact Editor instruction and ask to confirm.
-When intent is edit, message may be empty and proposedEdit null (Editor runs the user text), unless you normalize to a clearer instruction in proposedEdit.
-specialist: style | layout | copy | general.
-
-Supported: brand/section/button/text colors (names, dark green, light grey, or #hex), fonts, partial word color, add/remove sections (not header/footer remove), spacing, themes, copy, images, menu, cycle section layouts including header/contact/footer, contact email inbox, restaurant location via the map picker.
-Unsupported: videos, multi-page, drag-resize, custom font uploads.`,
+          content: buildAskSystemPrompt(clock),
         },
+        ...history.map((turn) => ({
+          role: turn.role,
+          content: turn.content,
+        })),
         {
           role: "user",
           content: `Theme: ${args.family}
@@ -384,6 +445,7 @@ User: ${args.instruction}`,
         proposedEdit: parsed.proposedEdit,
         specialist: parsed.specialist,
         openLocationPicker: parsed.openLocationPicker,
+        suggestions: parsed.suggestions,
       });
     }
   } catch (error) {

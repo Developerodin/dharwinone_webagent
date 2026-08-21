@@ -9,6 +9,14 @@ import { getActiveProjectId } from "@/lib/projectStorage";
 type UseAppViewSyncArgs = {
   restoreProject: (id: string) => boolean;
   refreshProjects: () => void;
+  /**
+   * Reattaches to a build still running for the restored project.
+   *
+   * Reloading during a build restores the page as it was before it started, so
+   * without this the tab shows a stale document and no sign that the pipeline
+   * the user is paying for is still working.
+   */
+  onProjectRestored?: (id: string) => void;
 };
 
 /**
@@ -17,6 +25,7 @@ type UseAppViewSyncArgs = {
 export function useAppViewSync({
   restoreProject,
   refreshProjects,
+  onProjectRestored,
 }: UseAppViewSyncArgs): {
   view: AppView;
   navigateView: (next: AppView) => void;
@@ -53,12 +62,13 @@ export function useAppViewSync({
       setView("builder");
       writeAppViewHash("builder");
       refreshProjects();
+      onProjectRestored?.(activeId);
       return;
     }
 
     writeAppViewHash("home");
     setView("home");
-  }, [refreshProjects, restoreProject]);
+  }, [onProjectRestored, refreshProjects, restoreProject]);
 
   useEffect(() => {
     /**
@@ -71,6 +81,7 @@ export function useAppViewSync({
         if (activeId && restoreProject(activeId)) {
           setView("builder");
           refreshProjects();
+          onProjectRestored?.(activeId);
           return;
         }
         if (view === "builder") return;
@@ -87,7 +98,7 @@ export function useAppViewSync({
 
     window.addEventListener("hashchange", onHashChange);
     return () => window.removeEventListener("hashchange", onHashChange);
-  }, [refreshProjects, restoreProject, view]);
+  }, [onProjectRestored, refreshProjects, restoreProject, view]);
 
   return { view, navigateView };
 }

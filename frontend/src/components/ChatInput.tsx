@@ -18,17 +18,25 @@ type PendingMedia =
   | {
       source: "library";
       imagePath: string;
+      /** Present for object-storage items; absent for legacy disk uploads. */
+      assetId?: string;
       mediaKind: "image" | "video";
       filename: string;
     };
+
+/** A library item queued for placement. */
+export type LibraryMediaSelection = {
+  imagePath: string;
+  assetId?: string;
+};
 
 type ChatInputProps = {
   onSubmit: (text: string) => void;
   /** When set, shows attach/drop UI for replacing section images/videos. */
   onUploadImage?: (file: File, target: ImageUploadTarget) => void;
-  /** Applies an existing library path to a section slot. */
+  /** Applies an existing library item to a section slot. */
   onApplyLibraryMedia?: (
-    imagePath: string,
+    item: LibraryMediaSelection,
     target: ImageUploadTarget,
   ) => void;
   page?: Page | null;
@@ -117,7 +125,10 @@ export function ChatInput({
         return;
       }
       if (pending.source === "library" && onApplyLibraryMedia) {
-        onApplyLibraryMedia(pending.imagePath, selectedTarget);
+        onApplyLibraryMedia(
+          { imagePath: pending.imagePath, assetId: pending.assetId },
+          selectedTarget,
+        );
         setPending(null);
         setValue("");
         return;
@@ -145,6 +156,7 @@ export function ChatInput({
     setPending({
       source: "library",
       imagePath: item.imagePath,
+      assetId: item.assetId,
       mediaKind: item.mediaKind,
       filename: item.filename,
     });

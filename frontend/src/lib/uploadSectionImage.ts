@@ -1,10 +1,14 @@
+import { ApiError } from "@/auth/types";
 import type { Page, SectionType } from "@/types/page";
 import { getAccessToken } from "@/lib/apiClient";
+import { assetsEnabled, uploadAsset } from "@/lib/assetApi";
+import { newIntentKey, placeServerMedia } from "@/lib/projectApi";
 
 /**
  * Headers for a JSON request to an authenticated pipeline route.
  *
- * /api/upload now requires a session; it writes to disk.
+ * Used only by the legacy disk-upload fallback below; the object-storage path
+ * sends the file straight to the bucket and never posts it here.
  */
 function authHeaders(): Record<string, string> {
   return {
@@ -138,29 +142,173 @@ export async function fileToUploadDataUrl(file: File): Promise<string> {
     : prepareImageDataUrl(file);
 }
 
-/**
- * Uploads an image or video and patches the matching page asset slot.
- */
-export async function uploadSectionImage(args: {
-  file: File;
+export type SectionMediaResult = {
   page: Page;
-  target: ImageUploadTarget;
-}): Promise<{ page: Page; imagePath: string; mediaKind: "image" | "video" }> {
-  if (!isMediaFile(args.file)) {
+  imagePath: string;
+  mediaKind: "image" | "video";
+  /** Set when the version was written server-side. */
+  version?: number;
+};
+
+/**
+ * Rejects a file that is the wrong type or over the size cap.
+ *
+ * Checked before a single byte moves: telling someone their 60 MB video is too
+ * large after they have uploaded it wastes their bandwidth to report something
+ * we already knew.
+ */
+function assertUploadable(file: File): void {
+  if (!isMediaFile(file)) {
     throw new Error(
       "Please choose an image (jpg, png, webp) or video (mp4, webm, mov).",
     );
   }
 
-  const video = isVideoFile(args.file);
+  const video = isVideoFile(file);
   const maxBytes = video ? MAX_VIDEO_BYTES : MAX_UPLOAD_BYTES;
-  if (args.file.size > maxBytes) {
+  if (file.size > maxBytes) {
     const limitMb = Math.round(maxBytes / (1024 * 1024));
     throw new Error(
-      `${video ? "Video" : "Image"} is too large (${Math.round(args.file.size / (1024 * 1024))}MB). Max is ${limitMb}MB.`,
+      `${video ? "Video" : "Image"} is too large (${Math.round(file.size / (1024 * 1024))}MB). Max is ${limitMb}MB.`,
     );
   }
+}
 
+/**
+ * Uploads a file and writes it into a section slot.
+ *
+ * Two paths, chosen by what the deployment supports:
+ *
+ *  1. Object storage — the file goes browser → bucket, then the server places
+ *     the asset id into its own copy of the page and appends a version. The
+ *     document never travels, and the asset is linked so garbage collection
+ *     knows it is in use. This needs a project id, because there is no stored
+ *     document to patch without one.
+ *  2. Legacy disk upload — base64 through the API, page patched in the
+ *     response. Still the only option for an unsaved project or a deployment
+ *     with no bucket configured.
+ */
+export async function uploadSectionImage(args: {
+  file: File;
+  page: Page;
+  target: ImageUploadTarget;
+  /** Server project to write into. Absent for a page not yet saved. */
+  projectId?: string | null;
+  /** Version the client is editing from, for optimistic concurrency. */
+  expectedVersion?: number;
+  onProgress?: (fraction: number) => void;
+}): Promise<SectionMediaResult> {
+  assertUploadable(args.file);
+
+  // The server path patches the *stored* document, so it needs one to exist.
+  // A project with no version yet — created, but whose first build never
+  // finished — still has to go through the legacy route, which patches the
+  // page the client is holding.
+  const hasStoredPage = (args.expectedVersion ?? 0) > 0;
+
+  if (args.projectId && hasStoredPage && (await assetsEnabled())) {
+    const asset = await uploadAsset(args.file, args.onProgress);
+    return placeAssetInSection({
+      assetId: asset.id,
+      projectId: args.projectId,
+      target: args.target,
+      expectedVersion: args.expectedVersion ?? 0,
+    });
+  }
+
+  return legacyUploadSectionImage(args);
+}
+
+/**
+ * Writes an already-uploaded asset into a section slot, server-side.
+ *
+ * A version conflict is retried once against the new head. Placing a photo
+ * does not depend on what the previous version said, so re-issuing it is the
+ * honest resolution — unlike a whole-page save, where the client's copy really
+ * has diverged and retrying would discard the other tab's work.
+ */
+export async function placeAssetInSection(args: {
+  assetId: string;
+  projectId: string;
+  target: ImageUploadTarget;
+  expectedVersion: number;
+}): Promise<SectionMediaResult> {
+  const intentKey = newIntentKey();
+
+  const attempt = (expectedVersion: number) =>
+    placeServerMedia({
+      projectId: args.projectId,
+      assetId: args.assetId,
+      section: args.target.section,
+      assetKey: args.target.assetKey,
+      expectedVersion,
+      idempotencyKey: intentKey,
+    });
+
+  let placed;
+  try {
+    placed = await attempt(args.expectedVersion);
+  } catch (error) {
+    const current =
+      error instanceof ApiError && error.code === "VERSION_CONFLICT"
+        ? error.details.currentVersion
+        : undefined;
+
+    if (typeof current !== "number") throw error;
+    placed = await attempt(current);
+  }
+
+  return {
+    page: placed.page,
+    imagePath: placed.imagePath,
+    mediaKind: placed.mediaKind,
+    version: placed.version,
+  };
+}
+
+/**
+ * Writes a media URL into a section slot on a page the client holds.
+ *
+ * Mirrors the server's slot rules — gallery grows, everything else has one
+ * `primary` slot — for the one case the server cannot handle: a project with
+ * no stored document to patch. The caller commits the result as a version.
+ */
+export function placeMediaLocally(
+  page: Page,
+  target: ImageUploadTarget,
+  imagePath: string,
+): Page {
+  const next = structuredClone(page);
+  const section = next.sections.find((item) => item.type === target.section);
+
+  if (!section) {
+    throw new Error(`This page has no ${target.section} section.`);
+  }
+
+  const existing = section.assets.findIndex(
+    (asset) => asset.key === target.assetKey,
+  );
+
+  if (existing >= 0) {
+    section.assets[existing] = { key: target.assetKey, imagePath };
+  } else if (section.type === "gallery") {
+    section.assets.push({ key: target.assetKey, imagePath });
+  } else {
+    section.assets = [{ key: target.assetKey || "primary", imagePath }];
+  }
+
+  return next;
+}
+
+/**
+ * Legacy disk upload: base64 through the API, page patched in the response.
+ */
+async function legacyUploadSectionImage(args: {
+  file: File;
+  page: Page;
+  target: ImageUploadTarget;
+}): Promise<SectionMediaResult> {
+  const video = isVideoFile(args.file);
   const dataUrl = await fileToUploadDataUrl(args.file);
 
   const response = await fetch("/api/upload", {

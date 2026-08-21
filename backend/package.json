@@ -16,7 +16,8 @@
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset",
-    "preflight": "tsx src/scripts/preflight.ts"
+    "preflight": "tsx src/scripts/preflight.ts",
+    "check:google": "tsx scripts/check-google-oauth.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1114.0",

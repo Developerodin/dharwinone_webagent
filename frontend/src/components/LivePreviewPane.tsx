@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Pencil } from "lucide-react";
 import { ThinkingIndicator } from "@/components/ThinkingIndicator";
 import { BrandMark } from "@/components/BrandMark";
+import { CanvasToolButtons } from "@/components/shell/CanvasToolButtons";
 import { PageRenderer } from "@/render/PageRenderer";
 import { getPageFamilyLabel } from "@/lib/pageFamilyLabel";
 import type { PreviewPick } from "@/lib/resolvePreviewPick";
-import { cn } from "@/lib/utils";
+import type { CanvasTool, InlineTextSession } from "@/hooks/useCanvasTool";
 import type { PageFamily } from "@/lib/pageFamily";
 import type { ChatPhase } from "@/types/chat";
 import type { Page } from "@/types/page";
@@ -35,10 +35,14 @@ type LivePreviewPaneProps = {
   onSelectSection?: (type: string) => void;
   /** Called with the resolved element pick in Edit/inspect mode. */
   onPick?: (pick: PreviewPick) => void;
-  /** Manual section-edit mode. Off = browse/scroll without selecting. */
-  editMode?: boolean;
-  /** Toggles manual section-edit mode. */
-  onEditModeChange?: (on: boolean) => void;
+  canvasTool?: CanvasTool;
+  onToggleSelect?: () => void;
+  onToggleText?: () => void;
+  textSession?: InlineTextSession | null;
+  textHint?: string | null;
+  onStartTextEdit?: (session: InlineTextSession | null) => void;
+  onCommitTextEdit?: (value: string) => void;
+  onCancelTextEdit?: () => void;
 };
 
 /**
@@ -82,8 +86,14 @@ export function LivePreviewPane({
   selectedSectionType = null,
   onSelectSection,
   onPick,
-  editMode = false,
-  onEditModeChange,
+  canvasTool = "off",
+  onToggleSelect,
+  onToggleText,
+  textSession = null,
+  textHint = null,
+  onStartTextEdit,
+  onCommitTextEdit,
+  onCancelTextEdit,
 }: LivePreviewPaneProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const artboardRef = useRef<HTMLDivElement>(null);
@@ -172,26 +182,14 @@ export function LivePreviewPane({
               ? "Assembling"
               : "Live preview"}
         </p>
-        {page && onEditModeChange ? (
-          <button
-            type="button"
-            onClick={() => onEditModeChange(!editMode)}
-            className={cn(
-              "inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium transition md:hidden",
-              editMode
-                ? "border-blue-500/50 bg-blue-500/15 text-blue-300"
-                : "border-[var(--lovable-border)] bg-[var(--lovable-bg)] text-[var(--lovable-text-muted)] hover:bg-[var(--lovable-hover)] hover:text-[var(--lovable-text)]",
-            )}
-            aria-label={
-              editMode
-                ? "Turn off section edit mode"
-                : "Turn on section edit mode"
-            }
-            aria-pressed={editMode}
-          >
-            <Pencil className="size-3.5" aria-hidden="true" />
-            Edit
-          </button>
+        {page && onToggleSelect && onToggleText ? (
+          <CanvasToolButtons
+            tool={canvasTool}
+            onToggleSelect={onToggleSelect}
+            onToggleText={onToggleText}
+            compact
+            className="md:hidden"
+          />
         ) : null}
       </div>
 
@@ -246,6 +244,11 @@ export function LivePreviewPane({
                     selectedSectionType={selectedSectionType}
                     onSelectSection={onSelectSection}
                     onPick={onPick}
+                    pickMode={canvasTool === "text" ? "text" : "select"}
+                    textSession={textSession}
+                    onStartTextEdit={onStartTextEdit}
+                    onCommitTextEdit={onCommitTextEdit}
+                    onCancelTextEdit={onCancelTextEdit}
                   />
                 </div>
                 </div>
@@ -266,6 +269,11 @@ export function LivePreviewPane({
                     selectedSectionType={selectedSectionType}
                     onSelectSection={onSelectSection}
                     onPick={onPick}
+                    pickMode={canvasTool === "text" ? "text" : "select"}
+                    textSession={textSession}
+                    onStartTextEdit={onStartTextEdit}
+                    onCommitTextEdit={onCommitTextEdit}
+                    onCancelTextEdit={onCancelTextEdit}
                   />
                 </div>
               </div>
@@ -279,6 +287,14 @@ export function LivePreviewPane({
         ) : (
           <EmptyPreview />
         )}
+        {textHint ? (
+          <p
+            role="status"
+            className="pointer-events-none absolute bottom-4 left-1/2 z-30 -translate-x-1/2 rounded-full border border-[var(--lovable-border)] bg-[var(--lovable-panel)] px-3 py-1.5 text-[12px] text-[var(--lovable-text-muted)] shadow-lg"
+          >
+            {textHint}
+          </p>
+        ) : null}
       </div>
 
       {/* Canvas toolbar — temporarily hidden

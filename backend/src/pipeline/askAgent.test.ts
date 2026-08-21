@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  CANNED_BUILDER_HELP,
   classifyIntentHeuristic,
   isClearEditHeuristic,
   isEmailInboxIntent,
+  isGeneralConversationHeuristic,
+  shouldShortCircuitAsk,
   wantsLocationPicker,
 } from "./askAgent.js";
 
@@ -30,5 +33,28 @@ describe("Ask location vs email intent", () => {
     const result = classifyIntentHeuristic(location);
     expect(result.openLocationPicker).toBe(true);
     expect(result.intent).toBe("ask");
+  });
+});
+
+describe("Ask general conversation", () => {
+  it.each([
+    "what is 2 + 3",
+    "who is prime minister of indian",
+    "hi",
+  ])("does not treat %s as a clear edit or canned builder help", (text) => {
+    expect(isClearEditHeuristic(text)).toBe(false);
+    expect(isGeneralConversationHeuristic(text)).toBe(true);
+    expect(shouldShortCircuitAsk(text)).toBe(false);
+    expect(classifyIntentHeuristic(text).message).not.toContain(
+      "I can help with colors",
+    );
+    expect(classifyIntentHeuristic(text).message).not.toBe(CANNED_BUILDER_HELP);
+    expect(classifyIntentHeuristic(text).intent).toBe("ask");
+  });
+
+  it("still short-circuits clear visual edits", () => {
+    expect(shouldShortCircuitAsk("make this button black and white")).toBe(
+      true,
+    );
   });
 });

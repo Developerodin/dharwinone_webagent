@@ -7,6 +7,13 @@ import type { Page } from "@/types/page";
 export async function consumeBuildStream(
   response: Response,
   onStage: (stage: PipelineStage) => void,
+  /**
+   * Called with the build's job id as soon as the server announces it.
+   *
+   * Recorded before any stage arrives, so a tab that closes ten seconds in
+   * still knows which build to reattach to.
+   */
+  onJob?: (jobId: string) => void,
 ): Promise<{
   page: Page;
   meta: Record<string, unknown>;
@@ -44,6 +51,7 @@ export async function consumeBuildStream(
 
       const payload = JSON.parse(line.slice(6)) as {
         type?: string;
+        jobId?: string;
         stage?: PipelineStage;
         page?: Page;
         meta?: Record<string, unknown>;
@@ -51,6 +59,10 @@ export async function consumeBuildStream(
         version?: number;
         error?: string;
       };
+
+      if (payload.type === "job" && payload.jobId) {
+        onJob?.(payload.jobId);
+      }
 
       if (payload.type === "stage" && payload.stage) {
         onStage(payload.stage);

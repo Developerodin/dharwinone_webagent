@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { parsePageFamily, type PageFamily } from "../config/pageFamily.js";
 import { runAskAgent } from "../pipeline/askAgent.js";
+import { sanitizeAskHistory } from "../pipeline/askHistory.js";
 import { briefSchema, coerceBriefInput } from "../schemas/brief.schema.js";
 import { pageSchema } from "../schemas/page.schema.js";
 
@@ -11,6 +12,7 @@ type AskBody = {
   page?: unknown;
   brief?: unknown;
   family?: unknown;
+  history?: unknown;
 };
 
 /**
@@ -53,6 +55,7 @@ askRouter.post("/", async (req, res) => {
       brief: briefParsed.data,
       family,
       useFixture,
+      history: sanitizeAskHistory(body.history),
     });
 
     res.status(200).json({ ok: true, ...result });

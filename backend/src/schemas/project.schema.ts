@@ -53,6 +53,34 @@ export const saveVersionSchema = z.object({
   expectedVersion: z.number().int().min(0).optional(),
 });
 
+/** Sections that carry a media slot. */
+export const mediaSectionSchema = z.enum([
+  "hero",
+  "menu",
+  "about",
+  "gallery",
+  "location_map",
+  "services",
+  "stats",
+  "testimonials",
+  "team",
+  "reservation",
+]);
+
+/**
+ * Places an already-uploaded asset into a section slot.
+ *
+ * The client sends an asset id, not a page: the server patches its own copy of
+ * the document, so a stale tab cannot resurrect an old page as a side effect of
+ * changing one image.
+ */
+export const placeMediaSchema = z.object({
+  assetId: z.string().trim().min(1).max(64),
+  section: mediaSectionSchema,
+  assetKey: z.string().trim().min(1).max(120).optional(),
+  expectedVersion: z.number().int().min(0).optional(),
+});
+
 export const presignAssetSchema = z.object({
   filename: z.string().trim().min(1).max(255),
   mime: z.string().trim().min(3).max(120),

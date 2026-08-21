@@ -3,9 +3,9 @@ import {
   createMessageId,
   createWelcomeMessage,
   formatBriefSummary,
-  formatClarificationMessage,
 } from "@/lib/chatFormatters";
 import { runConfirmBuild } from "@/lib/confirmBuildFlow";
+import { resumeBuildIfRunning } from "@/lib/resumeBuildFlow";
 import {
   runAskThenEditFlow,
   runEditFlow,
@@ -23,7 +23,7 @@ import type { ImageUploadTarget } from "@/lib/uploadSectionImage";
 import type { PageFamily } from "@/lib/pageFamily";
 import type { HistoryEntry } from "@/lib/projectStorage";
 import { formatLocationDumpLine } from "@/lib/locationPickerIntent";
-import { buildIntakeClarificationActions } from "@/lib/intakeClarificationActions";
+import { buildIntakeClarificationUi } from "@/lib/intakeClarificationUi";
 import type { PickedLocation } from "@/lib/mapsApi";
 import type { ChatMessage, ChatPhase } from "@/types/chat";
 import type { Brief, IntakeResponse, PipelineStage } from "@/types/intake";
@@ -34,6 +34,8 @@ import {
   sectionOnlyPick,
   type PreviewPick,
 } from "@/lib/resolvePreviewPick";
+import { applyInlineCopy } from "@/lib/applyInlineCopy";
+import { recentChatTurns } from "@/lib/chatHistory";
 import { getAccessToken } from "@/lib/apiClient";
 import {
   loadServerProject,
@@ -232,20 +234,20 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
       if (data.status === "needs_clarification") {
         const canSkip = data.canSkip === true;
         const gaps = data.gaps ?? [];
-        setPendingQuestions(data.questions);
-        setLocationPicker({
-          open: false,
-          prefill: data.partialBrief.address?.trim() ?? "",
+        const ui = buildIntakeClarificationUi({
+          questions: data.questions,
+          round: data.clarificationRound,
+          canSkip,
+          gaps,
+          addressPrefill: data.partialBrief.address?.trim() ?? "",
         });
+        setPendingQuestions(data.questions);
+        setLocationPicker(ui.locationPicker);
         appendMessage({
           role: "assistant",
-          content: formatClarificationMessage(
-            data.questions,
-            data.clarificationRound,
-            canSkip,
-          ),
+          content: ui.content,
           questions: data.questions,
-          actions: buildIntakeClarificationActions({ canSkip, gaps }),
+          actions: ui.actions,
         });
         setPhase("clarifying");
         return;
@@ -308,6 +310,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
         setHistory,
         setDirection,
         openLocationPicker: promptLocationPicker,
+        historyTurns: recentChatTurns(messages, scopedInstruction),
       };
       if (options?.skipAsk || skipAskForPick) {
         await runEditFlow(deps);
@@ -331,6 +334,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
       selectedSectionType,
       updateStageMessage,
       useFixture,
+      messages,
     ],
   );
 
@@ -390,6 +394,56 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
       selectedPick,
       selectedSectionType,
       updateStageMessage,
+      useFixture,
+    ],
+  );
+
+  /**
+   * Saves inline T-tool text via set_copy with no Editor agent card.
+   */
+  const commitInlineCopy = useCallback(
+    async (pick: PreviewPick, value: string) => {
+      if (!page || !brief || !pick.field) return;
+      setIsBusy(true);
+      setError(null);
+      try {
+        await applyInlineCopy({
+          page,
+          brief,
+          pageFamily,
+          projectId,
+          serverVersion,
+          setServerVersion,
+          enrichedChatText,
+          useFixture,
+          pick,
+          value,
+          direction,
+          history,
+          setHistory,
+          setPage,
+          setProjectId,
+          setMessages,
+          appendMessage,
+          setPhase,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Could not save text");
+      } finally {
+        setIsBusy(false);
+      }
+    },
+    [
+      appendMessage,
+      brief,
+      direction,
+      enrichedChatText,
+      history,
+      page,
+      pageFamily,
+      projectId,
+      serverVersion,
+      setServerVersion,
       useFixture,
     ],
   );
@@ -512,12 +566,16 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
    * Applies an existing library media path to a section slot.
    */
   const applyLibraryMedia = useCallback(
-    async (imagePath: string, target: ImageUploadTarget) => {
+    async (
+      item: { imagePath: string; assetId?: string },
+      target: ImageUploadTarget,
+    ) => {
       if (!page || isBusy) return;
       setIsBusy(true);
       try {
         await runUploadImageFlow({
-          libraryImagePath: imagePath,
+          libraryImagePath: item.imagePath,
+          libraryAssetId: item.assetId,
           target,
           page,
           brief,
@@ -832,6 +890,39 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
     return true;
   }, []);
 
+  /**
+   * Reattaches to a build that was already running when this tab opened.
+   *
+   * Called after a project is restored: the cached page is whatever existed
+   * before the build started, so without this a reload during a build shows a
+   * stale document and no sign that anything is happening.
+   */
+  const resumeBuild = useCallback(
+    async (id: string) => {
+      if (isBusy) return;
+
+      setIsBusy(true);
+      try {
+        await resumeBuildIfRunning({
+          projectId: id,
+          appendMessage,
+          updateStageMessage,
+          seedBuildStageRoster,
+          setPage,
+          setPageFamily,
+          setServerVersion,
+          setMessages,
+          setPhase,
+          setError,
+          setDirection,
+        });
+      } finally {
+        setIsBusy(false);
+      }
+    },
+    [appendMessage, isBusy, seedBuildStageRoster, updateStageMessage],
+  );
+
   return {
     messages,
     phase,
@@ -848,7 +939,10 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
     pageFamily,
     brief,
     projectId,
+    /** Stored version this session is editing from; drives history + conflicts. */
+    serverVersion,
     restoreProject,
+    resumeBuild,
     applyPendingEdit,
     dismissPendingEdit,
     pendingEditInstruction,
@@ -857,6 +951,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
     setSelectedSectionType,
     setSelectedPick,
     applySectionOps,
+    commitInlineCopy,
     undoEdit,
     canUndo: history.length > 0,
     direction,

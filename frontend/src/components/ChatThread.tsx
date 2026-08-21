@@ -1,5 +1,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { AgentPipelineCard } from "@/components/AgentPipelineCard";
+import { ChatRoundupCard } from "@/components/chat/ChatRoundupCard";
+import { SuggestionChipRow } from "@/components/chat/SuggestionChipRow";
 import { ThinkingIndicator } from "@/components/ThinkingIndicator";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +18,8 @@ type ChatThreadProps = {
   onAction: (action: ChatAction["action"]) => void;
   isBusy: boolean;
   phase?: ChatPhase;
+  /** Sends a suggestion chip as the next user message. */
+  onSuggestion?: (text: string) => void;
 };
 
 type ThreadBlock =
@@ -213,6 +217,7 @@ export function ChatThread({
   onAction,
   isBusy,
   phase,
+  onSuggestion,
 }: ChatThreadProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
@@ -260,7 +265,9 @@ export function ChatThread({
               key={block.message.id}
               message={block.message}
               onAction={onAction}
+              onSuggestion={onSuggestion}
               hideActions={hideActions}
+              suggestionsDisabled={isBusy}
             />
           ),
         )}
@@ -331,8 +338,10 @@ function EmptyChat() {
 type MessageBubbleProps = {
   message: ChatMessage;
   onAction: (action: ChatAction["action"]) => void;
+  onSuggestion?: (text: string) => void;
   /** When true, suppress CTAs (e.g. while Media Uploader is Working). */
   hideActions?: boolean;
+  suggestionsDisabled?: boolean;
 };
 
 /**
@@ -341,13 +350,28 @@ type MessageBubbleProps = {
 function MessageBubble({
   message,
   onAction,
+  onSuggestion,
   hideActions = false,
+  suggestionsDisabled = false,
 }: MessageBubbleProps) {
   const isUser = message.role === "user";
   const isAgent = message.role === "agent";
   const isAssistant = message.role === "assistant";
   const actions = message.actions ?? [];
   const showActions = !hideActions && actions.length > 0;
+  const suggestions = message.suggestions ?? [];
+
+  if (message.kind === "roundup") {
+    return (
+      <ChatRoundupCard
+        message={message}
+        onAction={onAction}
+        onSuggestion={onSuggestion}
+        hideActions={hideActions}
+        suggestionsDisabled={suggestionsDisabled}
+      />
+    );
+  }
 
   return (
     <article
@@ -408,6 +432,14 @@ function MessageBubble({
               </Button>
             ))}
           </div>
+        ) : null}
+
+        {isAssistant && onSuggestion && suggestions.length > 0 ? (
+          <SuggestionChipRow
+            suggestions={suggestions}
+            onSelect={onSuggestion}
+            disabled={suggestionsDisabled}
+          />
         ) : null}
       </div>
     </article>

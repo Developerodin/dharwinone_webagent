@@ -1,6 +1,14 @@
 import { authEnv } from "../config/env.js";
 import { escapeHtml } from "../lib/leadValidation.js";
 import { getSmtpTransport, readSmtpConfig } from "../lib/smtpMailer.js";
+import { AUTH_BRAND_NAME, authLogoAttachment } from "./emailBrand.js";
+import {
+  EMAIL_DANGER,
+  emailBody,
+  emailButton,
+  emailMuted,
+  emailShell,
+} from "./emailShell.js";
 
 /**
  * Transactional auth emails.
@@ -22,29 +30,10 @@ type MailContent = {
 };
 
 /**
- * Wraps body HTML in a minimal, client-safe shell.
- *
- * Deliberately table-free and inline-styled: email clients are not browsers,
- * and anything cleverer degrades badly in Outlook.
- */
-function shell(title: string, bodyHtml: string): string {
-  return `<!doctype html>
-<html><body style="margin:0;padding:24px;background:#f6f7f9;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#111;line-height:1.55">
-  <div style="max-width:480px;margin:0 auto;background:#fff;border-radius:12px;padding:32px">
-    <h1 style="margin:0 0 16px;font-size:20px;font-weight:600">${escapeHtml(title)}</h1>
-    ${bodyHtml}
-    <p style="margin:28px 0 0;padding-top:16px;border-top:1px solid #eaecef;font-size:12px;color:#8a9099">
-      ProwPlus · this is an automated message, please don't reply.
-    </p>
-  </div>
-</body></html>`;
-}
-
-/**
  * Renders a six-digit code as a large, copy-friendly block.
  */
 function codeBlock(code: string): string {
-  return `<p style="margin:0 0 8px;font-size:32px;font-weight:700;letter-spacing:8px;font-family:ui-monospace,Menlo,monospace">${escapeHtml(code)}</p>`;
+  return `<p style="margin:0 0 8px;font-size:32px;font-weight:700;letter-spacing:8px;font-family:ui-monospace,Menlo,monospace;color:#f4f4f5">${escapeHtml(code)}</p>`;
 }
 
 /**
@@ -54,21 +43,21 @@ export function buildVerifyEmailContent(
   code: string,
   ttlMinutes: number,
 ): MailContent {
-  const subject = `${code} is your ProwPlus verification code`;
+  const subject = `${code} is your ${AUTH_BRAND_NAME} verification code`;
   const text = [
     "Confirm your email address",
     "",
     `Your verification code is: ${code}`,
     `It expires in ${ttlMinutes} minutes.`,
     "",
-    "If you didn't try to create a ProwPlus account, you can ignore this email.",
+    `If you didn't try to create a ${AUTH_BRAND_NAME} account, you can ignore this email.`,
   ].join("\n");
 
-  const html = shell(
+  const html = emailShell(
     "Confirm your email address",
     `${codeBlock(code)}
-     <p style="margin:0 0 20px;font-size:14px;color:#5c6678">This code expires in ${ttlMinutes} minutes.</p>
-     <p style="margin:0;font-size:14px;color:#5c6678">If you didn't try to create a ProwPlus account, you can safely ignore this email.</p>`,
+     <p style="margin:0 0 20px;font-size:14px;color:#a1a1aa">This code expires in ${ttlMinutes} minutes.</p>
+     ${emailMuted(`If you didn't try to create a ${AUTH_BRAND_NAME} account, you can safely ignore this email.`)}`,
   );
 
   return { subject, text, html };
@@ -81,7 +70,7 @@ export function buildResetPasswordContent(
   code: string,
   ttlMinutes: number,
 ): MailContent {
-  const subject = `${code} is your ProwPlus password reset code`;
+  const subject = `${code} is your ${AUTH_BRAND_NAME} password reset code`;
   const text = [
     "Reset your password",
     "",
@@ -91,11 +80,11 @@ export function buildResetPasswordContent(
     "If you didn't request a password reset, ignore this email — your password has not changed.",
   ].join("\n");
 
-  const html = shell(
+  const html = emailShell(
     "Reset your password",
     `${codeBlock(code)}
-     <p style="margin:0 0 20px;font-size:14px;color:#5c6678">This code expires in ${ttlMinutes} minutes.</p>
-     <p style="margin:0;font-size:14px;color:#5c6678">If you didn't request this, ignore this email — your password has not changed.</p>`,
+     <p style="margin:0 0 20px;font-size:14px;color:#a1a1aa">This code expires in ${ttlMinutes} minutes.</p>
+     ${emailMuted("If you didn't request this, ignore this email — your password has not changed.")}`,
   );
 
   return { subject, text, html };
@@ -110,22 +99,22 @@ export function buildResetPasswordContent(
  */
 export function buildGoogleOnlyResetContent(): MailContent {
   const env = authEnv();
-  const subject = "Signing in to ProwPlus";
+  const subject = `Signing in to ${AUTH_BRAND_NAME}`;
   const text = [
     "Someone asked to reset the password for this email address.",
     "",
-    "Your ProwPlus account signs in with Google, so there's no password to reset.",
+    `Your ${AUTH_BRAND_NAME} account signs in with Google, so there's no password to reset.`,
     `Continue here: ${env.appUrl}/login`,
     "",
     "If this wasn't you, no action is needed.",
   ].join("\n");
 
-  const html = shell(
-    "Signing in to ProwPlus",
-    `<p style="margin:0 0 16px;font-size:14px">Someone asked to reset the password for this email address.</p>
-     <p style="margin:0 0 20px;font-size:14px">Your account signs in with <strong>Google</strong>, so there's no password to reset.</p>
-     <p style="margin:0 0 20px"><a href="${escapeHtml(env.appUrl)}/login" style="display:inline-block;background:#111;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-size:14px">Continue with Google</a></p>
-     <p style="margin:0;font-size:14px;color:#5c6678">If this wasn't you, no action is needed.</p>`,
+  const html = emailShell(
+    `Signing in to ${AUTH_BRAND_NAME}`,
+    `${emailBody("Someone asked to reset the password for this email address.")}
+     <p style="margin:0 0 20px;font-size:14px;color:#f4f4f5">Your account signs in with <strong>Google</strong>, so there's no password to reset.</p>
+     <p style="margin:0 0 20px">${emailButton(`${env.appUrl}/login`, "Continue with Google")}</p>
+     ${emailMuted("If this wasn't you, no action is needed.")}`,
   );
 
   return { subject, text, html };
@@ -142,7 +131,7 @@ export function buildDuplicateSignupContent(): MailContent {
   const env = authEnv();
   const subject = "Someone tried to sign up with your email";
   const text = [
-    "Someone just tried to create a ProwPlus account with this email address.",
+    `Someone just tried to create a ${AUTH_BRAND_NAME} account with this email address.`,
     "",
     "You already have an account, so nothing was created.",
     `Sign in: ${env.appUrl}/login`,
@@ -151,11 +140,11 @@ export function buildDuplicateSignupContent(): MailContent {
     "If this wasn't you, no action is needed — but consider changing your password if you reuse it elsewhere.",
   ].join("\n");
 
-  const html = shell(
+  const html = emailShell(
     "Someone tried to sign up with your email",
-    `<p style="margin:0 0 16px;font-size:14px">Someone just tried to create a ProwPlus account with this email address. You already have an account, so nothing was created.</p>
-     <p style="margin:0 0 20px"><a href="${escapeHtml(env.appUrl)}/login" style="display:inline-block;background:#111;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-size:14px">Sign in</a></p>
-     <p style="margin:0;font-size:14px;color:#5c6678">If this wasn't you, no action is needed.</p>`,
+    `${emailBody(`Someone just tried to create a ${AUTH_BRAND_NAME} account with this email address. You already have an account, so nothing was created.`)}
+     <p style="margin:0 0 20px">${emailButton(`${env.appUrl}/login`, "Sign in")}</p>
+     ${emailMuted("If this wasn't you, no action is needed.")}`,
   );
 
   return { subject, text, html };
@@ -166,20 +155,20 @@ export function buildDuplicateSignupContent(): MailContent {
  */
 export function buildPasswordChangedContent(): MailContent {
   const env = authEnv();
-  const subject = "Your ProwPlus password was changed";
+  const subject = `Your ${AUTH_BRAND_NAME} password was changed`;
   const text = [
-    "Your ProwPlus password was just changed.",
+    `Your ${AUTH_BRAND_NAME} password was just changed.`,
     "",
     "You've been signed out on all devices.",
     "",
     `If this wasn't you, reset your password immediately: ${env.appUrl}/forgot-password`,
   ].join("\n");
 
-  const html = shell(
+  const html = emailShell(
     "Your password was changed",
-    `<p style="margin:0 0 16px;font-size:14px">Your ProwPlus password was just changed, and you've been signed out on all devices.</p>
-     <p style="margin:0 0 20px;font-size:14px"><strong>If this wasn't you</strong>, reset your password immediately.</p>
-     <p style="margin:0"><a href="${escapeHtml(env.appUrl)}/forgot-password" style="display:inline-block;background:#c43c3c;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-size:14px">Reset password</a></p>`,
+    `${emailBody(`Your ${AUTH_BRAND_NAME} password was just changed, and you've been signed out on all devices.`)}
+     <p style="margin:0 0 20px;font-size:14px;color:#f4f4f5"><strong>If this wasn't you</strong>, reset your password immediately.</p>
+     <p style="margin:0">${emailButton(`${env.appUrl}/forgot-password`, "Reset password", EMAIL_DANGER)}</p>`,
   );
 
   return { subject, text, html };
@@ -190,19 +179,19 @@ export function buildPasswordChangedContent(): MailContent {
  */
 export function buildSuspiciousSessionContent(): MailContent {
   const env = authEnv();
-  const subject = "You were signed out of ProwPlus";
+  const subject = `You were signed out of ${AUTH_BRAND_NAME}`;
   const text = [
-    "We detected an unusual sign-in token for your ProwPlus account and signed you out everywhere as a precaution.",
+    `We detected an unusual sign-in token for your ${AUTH_BRAND_NAME} account and signed you out everywhere as a precaution.`,
     "",
     "Signing back in is enough if you recognise this. If you don't, change your password.",
     `${env.appUrl}/login`,
   ].join("\n");
 
-  const html = shell(
+  const html = emailShell(
     "You were signed out",
-    `<p style="margin:0 0 16px;font-size:14px">We detected an unusual sign-in token for your account and signed you out everywhere as a precaution.</p>
-     <p style="margin:0 0 20px;font-size:14px">Signing back in is enough if you recognise this. If you don't, change your password.</p>
-     <p style="margin:0"><a href="${escapeHtml(env.appUrl)}/login" style="display:inline-block;background:#111;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-size:14px">Sign in</a></p>`,
+    `${emailBody("We detected an unusual sign-in token for your account and signed you out everywhere as a precaution.")}
+     <p style="margin:0 0 20px;font-size:14px;color:#f4f4f5">Signing back in is enough if you recognise this. If you don't, change your password.</p>
+     <p style="margin:0">${emailButton(`${env.appUrl}/login`, "Sign in")}</p>`,
   );
 
   return { subject, text, html };
@@ -227,11 +216,22 @@ export async function sendAuthEmail(
     return false;
   }
 
+  let logo;
+  try {
+    logo = await authLogoAttachment();
+  } catch (error) {
+    console.warn(
+      "[auth] logo attachment skipped:",
+      error instanceof Error ? error.message : error,
+    );
+  }
+
   const mail = {
     to,
     subject: content.subject,
     text: content.text,
     html: content.html,
+    ...(logo ? { attachments: [logo] } : {}),
   };
 
   try {

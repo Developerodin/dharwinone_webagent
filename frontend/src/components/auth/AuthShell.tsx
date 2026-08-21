@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { BrandMark } from "@/components/BrandMark";
 import { AuroraBackground } from "./AuroraBackground";
 
 /**
@@ -45,22 +46,14 @@ export function AuthShell({
 }
 
 /**
- * The product mark. A gradient glyph so the auth screens do not depend on an
- * image request that could fail or arrive late.
+ * Same Dharwin mark as the builder sidebar, sized for auth chrome.
  */
 export function AuthLogo({ size = 46 }: { size?: number }) {
   return (
-    <div
-      aria-label="ProwPlus"
-      role="img"
-      className="rounded-[14px]"
-      style={{
-        width: size,
-        height: size,
-        background:
-          "linear-gradient(150deg, #ff9a3c 0%, #ff5c7a 42%, #7b6bff 100%)",
-        boxShadow: "0 8px 28px -8px rgba(255,92,122,0.55)",
-      }}
+    <BrandMark
+      labelled
+      className="size-auto max-w-none"
+      style={{ width: size, height: size }}
     />
   );
 }

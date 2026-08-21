@@ -4,15 +4,17 @@ import {
   Eye,
   ExternalLink,
   Globe2,
+  History,
   MessageSquare,
   Monitor,
   PanelLeft,
-  Pencil,
   Smartphone,
   Tablet,
   Undo2,
   Zap,
 } from "lucide-react";
+import { CanvasToolButtons } from "@/components/shell/CanvasToolButtons";
+import type { CanvasTool } from "@/hooks/useCanvasTool";
 import { cn } from "@/lib/utils";
 
 type DeviceMode = "desktop" | "tablet" | "mobile";
@@ -37,10 +39,12 @@ type EditorTopBarProps = {
   onGoHome?: () => void;
   canUndo?: boolean;
   onUndo?: () => void;
-  /** When true, preview element clicks attach a chat edit target. */
-  editMode?: boolean;
-  /** Toggles Cursor-style element pick mode. */
-  onEditModeChange?: (on: boolean) => void;
+  /** Opens version history. Absent until a project is saved server-side. */
+  onOpenHistory?: () => void;
+  historyOpen?: boolean;
+  canvasTool?: CanvasTool;
+  onToggleSelect?: () => void;
+  onToggleText?: () => void;
 };
 
 /**
@@ -76,8 +80,11 @@ export function EditorTopBar({
   onGoHome,
   canUndo = false,
   onUndo,
-  editMode = false,
-  onEditModeChange,
+  onOpenHistory,
+  historyOpen = false,
+  canvasTool = "off",
+  onToggleSelect,
+  onToggleText,
 }: EditorTopBarProps) {
   return (
     <header
@@ -220,26 +227,13 @@ export function EditorTopBar({
           <ChevronDown className="size-3" aria-hidden="true" />
         </button>
 
-        {onEditModeChange ? (
-          <button
-            type="button"
-            onClick={() => onEditModeChange(!editMode)}
-            className={cn(
-              "inline-flex min-h-7 items-center gap-1 rounded-lg border px-2.5 text-[12px] font-medium transition",
-              editMode
-                ? "border-blue-500/50 bg-blue-500/15 text-blue-300"
-                : "border-[var(--lovable-border)] bg-[var(--lovable-bg)] text-[var(--lovable-text-muted)] hover:bg-[var(--lovable-hover)] hover:text-[var(--lovable-text)]",
-            )}
-            aria-label={
-              editMode
-                ? "Turn off element pick mode"
-                : "Turn on element pick mode"
-            }
-            aria-pressed={editMode}
-          >
-            <Pencil className="size-3.5" aria-hidden="true" />
-            Edit
-          </button>
+        {onToggleSelect && onToggleText ? (
+          <CanvasToolButtons
+            tool={canvasTool}
+            onToggleSelect={onToggleSelect}
+            onToggleText={onToggleText}
+            className="hidden md:flex"
+          />
         ) : null}
 
         {onUndo ? (
@@ -252,6 +246,24 @@ export function EditorTopBar({
           >
             <Undo2 className="size-3.5" aria-hidden="true" />
             Undo
+          </button>
+        ) : null}
+
+        {onOpenHistory ? (
+          <button
+            type="button"
+            onClick={onOpenHistory}
+            className={cn(
+              "inline-flex min-h-7 items-center gap-1 rounded-lg border border-[var(--lovable-border)] px-2.5 text-[12px] transition hover:bg-[var(--lovable-hover)] hover:text-[var(--lovable-text)]",
+              historyOpen
+                ? "bg-[var(--lovable-active)] text-[var(--lovable-text)]"
+                : "bg-[var(--lovable-bg)] text-[var(--lovable-text-muted)]",
+            )}
+            aria-pressed={historyOpen}
+            aria-label="Version history"
+          >
+            <History className="size-3.5" aria-hidden="true" />
+            History
           </button>
         ) : null}
 

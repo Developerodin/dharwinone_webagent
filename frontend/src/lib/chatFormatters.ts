@@ -32,12 +32,31 @@ export function formatEditResultMessage(summary: string): string {
 
 /**
  * Formats clarification questions for the chat thread.
+ * Location rounds stay a dedicated map-pin step (never a numbered mix-in).
  */
 export function formatClarificationMessage(
   questions: string[],
   round: number,
   canSkip = false,
+  options?: { locationOnly?: boolean },
 ): string {
+  if (options?.locationOnly) {
+    const question =
+      questions[0]?.trim() ||
+      "Where are you located? Tap Select location on the map, or type the street address.";
+    const skipNote = canSkip
+      ? "\n\nIf you don’t have it yet, reply **skip for now** (or tap the button) and we’ll continue without a map pin."
+      : "";
+    return [
+      `I need your restaurant location (ask #${round}):`,
+      "",
+      question,
+      "",
+      "This step is only the pin — I’ll ask anything else after you drop it (or type the address).",
+      skipNote,
+    ].join("\n");
+  }
+
   const list = questions.map((q, i) => `${i + 1}. ${q}`).join("\n");
   const skipNote = canSkip
     ? "\n\nIf you don’t have these details, reply **skip for now** (or tap the button) and we’ll continue without them."

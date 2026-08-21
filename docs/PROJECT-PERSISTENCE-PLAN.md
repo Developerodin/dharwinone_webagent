@@ -1,6 +1,6 @@
 # Project Persistence — Production Build Plan
 
-**Status:** steps 1–5 implemented (schema, repository, read/write APIs, asset pipeline) — see §23
+**Status:** steps 1–10 implemented (schema, repository, read/write APIs, asset pipeline, server-authoritative edit, durable build jobs, chat persistence, localStorage import, quotas) and consumed by the frontend. Publishing (step 11) is the remaining gap — see §23
 **Scope:** server-side projects, versioning, assets, build jobs, publishing
 **Companion doc:** [`AUTH-AND-ONBOARDING-PLAN.md`](./AUTH-AND-ONBOARDING-PLAN.md) — this doc assumes `User` exists and every request is authenticated.
 **Posture:** production. Not "good enough for a test round." Everything here is built to survive real users, multiple server instances, restarts, concurrent tabs, and data we cannot afford to lose.
@@ -867,18 +867,32 @@ VERSION_RETENTION_DAYS=30
 ### Bug caught during verification
 The project and asset routers were first mounted **after** the global `express.json({ limit: "80mb" })`. Whichever parser runs first consumes the body, so the 2 MB and 64 KB limits silently did nothing. Now mounted before it, and verified: 3 MB → 413 on `/api/projects` and `/api/assets`, still accepted on the legacy `/api/intake`.
 
+### Session of 2026-08-21 — frontend wiring, durable builds, media pipeline
+
+Everything the backend had built but nothing consumed is now consumed.
+
+| Area | Files | What changed |
+|---|---|---|
+| Presigned upload contract | `src/storage/driver.ts`, `assets/service.ts`, `routes/assets.ts` | Presign returns the exact headers the browser must replay. **Bug found by an end-to-end run:** the SDK hoists `x-amz-meta-sha256` into the query string, so S3 rejected every PUT with *"headers present which were not signed"*. Fixed with `unhoistableHeaders` + `signableHeaders` |
+| Server-authoritative media placement | `routes/projectPipeline.ts` `POST /:id/media`, `projects/mediaPlacement.ts` | The client sends an asset id and a slot, never a page. The version write links the asset, so garbage collection can see the file is in use — which the old `/api/upload` path never achieved |
+| Daily build quota | `config/limits.ts`, `projects/quota.ts` | `MAX_BUILDS_PER_DAY` was defined and never enforced. Now checked *before* the pipeline runs, since the point is not to spend the tokens |
+| Durable builds | `prisma/schema.prisma` (`BuildJob`, `JobStatus`), `migrations/20260821061530_build_jobs/`, `jobs/buildJobs.ts` | Every build writes a job row with its stages and a heartbeat. `GET /:id/jobs/latest` and `GET /:id/jobs/:jobId/events` let a reloaded tab reattach; the events stream tails the row rather than an in-process emitter, so it survives a redeploy. Stale RUNNING rows are reconciled at boot and on the daily sweep |
+| Frontend: uploads | `lib/assetApi.ts` (new), `uploadSectionImage.ts`, `mediaLibrary.ts`, `editUploadFlows.ts` | Browser → bucket directly, with SHA-256 dedupe and upload progress. Falls back to the legacy disk route when a project is unsaved or storage is unconfigured. A version conflict on placement retries once against the new head |
+| Frontend: project management | `lib/projectActions.ts` (new), `components/shell/ProjectRowMenu.tsx` (new), `DashboardSidebar.tsx`, `ChatApp.tsx` | Rename, duplicate, trash, and restore — all server-backed. Delete previously removed only the local cache, so the server row survived forever |
+| Frontend: version history | `components/shell/VersionHistoryPanel.tsx` (new), `EditorTopBar.tsx` | `listVersions` / `revert` shipped on day one with no UI. There is now a History panel with per-version restore |
+| Frontend: media library | `components/shell/AssetsPanel.tsx` (new) | The editor's Assets tab rendered nothing at all. It now lists stored media with a storage meter, upload, remove, and place-into-section |
+| Frontend: build resume | `lib/resumeBuildFlow.ts` (new), `useChatFlow.ts`, `useAppViewSync.ts` | Opening a project — on boot or from the sidebar — reattaches to a build still running server-side |
+| Tests | `projects/mediaPlacement.test.ts`, `jobs/buildJobs.test.ts` | 327 passing |
+
+Verified end-to-end against the real database and bucket: presign → PUT → commit → place → link → conflict → history → revert → trash → restore, plus content-addressed dedupe on a second upload of the same bytes.
+
 ### Not yet built
-- **Step 6 — server-authoritative edit.** `/api/edit` still trusts `req.body.page`. This is the change that makes the whole design real, and it is deliberately separate: it alters the behaviour of a running app, and the client must move at the same time.
-- **Step 7 — `BuildJob` + resumable SSE.** Table not yet in the schema; adds with the feature.
-- **Step 8 — chat persistence.** Table exists and is pruned; no routes yet.
-- **Step 9 — localStorage import.** Needs steps 1–5 in place, which they now are.
-- **Step 11 — publishing.** `Publication` table not yet added.
-- Frontend: nothing consumes these endpoints yet.
+- **Step 11 — publishing.** No `Publication` table, no static render, no CDN deploy, no live URL, no rollback. `SITES_BUCKET` / `SITES_BASE_DOMAIN` are not configured. This is the largest remaining gap.
+- **Legacy pipeline routes.** `/api/intake`, `/api/build`, `/api/edit`, `/api/ask`, `/api/upload` still sit behind `express.json({ limit: "80mb" })` (`server.ts`). Step 6's deliverable of dropping that to 1 MB waits on the last caller moving off them — today that is an unsaved project, which has no stored document to patch.
+- **Observability (step 10, half).** Quotas are enforced (projects, storage, page size, builds/day); there are no metrics, traces, or dashboards.
+- **Integration tests.** Only pure-helper unit tests exist. No tests against a real database, no concurrent-edit race test, no tenancy test, no load or failure-injection runs.
+- **Backups drill (step 12, half).** The daily sweep runs; a restore has never been rehearsed.
 
-### Blocked on you
-| Needed | For |
-|---|---|
-| Neon `DATABASE_URL` + `DIRECT_DATABASE_URL` | `npm run db:deploy` to apply both migrations. Nothing is exercised end-to-end until then |
-| R2 bucket + keys + `CDN_BASE_URL` | Uploads. Without them the asset routes return `STORAGE_UNAVAILABLE` and the rest of the API works normally |
-
-Serve `CDN_BASE_URL` from a **different origin** than the app — a malicious upload must not be able to execute in the app's origin.
+### Environment notes
+- The datasource is **local Postgres** (`localhost:5432/webagent`), not Neon as §22 decided. Storage is **AWS S3** (`ap-south-1`), not R2 — the driver is S3-compatible either way, so this is a config choice, not a code one.
+- The assets bucket allows browser PUTs from `http://localhost:3000` and `https://*.dharwinone.com`. The Vite dev server runs on **5173**, which is not on that list, so uploads fail locally until `http://localhost:5173` is added to the bucket's CORS `AllowedOrigins`.

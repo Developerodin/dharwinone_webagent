@@ -42,7 +42,7 @@ function unclaimedLocalProjects(): StoredProject[] {
  * The page and chat thread are fetched separately and only for the project
  * being opened — the dashboard must never pull every document.
  */
-function toStoredProject(project: ServerProject): StoredProject {
+export function toStoredProject(project: ServerProject): StoredProject {
   return {
     id: project.id,
     businessName: project.name,

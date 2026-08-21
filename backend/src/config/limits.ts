@@ -52,6 +52,17 @@ export const LIMITS = {
     return int("MAX_VIDEO_BYTES", 50 * 1024 * 1024);
   },
 
+  /**
+   * Pipeline builds per user per rolling 24 hours.
+   *
+   * A build is the most expensive thing the API does — a full LLM pipeline —
+   * so this is the cap that stops one account from spending the token budget
+   * for everyone.
+   */
+  get maxBuildsPerDay() {
+    return int("MAX_BUILDS_PER_DAY", 30);
+  },
+
   /** Chat messages retained per project. */
   get maxMessagesPerProject() {
     return int("MAX_MESSAGES_PER_PROJECT", 2000);

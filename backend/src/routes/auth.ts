@@ -145,7 +145,7 @@ authRouter.post(
     if (env.signupInviteCode && body.inviteCode !== env.signupInviteCode) {
       throw forbidden(
         "INVITE_REQUIRED",
-        "ProwPlus is invite-only right now. Please enter a valid invite code.",
+        "Dharwin is invite-only right now. Please enter a valid invite code.",
       );
     }
 

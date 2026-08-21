@@ -26,7 +26,14 @@ export type PresignArgs = {
 
 export type PresignResult =
   | { deduped: true; asset: Asset }
-  | { deduped: false; asset: Asset; uploadUrl: string; expiresInSeconds: number };
+  | {
+      deduped: false;
+      asset: Asset;
+      uploadUrl: string;
+      /** Headers the browser must replay on the PUT, or the signature fails. */
+      uploadHeaders: Record<string, string>;
+      expiresInSeconds: number;
+    };
 
 /**
  * Validates a hex SHA-256.
@@ -120,14 +127,20 @@ export async function presignAsset(
       },
     }));
 
-  const { url, expiresInSeconds } = await presignUpload({
+  const { url, headers, expiresInSeconds } = await presignUpload({
     storageKey: asset.storageKey,
     mime: asset.mime,
     bytes: args.bytes,
     sha256,
   });
 
-  return { deduped: false, asset, uploadUrl: url, expiresInSeconds };
+  return {
+    deduped: false,
+    asset,
+    uploadUrl: url,
+    uploadHeaders: headers,
+    expiresInSeconds,
+  };
 }
 
 /**
@@ -328,4 +341,33 @@ export async function storageUsage(
     used: aggregate._sum.bytes ?? 0,
     limit: LIMITS.maxStorageBytesPerUser,
   };
+}
+
+/**
+ * Loads an asset that is ready to be placed into a page.
+ *
+ * Ownership and readiness are checked together: a PENDING row means the upload
+ * never landed, and linking it would put a URL that 404s into the document.
+ */
+export async function requireReadyAsset(
+  ownerId: string,
+  assetId: string,
+): Promise<Asset> {
+  const asset = await prisma.asset.findFirst({
+    where: { id: assetId, ownerId },
+  });
+
+  if (!asset) {
+    throw notFound("ASSET_NOT_FOUND", "That file could not be found.");
+  }
+
+  if (asset.status !== "READY") {
+    throw badRequest(
+      "ASSET_NOT_READY",
+      "That upload hasn't finished processing yet.",
+      { status: asset.status },
+    );
+  }
+
+  return asset;
 }

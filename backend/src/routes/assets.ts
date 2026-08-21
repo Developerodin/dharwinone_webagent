@@ -76,6 +76,7 @@ assetsRouter.post(
       deduped: false,
       asset: present(result.asset),
       uploadUrl: result.uploadUrl,
+      uploadHeaders: result.uploadHeaders,
       expiresInSeconds: result.expiresInSeconds,
     });
   }),

@@ -4,6 +4,7 @@ import {
   type CSSProperties,
   type KeyboardEvent,
   type MouseEvent as ReactMouseEvent,
+  type RefObject,
 } from "react";
 import type {
   Page,
@@ -16,12 +17,15 @@ import {
   ElementPickOverlay,
   type PickOverlayRect,
 } from "@/components/preview/ElementPickOverlay";
+import { InlineTextEditor } from "@/components/preview/InlineTextEditor";
 import {
   previewPickFromEvent,
   resolvePickTag,
   sectionOnlyPick,
   type PreviewPick,
 } from "@/lib/resolvePreviewPick";
+import { canInlineEditPick, copyValueForPick } from "@/lib/inlineCopy";
+import type { InlineTextSession } from "@/hooks/useCanvasTool";
 import {
   getFamilyFromComponentId,
   themeClassForFamily,
@@ -42,6 +46,16 @@ type PageRendererProps = {
   onSelectSection?: (type: string) => void;
   /** Called with the resolved element pick in Edit/inspect mode. */
   onPick?: (pick: PreviewPick) => void;
+  /** Select = attach for chat; text = inline copy overlay. */
+  pickMode?: "select" | "text";
+  /** Live inline editor session, rendered over the page. */
+  textSession?: InlineTextSession | null;
+  /** Opens the overlay, or null when the click is not editable text. */
+  onStartTextEdit?: (session: InlineTextSession | null) => void;
+  /** Commits the overlay value. */
+  onCommitTextEdit?: (value: string) => void;
+  /** Closes the overlay without saving. */
+  onCancelTextEdit?: () => void;
 };
 
 /**
@@ -152,6 +166,11 @@ export function PageRenderer({
   selectedSectionType = null,
   onSelectSection,
   onPick,
+  pickMode = "select",
+  textSession = null,
+  onStartTextEdit,
+  onCommitTextEdit,
+  onCancelTextEdit,
 }: PageRendererProps) {
   const family = resolvePageFamily(page.sections);
   const themeClass = themeClassForFamily(family);
@@ -200,9 +219,22 @@ export function PageRenderer({
           selected={selectable && selectedSectionType === section.type}
           onSelect={onSelectSection}
           onPick={onPick}
+          pickMode={pickMode}
+          overlayRootRef={rootRef}
+          page={page}
+          onStartTextEdit={onStartTextEdit}
         />
       ))}
-      {selectable ? <ElementPickOverlay rect={hoverRect} /> : null}
+      {selectable && !textSession ? (
+        <ElementPickOverlay rect={hoverRect} />
+      ) : null}
+      {textSession && onCommitTextEdit && onCancelTextEdit ? (
+        <InlineTextEditor
+          session={textSession}
+          onCommit={onCommitTextEdit}
+          onCancel={onCancelTextEdit}
+        />
+      ) : null}
     </div>
   );
 }
@@ -215,6 +247,10 @@ type SectionSlotProps = {
   selected?: boolean;
   onSelect?: (type: string) => void;
   onPick?: (pick: PreviewPick) => void;
+  pickMode?: "select" | "text";
+  overlayRootRef: RefObject<HTMLDivElement | null>;
+  page: Page;
+  onStartTextEdit?: (session: InlineTextSession | null) => void;
 };
 
 /**
@@ -228,6 +264,10 @@ function SectionSlot({
   selected = false,
   onSelect,
   onPick,
+  pickMode = "select",
+  overlayRootRef,
+  page,
+  onStartTextEdit,
 }: SectionSlotProps) {
   const Component = pageComponentRegistry[section.componentId];
   const rootRef = useRef<HTMLDivElement>(null);
@@ -271,6 +311,25 @@ function SectionSlot({
     const pick = previewPickFromEvent(e.nativeEvent, section, root);
     onPick?.(pick);
     onSelect?.(section.type);
+    if (pickMode !== "text") return;
+    if (!canInlineEditPick(pick)) {
+      onStartTextEdit?.(null);
+      return;
+    }
+    const raw = e.nativeEvent.target;
+    const el = raw instanceof HTMLElement ? raw : root;
+    const { node } = resolvePickTag(el, root);
+    const pageRoot = overlayRootRef.current;
+    const rect = pageRoot ? overlayRectFor(pageRoot, node) : null;
+    if (!rect) {
+      onStartTextEdit?.(null);
+      return;
+    }
+    onStartTextEdit?.({
+      pick,
+      rect,
+      value: copyValueForPick(page, pick),
+    });
   }
 
   return (

@@ -35,6 +35,9 @@ const P3_GAPS: BriefGap[] = [
   "brandColors",
 ];
 
+/** Max questions per non-location clarification turn. */
+export const MAX_CLARIFICATION_QUESTIONS = 3;
+
 const GENERIC_BUSINESS_NAMES = new Set([
   "restaurant",
   "my business",
@@ -147,6 +150,37 @@ function gapRank(gap: BriefGap): number {
   if (P2_GAPS.includes(gap)) return 2;
   if (P3_GAPS.includes(gap)) return 3;
   return 9;
+}
+
+/**
+ * True when this gap is the map-pin / street-address ask.
+ */
+export function isLocationGap(gap: BriefGap): boolean {
+  return gap === "address";
+}
+
+/**
+ * Picks gaps for one clarification turn. Address is always a solo map-pin
+ * step — never batched with email, hours, or anything else.
+ */
+export function selectGapsForRound(
+  gaps: BriefGap[],
+  maxQuestions = MAX_CLARIFICATION_QUESTIONS,
+): BriefGap[] {
+  if (gaps.length === 0) return [];
+  if (!gaps.some(isLocationGap)) {
+    return gaps.slice(0, maxQuestions);
+  }
+
+  const addressRank = gapRank("address");
+  const beforeAddress = gaps.filter(
+    (gap) =>
+      !isLocationGap(gap) && gap !== "neighbourhood" && gapRank(gap) < addressRank,
+  );
+  if (beforeAddress.length > 0) {
+    return beforeAddress.slice(0, maxQuestions);
+  }
+  return ["address"];
 }
 
 /**

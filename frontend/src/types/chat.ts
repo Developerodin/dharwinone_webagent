@@ -17,6 +17,8 @@ export type ChatAction = {
   ariaLabel?: string;
 };
 
+export type ChatMessageKind = "message" | "roundup";
+
 export type ChatMessage = {
   id: string;
   role: ChatMessageRole;
@@ -31,6 +33,12 @@ export type ChatMessage = {
   /** Human-readable thinking / status line for agent stages. */
   stageDetail?: string;
   stageMs?: number;
+  /** Roundup card after a build; omitted for normal bubbles. */
+  kind?: ChatMessageKind;
+  /** Title shown on a roundup card. */
+  roundupTitle?: string;
+  /** Tap-to-send follow-up chips under the bubble or roundup. */
+  suggestions?: string[];
 };
 
 export type ChatPhase =

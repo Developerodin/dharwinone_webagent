@@ -54,7 +54,7 @@ export type GoogleIdentity = {
  *                         so a captured token cannot be replayed later
  *  - `email_verified`   : without it, anyone able to mint a Google account
  *                         claiming a victim's address could take over the
- *                         matching ProwPlus account through account linking
+ *                         matching Dharwin account through account linking
  */
 export async function verifyGoogleIdToken(
   credential: string,
