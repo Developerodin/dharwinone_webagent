@@ -40,11 +40,24 @@ function s3(): { client: S3Client; config: StorageConfig } {
       },
       // R2 and MinIO require path-style addressing; S3 tolerates it.
       forcePathStyle: Boolean(config.endpoint),
+      // SDK v3 defaults to CRC32 on PutObject. Presigning has no body, so it
+      // bakes x-amz-checksum-crc32=AAAAAA== (CRC of empty) into the URL. The
+      // browser then PUTs real bytes, S3 rejects the mismatch, and the
+      // response often lacks CORS headers — which the UI reports as CORS.
+      requestChecksumCalculation: "WHEN_REQUIRED",
     });
     clientKey = key;
   }
 
   return { client, config };
+}
+
+/**
+ * Drops the memoized S3 client. Test-only.
+ */
+export function resetStorageClient(): void {
+  client = null;
+  clientKey = "";
 }
 
 /**
