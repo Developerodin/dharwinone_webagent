@@ -11,10 +11,7 @@ import { loadProject } from "@/lib/projectStorage";
 import type { ChatMessage, ChatPhase } from "@/types/chat";
 import type { PipelineStage } from "@/types/intake";
 import type { Page } from "@/types/page";
-import {
-  formatRoundupTitle,
-  suggestionChipsForPage,
-} from "@/lib/suggestionChips";
+import { formatRoundupTitle } from "@/lib/suggestionChips";
 
 export type ResumeBuildDeps = {
   projectId: string;
@@ -107,7 +104,6 @@ export async function resumeBuildIfRunning(
       pageFamily: family,
       kind: "roundup",
       roundupTitle: formatRoundupTitle(businessName),
-      suggestions: suggestionChipsForPage(result.page, brief),
       actions: [
         { label: "Open preview ↗", action: "preview", variant: "primary" },
         { label: "Build another", action: "reset", variant: "outline" },

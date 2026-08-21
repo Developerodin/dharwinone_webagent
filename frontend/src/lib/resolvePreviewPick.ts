@@ -47,7 +47,11 @@ type ContentField = { field: string; value: string };
  * Human label for a content field key (chip / aria).
  */
 export function fieldLabelFor(field: string): string {
-  return FIELD_LABELS[field] ?? field;
+  if (/^items\.\d+\.name$/i.test(field)) return "dish name";
+  if (/^items\.\d+\.description$/i.test(field)) return "dish description";
+  if (/^items\.\d+\.quote$/i.test(field)) return "quote";
+  const last = field.split(".").at(-1);
+  return FIELD_LABELS[field] ?? (last ? (FIELD_LABELS[last] ?? last) : field);
 }
 
 /**
@@ -60,7 +64,8 @@ export function collectContentFields(
   for (const [field, raw] of Object.entries(content)) {
     const plain = textFieldToPlain(raw).replace(/\s+/g, " ").trim();
     if (plain) out.push({ field, value: plain });
-    if (Array.isArray(raw) && raw.every((item) => typeof item === "string")) {
+    if (!Array.isArray(raw)) continue;
+    if (raw.every((item) => typeof item === "string")) {
       const joined = raw
         .map((item) => item.trim())
         .filter(Boolean)
@@ -68,7 +73,19 @@ export function collectContentFields(
       if (joined && joined !== plain) {
         out.push({ field, value: joined });
       }
+      continue;
     }
+    raw.forEach((item, index) => {
+      if (!item || typeof item !== "object" || Array.isArray(item)) return;
+      for (const [key, val] of Object.entries(
+        item as Record<string, unknown>,
+      )) {
+        const leaf = textFieldToPlain(val).replace(/\s+/g, " ").trim();
+        if (leaf) {
+          out.push({ field: `${field}.${index}.${key}`, value: leaf });
+        }
+      }
+    });
   }
   return out;
 }
@@ -185,6 +202,22 @@ export function looksLikeQuestion(text: string): boolean {
 }
 
 /**
+ * Resolves a pointer target to an element.
+ * Clicking letters yields a Text node — treat that as the parent tag.
+ */
+export function elementFromPointerTarget(
+  target: EventTarget | null,
+  fallback: HTMLElement,
+): HTMLElement {
+  if (target instanceof HTMLElement) return target;
+  if (target instanceof Node) {
+    const parent = target.parentElement;
+    if (parent) return parent;
+  }
+  return fallback;
+}
+
+/**
  * Walks up to a meaningful tag (button/heading/p) inside the section root.
  */
 export function resolvePickTag(
@@ -222,8 +255,7 @@ export function previewPickFromEvent(
   section: PageSection,
   sectionRoot: HTMLElement,
 ): PreviewPick {
-  const raw = event.target;
-  const el = raw instanceof HTMLElement ? raw : sectionRoot;
+  const el = elementFromPointerTarget(event.target, sectionRoot);
   const clickedSectionRoot = el === sectionRoot;
   const { tag, node } = clickedSectionRoot
     ? { tag: "section", node: sectionRoot }

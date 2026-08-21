@@ -366,9 +366,7 @@ function MessageBubble({
       <ChatRoundupCard
         message={message}
         onAction={onAction}
-        onSuggestion={onSuggestion}
         hideActions={hideActions}
-        suggestionsDisabled={suggestionsDisabled}
       />
     );
   }

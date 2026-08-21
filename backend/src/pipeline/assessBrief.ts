@@ -17,6 +17,11 @@ import { extractBrief } from "./extractBrief.js";
 import { hasExplicitNameSignal } from "./hasExplicitNameSignal.js";
 import { inferPageFamily } from "./inferPageFamily.js";
 import { mergeClarificationAnswers } from "./mergeClarifications.js";
+import {
+  formatIntakeAsideMessage,
+  isOffTopicIntakeReply,
+  latestAnswerBlob,
+} from "./intakeAside.js";
 import { detectSkipIntent } from "./skipIntent.js";
 import { verifyBriefAgainstSource } from "./verifyBrief.js";
 import { isPlaceholderRestaurantEmail } from "../lib/leadValidation.js";
@@ -48,6 +53,8 @@ export type AssessBriefResult =
       pageFamily: PageFamily;
       canSkip: boolean;
       gaps: BriefGap[];
+      /** Set when the latest reply was chat/trivia, not a brief answer. */
+      asideMessage?: string;
     }
   | {
       status: "ready";
@@ -85,6 +92,8 @@ const GAP_QUESTIONS: Partial<Record<BriefGap, string>> = {
   address:
     "Where are you located? Tap Select location on the map, or type the street address / nearest landmark.",
   hours: "What are your opening hours?",
+  menuItems:
+    "List 4–8 menu items with prices (name — price). Include the dishes you’re known for.",
   usp: "In one line — what would a regular say makes you different?",
   signatureDishes: "Which 2–3 dishes are you known for?",
   audience:
@@ -243,6 +252,8 @@ function refineReadiness(args: {
   chatText: string;
   clarificationRound: number;
   skipConfirmed: boolean;
+  /** Off-topic chat must not burn a clarification round or trip the cap. */
+  skipRoundCap?: boolean;
 }): { brief: Brief; readiness: ReturnType<typeof evaluateBriefReadiness> } {
   const brief: Brief = {
     ...args.brief,
@@ -273,12 +284,15 @@ function refineReadiness(args: {
     }
   }
 
-  readiness = applyIntakeRoundCap(readiness, args.clarificationRound, {
-    nameOk,
-    categoryOk: Boolean(brief.category?.trim()),
-    emailOk: !isPlaceholderRestaurantEmail(brief.email ?? ""),
-    addressMissing: !brief.address?.trim() && brief.lat == null && brief.lng == null,
-  });
+  if (!args.skipRoundCap) {
+    readiness = applyIntakeRoundCap(readiness, args.clarificationRound, {
+      nameOk,
+      categoryOk: Boolean(brief.category?.trim()),
+      emailOk: !isPlaceholderRestaurantEmail(brief.email ?? ""),
+      addressMissing:
+        !brief.address?.trim() && brief.lat == null && brief.lng == null,
+    });
+  }
 
   return { brief, readiness };
 }
@@ -313,9 +327,15 @@ export async function assessBrief(
     };
   }
 
-  const enrichedChatText = input.answers
-    ? mergeClarificationAnswers(input.chatText, input.answers)
-    : input.chatText;
+  const answerBlob = latestAnswerBlob(input.answers);
+  const offTopicReply = Boolean(
+    answerBlob && isOffTopicIntakeReply(answerBlob.text, answerBlob.questions),
+  );
+
+  const enrichedChatText =
+    input.answers && !offTopicReply
+      ? mergeClarificationAnswers(input.chatText, input.answers)
+      : input.chatText;
 
   const rawBrief = await extractBrief(enrichedChatText);
   const verifiedBrief = verifyBriefAgainstSource(rawBrief, enrichedChatText);
@@ -339,6 +359,7 @@ export async function assessBrief(
     chatText: enrichedChatText,
     clarificationRound,
     skipConfirmed,
+    skipRoundCap: offTopicReply,
   });
 
   if (readiness.status === "ready") {
@@ -352,20 +373,34 @@ export async function assessBrief(
   }
 
   const askedGaps = selectGapsForRound(readiness.gaps);
-  const questions = await generateClarificationQuestions(
-    partialBrief,
-    askedGaps,
-    enrichedChatText,
-  );
+  const questions =
+    offTopicReply && answerBlob && answerBlob.questions.length > 0
+      ? answerBlob.questions
+      : await generateClarificationQuestions(
+          partialBrief,
+          askedGaps,
+          enrichedChatText,
+        );
 
   return {
     status: "needs_clarification",
     questions,
     partialBrief,
-    clarificationRound: clarificationRound + 1,
+    clarificationRound: offTopicReply
+      ? clarificationRound
+      : clarificationRound + 1,
     enrichedChatText,
     pageFamily: inferPageFamily(partialBrief, enrichedChatText),
     canSkip: readiness.canSkip,
     gaps: askedGaps,
+    ...(offTopicReply && answerBlob
+      ? {
+          asideMessage: formatIntakeAsideMessage(
+            answerBlob.text,
+            questions,
+            readiness.canSkip,
+          ),
+        }
+      : {}),
   };
 }

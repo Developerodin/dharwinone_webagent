@@ -1,4 +1,5 @@
 import { textFieldToPlain } from "@/components/premium/contentHelpers";
+import { getContentAtPath, setContentAtPath } from "@/lib/contentPath";
 import type { PreviewPick } from "@/lib/resolvePreviewPick";
 import type { Page, SectionType } from "@/types/page";
 
@@ -45,7 +46,10 @@ export function patchPageCopy(
     ...page,
     sections: page.sections.map((entry) =>
       entry.type === section
-        ? { ...entry, content: { ...entry.content, [field]: value } }
+        ? {
+            ...entry,
+            content: setContentAtPath(entry.content, field, value),
+          }
         : entry,
     ),
   };
@@ -58,7 +62,10 @@ export function copyValueForPick(page: Page, pick: PreviewPick): string {
   if (!pick.field) return "";
   const section = page.sections.find((entry) => entry.type === pick.section);
   if (!section) return pick.snippet;
-  return textFieldToPlain(section.content[pick.field]) || pick.snippet;
+  return (
+    textFieldToPlain(getContentAtPath(section.content, pick.field)) ||
+    pick.snippet
+  );
 }
 
 /**

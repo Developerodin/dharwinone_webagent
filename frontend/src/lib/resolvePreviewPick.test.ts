@@ -40,6 +40,21 @@ describe("matchSectionField", () => {
     expect(matchSectionField(heroContent, "")).toBeUndefined();
     expect(matchSectionField(heroContent, "R")).toBeUndefined();
   });
+
+  it("matches a clicked menu dish name onto items.N.name", () => {
+    expect(
+      matchSectionField(
+        {
+          sectionTitle: "Our Menu",
+          items: [
+            { name: "Margherita Pizza", price: 350, description: "Basil" },
+            { name: "Farmhouse Pizza", price: 420, description: "Veg" },
+          ],
+        },
+        "Margherita Pizza",
+      ),
+    ).toBe("items.0.name");
+  });
 });
 
 describe("resolvePreviewPickFromContent", () => {

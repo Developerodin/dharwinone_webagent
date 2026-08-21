@@ -112,6 +112,24 @@ describe("detectBriefGaps", () => {
     expect(emailIndex).toBeLessThan(uspIndex);
     expect(addressIndex).toBeLessThan(uspIndex);
   });
+
+  it("ranks menu items with hours, before USP", () => {
+    const gaps = detectBriefGaps({
+      ...W2,
+      businessName: "Spice House",
+      category: "Indian restaurant",
+      phone: null,
+      address: "Jaipur",
+      menuItems: [],
+      photos: [],
+      brandColors: null,
+      email: "host@spicehouse.in",
+    });
+    expect(gaps.indexOf("hours")).toBeGreaterThanOrEqual(0);
+    expect(gaps.indexOf("menuItems")).toBeGreaterThanOrEqual(0);
+    expect(gaps.indexOf("menuItems")).toBeLessThan(gaps.indexOf("usp"));
+    expect(gaps.indexOf("hours")).toBeLessThan(gaps.indexOf("usp"));
+  });
 });
 
 describe("coerceBriefInput", () => {
@@ -326,6 +344,23 @@ describe("applyIntakeRoundCap", () => {
     );
     expect(capped).toEqual({ status: "ready" });
   });
+
+  it("does not auto-skip a missing menu at the round cap", () => {
+    const capped = applyIntakeRoundCap(
+      {
+        status: "needs_clarification",
+        gaps: ["menuItems", "usp", "audience"],
+        canSkip: true,
+      },
+      3,
+      { ...p0Ok, addressMissing: false },
+    );
+    expect(capped).toEqual({
+      status: "needs_clarification",
+      gaps: ["menuItems"],
+      canSkip: true,
+    });
+  });
 });
 
 describe("mergeClarificationAnswers", () => {
@@ -378,6 +413,12 @@ describe("selectGapsForRound", () => {
     expect(
       selectGapsForRound(["businessName", "category", "address", "hours"]),
     ).toEqual(["address"]);
+  });
+
+  it("batches hours and menu after the pin is known", () => {
+    expect(
+      selectGapsForRound(["hours", "menuItems", "usp", "signatureDishes"]),
+    ).toEqual(["hours", "menuItems", "usp"]);
   });
 
   it("batches non-location gaps after the pin is known", () => {

@@ -64,6 +64,7 @@ export type IntakeResponse =
       pageFamily: PageFamily;
       canSkip?: boolean;
       gaps?: string[];
+      asideMessage?: string;
     }
   | {
       ok: true;

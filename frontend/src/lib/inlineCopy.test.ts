@@ -53,6 +53,24 @@ describe("inline copy payload", () => {
     expect(page.sections[0]?.content.ctaLabel).toBe("BOOK A TABLE");
   });
 
+  it("patches a nested menu item name", () => {
+    const page: Page = {
+      sections: [
+        {
+          type: "menu",
+          componentId: "elegant-menu-01",
+          content: {
+            items: [{ name: "Margherita Pizza", price: 350 }],
+          },
+          assets: [],
+        },
+      ],
+    };
+    const next = patchPageCopy(page, "menu", "items.0.name", "Margherita");
+    const items = next.sections[0]?.content.items as Array<{ name: string }>;
+    expect(items[0]?.name).toBe("Margherita");
+  });
+
   it("formats a short remark", () => {
     expect(formatInlineCopyRemark(ctaPick, "BOOK A TABLE")).toBe(
       "Updated “BOOK A TABLE” in hero.",

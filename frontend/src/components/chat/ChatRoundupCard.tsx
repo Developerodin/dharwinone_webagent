@@ -1,29 +1,23 @@
 import { Button } from "@/components/ui/button";
-import { SuggestionChipRow } from "@/components/chat/SuggestionChipRow";
 import type { ChatAction, ChatMessage } from "@/types/chat";
 
 type ChatRoundupCardProps = {
   message: ChatMessage;
   onAction: (action: ChatAction["action"]) => void;
-  onSuggestion?: (text: string) => void;
   hideActions?: boolean;
-  suggestionsDisabled?: boolean;
 };
 
 /**
- * Post-build operation card: title, summary, CTAs, and follow-up chips.
+ * Post-build operation card: title, summary, and preview CTAs.
  */
 export function ChatRoundupCard({
   message,
   onAction,
-  onSuggestion,
   hideActions = false,
-  suggestionsDisabled = false,
 }: ChatRoundupCardProps) {
   const title = message.roundupTitle ?? "Site design ready";
   const actions = message.actions ?? [];
   const showActions = !hideActions && actions.length > 0;
-  const suggestions = message.suggestions ?? [];
 
   return (
     <article
@@ -75,13 +69,6 @@ export function ChatRoundupCard({
               </Button>
             ))}
           </div>
-        ) : null}
-        {onSuggestion ? (
-          <SuggestionChipRow
-            suggestions={suggestions}
-            onSelect={onSuggestion}
-            disabled={suggestionsDisabled}
-          />
         ) : null}
       </div>
     </article>

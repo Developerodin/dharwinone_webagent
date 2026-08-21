@@ -293,4 +293,53 @@ describe("applyEditOps", () => {
     expect(result.brief.email).toBe("reservations@nonnarosa.com");
     expect(result.notes.join(" ")).toMatch(/isn't usable/i);
   });
+
+  it("set_copy updates a nested menu dish name and syncs the brief", async () => {
+    const result = await applyEditOps({
+      page: {
+        sections: [
+          {
+            type: "menu",
+            componentId: "elegant-menu-01",
+            content: {
+              sectionTitle: "Our Menu",
+              items: [
+                {
+                  name: "Margherita Pizza",
+                  price: 350,
+                  description: "Tomato and basil",
+                },
+              ],
+            },
+            assets: [],
+          },
+        ],
+      },
+      brief: {
+        ...FIXTURE_BRIEF,
+        menuItems: [
+          {
+            name: "Margherita Pizza",
+            price: 350,
+            description: "Tomato and basil",
+          },
+        ],
+      },
+      family: "elegant",
+      ops: [
+        {
+          op: "set_copy",
+          section: "menu",
+          field: "items.0.name",
+          value: "Margherita",
+        },
+      ],
+    });
+
+    const items = result.page.sections[0]?.content.items as Array<{
+      name: string;
+    }>;
+    expect(items[0]?.name).toBe("Margherita");
+    expect(result.brief.menuItems[0]?.name).toBe("Margherita");
+  });
 });

@@ -14,10 +14,7 @@ import type { PageFamily } from "@/lib/pageFamily";
 import type { ChatMessage, ChatPhase } from "@/types/chat";
 import type { Brief, PipelineStage } from "@/types/intake";
 import type { Page } from "@/types/page";
-import {
-  formatRoundupTitle,
-  suggestionChipsForPage,
-} from "@/lib/suggestionChips";
+import { formatRoundupTitle } from "@/lib/suggestionChips";
 
 export type ConfirmBuildDeps = {
   brief: Brief;
@@ -155,7 +152,6 @@ export async function runConfirmBuild(deps: ConfirmBuildDeps): Promise<void> {
       pageFamily: family,
       kind: "roundup",
       roundupTitle: formatRoundupTitle(brief.businessName),
-      suggestions: suggestionChipsForPage(result.page, brief),
       actions: [
         { label: "Open preview ↗", action: "preview", variant: "primary" },
         { label: "Build another", action: "reset", variant: "outline" },

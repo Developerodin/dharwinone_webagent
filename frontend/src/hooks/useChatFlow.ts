@@ -24,8 +24,12 @@ import type { PageFamily } from "@/lib/pageFamily";
 import type { HistoryEntry } from "@/lib/projectStorage";
 import { formatLocationDumpLine } from "@/lib/locationPickerIntent";
 import { buildIntakeClarificationUi } from "@/lib/intakeClarificationUi";
+import {
+  formatIntakeAsideMessage,
+  isOffTopicIntakeReply,
+} from "@/lib/intakeAside";
 import type { PickedLocation } from "@/lib/mapsApi";
-import type { ChatMessage, ChatPhase } from "@/types/chat";
+import type { ChatAction, ChatMessage, ChatPhase } from "@/types/chat";
 import type { Brief, IntakeResponse, PipelineStage } from "@/types/intake";
 import type { Page, SectionType } from "@/types/page";
 import {
@@ -77,6 +81,9 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
   const [clarificationRound, setClarificationRound] = useState(0);
   /** Last clarification questions — used to send structured answers on reply. */
   const [pendingQuestions, setPendingQuestions] = useState<string[]>([]);
+  /** Skip / map-pin actions for the open clarification turn. */
+  const [pendingClarificationActions, setPendingClarificationActions] =
+    useState<ChatAction[] | undefined>(undefined);
   const [brief, setBrief] = useState<Brief | null>(null);
   const [pageFamily, setPageFamily] = useState<PageFamily | null>(null);
   const [page, setPage] = useState<Page | null>(null);
@@ -215,6 +222,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
 
       if (data.status === "unsupported") {
         setPendingQuestions([]);
+        setPendingClarificationActions(undefined);
         appendMessage({
           role: "assistant",
           content: data.message,
@@ -242,10 +250,11 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
           addressPrefill: data.partialBrief.address?.trim() ?? "",
         });
         setPendingQuestions(data.questions);
+        setPendingClarificationActions(ui.actions);
         setLocationPicker(ui.locationPicker);
         appendMessage({
           role: "assistant",
-          content: ui.content,
+          content: data.asideMessage ?? ui.content,
           questions: data.questions,
           actions: ui.actions,
         });
@@ -254,6 +263,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
       }
 
       setPendingQuestions([]);
+      setPendingClarificationActions(undefined);
       setBrief(data.brief);
       appendMessage({
         role: "assistant",
@@ -638,6 +648,39 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
           return;
         }
 
+        if (
+          (phase === "clarifying" || phase === "confirm") &&
+          isOffTopicIntakeReply(trimmed)
+        ) {
+          const questions = phase === "clarifying" ? pendingQuestions : [];
+          const canSkip = Boolean(
+            pendingClarificationActions?.some(
+              (action) => action.action === "skip",
+            ),
+          );
+          appendMessage({
+            role: "assistant",
+            content: formatIntakeAsideMessage(trimmed, questions, canSkip),
+            questions: questions.length > 0 ? questions : undefined,
+            actions:
+              phase === "confirm"
+                ? [
+                    {
+                      label: "Build page",
+                      action: "build",
+                      variant: "primary",
+                    },
+                    {
+                      label: "Start over",
+                      action: "reset",
+                      variant: "outline",
+                    },
+                  ]
+                : pendingClarificationActions,
+          });
+          return;
+        }
+
         setPhase("analyzing");
         updateStageMessage({ name: "Brief Extractor", status: "running" });
 
@@ -684,6 +727,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
       enrichedChatText,
       isBusy,
       page,
+      pendingClarificationActions,
       pendingEditInstruction,
       pendingQuestions,
       phase,
@@ -853,6 +897,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
     setEnrichedChatText(empty.enrichedChatText);
     setClarificationRound(0);
     setPendingQuestions([]);
+    setPendingClarificationActions(undefined);
     setBrief(empty.brief);
     setPageFamily(empty.pageFamily);
     setPage(empty.page);
@@ -886,6 +931,7 @@ export function useChatFlow({ useFixture: initialFixture }: UseChatFlowOptions) 
     setError(null);
     setClarificationRound(0);
     setPendingQuestions([]);
+    setPendingClarificationActions(undefined);
     setIsBusy(false);
     return true;
   }, []);

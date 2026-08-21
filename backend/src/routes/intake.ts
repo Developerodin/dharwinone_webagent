@@ -63,6 +63,7 @@ intakeRouter.post("/", async (req, res) => {
         pageFamily: result.pageFamily,
         canSkip: result.canSkip,
         gaps: result.gaps,
+        ...(result.asideMessage ? { asideMessage: result.asideMessage } : {}),
         meta: { fixture: useFixture },
       });
       return;

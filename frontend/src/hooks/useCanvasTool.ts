@@ -86,7 +86,7 @@ export function useCanvasTool({
   const startTextEdit = useCallback((session: InlineTextSession | null) => {
     if (!session) {
       setTextSession(null);
-      setTextHint("Click a headline, button, or paragraph");
+      setTextHint("Can't edit that — click a heading, button label, or paragraph");
       return;
     }
     setTextHint(null);

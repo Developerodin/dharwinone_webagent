@@ -22,6 +22,7 @@ import {
   previewPickFromEvent,
   resolvePickTag,
   sectionOnlyPick,
+  elementFromPointerTarget,
   type PreviewPick,
 } from "@/lib/resolvePreviewPick";
 import { canInlineEditPick, copyValueForPick } from "@/lib/inlineCopy";
@@ -84,15 +85,19 @@ function overlayRectFor(
 }
 
 /**
- * True when the event originated in a native form control.
- * Select-mode section handlers must not steal Space/Enter/clicks from these.
+ * True when the event originated in a native typing control.
+ * Buttons/links must stay pickable in T-mode (CTA labels).
  */
-function isFormFieldTarget(target: EventTarget | null): boolean {
-  if (!(target instanceof Element)) return false;
+function isNativeTypingControl(target: EventTarget | null): boolean {
+  const el =
+    target instanceof Element
+      ? target
+      : target instanceof Node
+        ? target.parentElement
+        : null;
+  if (!el) return false;
   return Boolean(
-    target.closest(
-      "form, label, input, textarea, select, button, option, [contenteditable='true']",
-    ),
+    el.closest("input, textarea, select, option, [contenteditable='true']"),
   );
 }
 
@@ -201,8 +206,8 @@ export function PageRenderer({
   function handleMouseMove(event: ReactMouseEvent<HTMLDivElement>) {
     if (!selectable) return;
     const root = rootRef.current;
-    const target = event.target;
-    if (!root || !(target instanceof HTMLElement)) return;
+    if (!root) return;
+    const target = elementFromPointerTarget(event.target, root);
     setHoverRect(overlayRectFor(root, target));
   }
 
@@ -247,6 +252,7 @@ export function PageRenderer({
       ) : null}
       {textSession && onCommitTextEdit && onCancelTextEdit ? (
         <InlineTextEditor
+          key={`${textSession.pick.section}-${textSession.pick.field ?? "copy"}`}
           session={textSession}
           onCommit={onCommitTextEdit}
           onCancel={onCancelTextEdit}
@@ -309,7 +315,7 @@ function SectionSlot({
    * Keyboard handler: Enter / Space attaches the whole section.
    */
   function handleKeyDown(e: KeyboardEvent) {
-    if (isFormFieldTarget(e.target)) return;
+    if (isNativeTypingControl(e.target)) return;
     if (e.key !== "Enter" && e.key !== " ") return;
     e.preventDefault();
     const pick = sectionOnlyPick(section.type);
@@ -322,7 +328,7 @@ function SectionSlot({
    */
   function handleClickCapture(e: ReactMouseEvent<HTMLDivElement>) {
     if (!selectable) return;
-    if (isFormFieldTarget(e.target)) return;
+    if (isNativeTypingControl(e.target)) return;
     e.preventDefault();
     e.stopPropagation();
     e.nativeEvent.preventDefault();
@@ -336,8 +342,7 @@ function SectionSlot({
       onStartTextEdit?.(null);
       return;
     }
-    const raw = e.nativeEvent.target;
-    const el = raw instanceof HTMLElement ? raw : root;
+    const el = elementFromPointerTarget(e.nativeEvent.target, root);
     const { node } = resolvePickTag(el, root);
     const pageRoot = overlayRootRef.current;
     const rect = pageRoot ? overlayRectFor(pageRoot, node) : null;

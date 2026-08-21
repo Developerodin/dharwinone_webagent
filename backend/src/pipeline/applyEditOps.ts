@@ -35,6 +35,7 @@ import { themeOverridesForFamily } from "./horecaDesignSystem.js";
 import { applyRemixSectionOp } from "./remixSection.js";
 import { applySetLocationOp } from "./applyLocationOp.js";
 import { applySetEmailOp } from "./applyEmailOp.js";
+import { setContentAtPath } from "./contentPath.js";
 import { namesFuzzyMatch } from "./resolveEditTarget.js";
 import { rewriteSectionCopy } from "./rewriteCopy.js";
 import { textFieldToPlain } from "./textRuns.js";
@@ -515,7 +516,10 @@ async function applyOneOp(
     case "set_copy": {
       const section = findSection(page.sections, op.section);
       if (!section) return { family, note: `No ${op.section} section to update.` };
-      section.content = { ...section.content, [op.field]: op.value };
+      section.content = setContentAtPath(section.content, op.field, op.value);
+      if (op.section === "menu" && op.field.startsWith("items.")) {
+        writeMenuItems(page, brief, readMenuItems(section));
+      }
       return {
         family,
         note: `Updated ${op.section}.${op.field}.`,

@@ -21,7 +21,7 @@ export type BriefGap =
 const CRITICAL_GAPS: BriefGap[] = ["businessName", "category", "email"];
 
 /** Visit facts we actually render — ask before USP. */
-const P1_GAPS: BriefGap[] = ["address", "hours"];
+const P1_GAPS: BriefGap[] = ["address", "hours", "menuItems"];
 
 /** Copy uniqueness — skippable. */
 const P2_GAPS: BriefGap[] = ["usp", "signatureDishes", "audience"];
@@ -30,7 +30,6 @@ const P2_GAPS: BriefGap[] = ["usp", "signatureDishes", "audience"];
 const P3_GAPS: BriefGap[] = [
   "story",
   "neighbourhood",
-  "menuItems",
   "phone",
   "brandColors",
 ];
@@ -250,7 +249,7 @@ export type BriefReadiness =
  * True when this gap must be asked at least once (user may still skip it).
  */
 export function isMustAskBeforeBuild(gap: BriefGap): boolean {
-  return gap === "address";
+  return gap === "address" || gap === "menuItems";
 }
 
 /**
