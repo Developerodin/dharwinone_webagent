@@ -8,6 +8,11 @@ import {
 import { useMobileNav } from "@/components/shared/useMobileNav";
 import { scrollToSection } from "@/lib/scrollToSection";
 import {
+  HeaderBrandMark,
+  HEADER_SPLIT_ROW,
+  HEADER_SPLIT_ROW_TAGLINE,
+} from "@/components/shared/HeaderBrandMark";
+import {
   premiumHeaderCtaOutline,
   premiumHeaderNav,
 } from "./premiumHeaderChrome";
@@ -50,7 +55,7 @@ export function PremiumHeader02({ content }: SectionComponentProps) {
       className="sticky top-[var(--shell-header-h)] z-30 border-b border-white/10 bg-[var(--theme-bg)]/85 backdrop-blur-md"
       role="banner"
     >
-      <div className="mx-auto flex w-full min-w-0 max-w-7xl items-center gap-3 px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10 @min-[1024px]/page:grid @min-[1024px]/page:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] @min-[1024px]/page:gap-6 @min-[1024px]/page:py-4">
+      <div className={tagline ? HEADER_SPLIT_ROW_TAGLINE : HEADER_SPLIT_ROW}>
         <nav
           aria-label="Primary left"
           className="hidden min-w-0 items-center justify-end gap-0.5 @min-[1024px]/page:flex"
@@ -67,38 +72,33 @@ export function PremiumHeader02({ content }: SectionComponentProps) {
           ))}
         </nav>
 
-        <button
-          type="button"
+        <HeaderBrandMark
+          brandName={brandName}
+          tagline={tagline}
           onClick={() => handleNavigate("hero")}
-          className="min-w-0 shrink-0 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-accent)] @min-[1024px]/page:justify-self-center @min-[1024px]/page:text-center"
-          aria-label="Scroll to hero section"
-        >
-          <span className="block truncate font-[family-name:var(--font-display)] text-xl leading-none tracking-tight text-[var(--theme-ink)] @min-[640px]/page:text-2xl @min-[1024px]/page:text-[1.75rem]">
-            {brandName}
-          </span>
-          {tagline ? (
-            <p className="mt-1 hidden max-w-xs truncate text-[12px] leading-snug text-[var(--theme-muted)] @min-[1024px]/page:block">
-              {tagline}
-            </p>
-          ) : null}
-        </button>
+          align="center"
+          nameClassName="font-[family-name:var(--font-display)] text-xl tracking-tight text-[var(--theme-ink)] @min-[640px]/page:text-2xl @min-[1024px]/page:text-[1.65rem]"
+          taglineClassName="text-[10px] uppercase leading-none tracking-[0.22em] text-[var(--theme-muted)]"
+          focusRingClassName="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-accent)]"
+        />
 
-        <div className="ml-auto flex min-w-0 shrink-0 items-center justify-end gap-2 @min-[1024px]/page:ml-0">
-          <nav
-            aria-label="Primary right"
-            className="hidden min-w-0 items-center gap-0.5 @min-[1024px]/page:flex"
-          >
-            {right.map((item) => (
-              <button
-                key={`r-${item.target}-${item.label}`}
-                type="button"
-                onClick={() => scrollToSection(item.target)}
-                className={premiumHeaderNav}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
+        <nav
+          aria-label="Primary right"
+          className="hidden min-w-0 items-center justify-start gap-0.5 @min-[1024px]/page:flex"
+        >
+          {right.map((item) => (
+            <button
+              key={`r-${item.target}-${item.label}`}
+              type="button"
+              onClick={() => scrollToSection(item.target)}
+              className={premiumHeaderNav}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
+
+        <div className="ml-auto flex shrink-0 items-center justify-end gap-2 @min-[1024px]/page:ml-0">
           <button type="button" onClick={handleCta} className={headerCtaChrome}>
             {ctaLabel}
           </button>

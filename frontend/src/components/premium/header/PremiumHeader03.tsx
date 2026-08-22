@@ -69,7 +69,7 @@ export function PremiumHeader03({ content }: SectionComponentProps) {
             {brandName}
           </span>
           {tagline ? (
-            <p className="mt-1.5 truncate text-[9px] font-medium uppercase tracking-[0.28em] text-white/85 @min-[640px]/page:text-[10px] @min-[640px]/page:tracking-[0.32em]">
+            <p className="mt-1.5 truncate text-[9px] font-medium uppercase leading-none tracking-[0.28em] text-white/85 @min-[640px]/page:text-[10px] @min-[640px]/page:tracking-[0.32em]">
               {tagline}
             </p>
           ) : null}

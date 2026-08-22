@@ -7,6 +7,7 @@ import {
 } from "@/components/shared/MobileNavMenu";
 import { useMobileNav } from "@/components/shared/useMobileNav";
 import { scrollToSection } from "@/lib/scrollToSection";
+import { HeaderBrandMark } from "@/components/shared/HeaderBrandMark";
 import {
   elegantHeaderCtaFill,
   elegantHeaderNav,
@@ -49,22 +50,16 @@ export function ElegantHeader01({ content }: SectionComponentProps) {
       className="sticky top-[var(--shell-header-h)] z-30 border-b border-[var(--eg-gold)]/20 bg-[#000000]/90 backdrop-blur-md"
       role="banner"
     >
-      <div className="mx-auto flex w-full min-w-0 max-w-7xl items-center gap-4 px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10 @min-[768px]/page:py-3.5">
-        <button
-          type="button"
+      <div className={`mx-auto flex w-full min-w-0 max-w-7xl items-center gap-4 px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10 @min-[768px]/page:py-3.5${tagline ? " @min-[1280px]/page:pb-8" : ""}`}>
+        <HeaderBrandMark
+          brandName={brandName}
+          tagline={tagline}
           onClick={() => handleNavigate("hero")}
-          className="min-w-0 shrink-0 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--eg-gold)]"
-          aria-label="Scroll to hero section"
-        >
-          <span className="block truncate font-[family-name:var(--eg-font-display)] text-xl leading-none tracking-[0.06em] text-[var(--eg-cream)] @min-[640px]/page:text-2xl">
-            {brandName}
-          </span>
-          {tagline ? (
-            <p className="mt-1 hidden max-w-[18rem] truncate font-[family-name:var(--eg-font-body)] text-[12px] leading-snug text-[var(--eg-muted)] @min-[1280px]/page:block">
-              {tagline}
-            </p>
-          ) : null}
-        </button>
+          align="left"
+          nameClassName="font-[family-name:var(--eg-font-display)] text-xl tracking-[0.06em] text-[var(--eg-cream)] @min-[640px]/page:text-2xl"
+          taglineClassName="font-[family-name:var(--eg-font-body)] text-[10px] uppercase leading-none tracking-[0.22em] text-[var(--eg-muted)]"
+          focusRingClassName="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--eg-gold)]"
+        />
 
         <nav
           aria-label="Primary"

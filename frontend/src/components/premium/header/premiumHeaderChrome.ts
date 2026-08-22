@@ -2,13 +2,13 @@ import { headerCtaClasses } from "@/components/shared/headerChrome";
 
 /** Quiet text nav — no pills, no uppercase tracking. */
 export const premiumHeaderNav =
-  "inline-flex min-h-10 shrink-0 items-center px-2.5 text-[13px] text-[var(--theme-muted)] transition-colors duration-200 hover:text-[var(--theme-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]";
+  "inline-flex h-10 shrink-0 items-center whitespace-nowrap px-2.5 text-[13px] leading-none text-[var(--theme-muted)] transition-colors duration-200 hover:text-[var(--theme-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]";
 
 const ctaFocus =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]";
 
 const ctaSize =
-  "min-h-9 w-auto max-w-[10.5rem] shrink-0 items-center justify-center truncate px-4 py-2 text-xs @min-[640px]/page:max-w-none @min-[640px]/page:px-5 @min-[640px]/page:text-sm";
+  "h-10 w-auto max-w-[11rem] shrink-0 items-center justify-center truncate px-4 text-xs leading-none @min-[640px]/page:max-w-none @min-[640px]/page:px-5 @min-[640px]/page:text-sm";
 
 /** Filled header CTA sized for a bar, not a hero. */
 export const premiumHeaderCtaFill = headerCtaClasses(

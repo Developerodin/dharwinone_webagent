@@ -51,7 +51,7 @@ export function ElegantHeader03({ content }: SectionComponentProps) {
           className="min-w-0 shrink-0 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--eg-gold)]"
           aria-label="Scroll to hero section"
         >
-          <span className="block truncate font-[family-name:var(--eg-font-display)] text-base tracking-[0.06em] text-[var(--eg-cream)] @min-[640px]/page:text-lg">
+          <span className="block truncate font-[family-name:var(--eg-font-display)] text-base leading-none tracking-[0.06em] text-[var(--eg-cream)] @min-[640px]/page:text-lg">
             {brandName}
           </span>
         </button>

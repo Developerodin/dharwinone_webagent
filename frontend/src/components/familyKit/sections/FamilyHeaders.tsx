@@ -13,15 +13,20 @@ import type {
   SectionComponentProps,
 } from "@/components/premium/registry";
 import { getBrandName, getTagline } from "./shared";
+import {
+  HeaderBrandMark,
+  HEADER_SPLIT_ROW,
+  HEADER_SPLIT_ROW_TAGLINE,
+} from "@/components/shared/HeaderBrandMark";
 
 const FAMILY_MOBILE_TRIGGER =
   "border border-[var(--theme-line)] bg-[var(--theme-card)] text-[var(--theme-ink)] hover:bg-[color:color-mix(in_srgb,var(--theme-bg)_80%,white_20%)] focus-visible:outline-[var(--theme-accent)]";
 
 const FAMILY_HEADER_NAV =
-  "inline-flex min-h-10 shrink-0 items-center px-2.5 text-[13px] text-[var(--theme-muted)] transition-colors duration-200 hover:text-[var(--theme-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]";
+  "inline-flex h-10 shrink-0 items-center whitespace-nowrap px-2.5 text-[13px] leading-none text-[var(--theme-muted)] transition-colors duration-200 hover:text-[var(--theme-ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--theme-accent)]";
 
 const CTA_SIZE =
-  "min-h-9 w-auto max-w-[10.5rem] shrink-0 truncate px-4 py-2 text-xs shadow-none hover:translate-y-0 hover:scale-100 @min-[640px]/page:max-w-none @min-[640px]/page:px-5 @min-[640px]/page:text-sm";
+  "h-10 w-auto max-w-[11rem] shrink-0 truncate px-4 text-xs leading-none shadow-none hover:translate-y-0 hover:scale-100 @min-[640px]/page:max-w-none @min-[640px]/page:px-5 @min-[640px]/page:text-sm";
 
 /**
  * Builds filled / outline / ghost header CTAs (display gated separately).
@@ -201,7 +206,7 @@ function createHeader02(tokens: ThemeTokens): SectionComponent {
         aria-label="Site header"
         className={`${tokens.section} sticky top-[var(--shell-header-h)] z-30 border-b border-[var(--theme-line)] bg-[color:color-mix(in_srgb,var(--theme-bg)_90%,transparent)] backdrop-blur-md`}
       >
-        <div className="mx-auto flex w-full min-w-0 max-w-7xl items-center gap-3 px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10 @min-[1024px]/page:grid @min-[1024px]/page:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] @min-[1024px]/page:gap-6 @min-[1024px]/page:py-4">
+        <div className={tagline ? HEADER_SPLIT_ROW_TAGLINE : HEADER_SPLIT_ROW}>
           <nav
             aria-label="Primary left"
             className="hidden min-w-0 items-center justify-end gap-0.5 @min-[1024px]/page:flex"
@@ -219,41 +224,34 @@ function createHeader02(tokens: ThemeTokens): SectionComponent {
             ))}
           </nav>
 
-          <button
-            type="button"
+          <HeaderBrandMark
+            brandName={brandName}
+            tagline={tagline}
             onClick={() => handleNavigate("hero")}
-            className="min-w-0 shrink-0 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-accent)] @min-[1024px]/page:justify-self-center @min-[1024px]/page:text-center"
-            aria-label="Scroll to hero section"
-          >
-            <p
-              className={`truncate text-xl leading-none tracking-tight text-[var(--theme-ink)] @min-[640px]/page:text-2xl ${tokens.heading}`}
-            >
-              {brandName}
-            </p>
-            {tagline ? (
-              <p className={`mt-1 hidden max-w-xs truncate text-[12px] leading-snug @min-[1024px]/page:block ${tokens.body}`}>
-                {tagline}
-              </p>
-            ) : null}
-          </button>
+            align="center"
+            nameClassName={`text-xl tracking-tight text-[var(--theme-ink)] @min-[640px]/page:text-2xl ${tokens.heading}`}
+            taglineClassName={`text-[10px] uppercase leading-none tracking-[0.22em] ${tokens.body}`}
+            focusRingClassName="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--theme-accent)]"
+          />
 
-          <div className="ml-auto flex min-w-0 shrink-0 items-center justify-end gap-2 @min-[1024px]/page:ml-0">
-            <nav
-              aria-label="Primary right"
-              className="hidden min-w-0 items-center gap-0.5 @min-[1024px]/page:flex"
-            >
-              {right.map((item) => (
-                <button
-                  key={`r-${item.target}-${item.label}`}
-                  type="button"
-                  onClick={() => scrollToSection(item.target)}
-                  className={FAMILY_HEADER_NAV}
-                  aria-label={`Scroll to ${item.label}`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </nav>
+          <nav
+            aria-label="Primary right"
+            className="hidden min-w-0 items-center justify-start gap-0.5 @min-[1024px]/page:flex"
+          >
+            {right.map((item) => (
+              <button
+                key={`r-${item.target}-${item.label}`}
+                type="button"
+                onClick={() => scrollToSection(item.target)}
+                className={FAMILY_HEADER_NAV}
+                aria-label={`Scroll to ${item.label}`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+
+          <div className="ml-auto flex shrink-0 items-center justify-end gap-2 @min-[1024px]/page:ml-0">
             <button
               type="button"
               onClick={handleCta}

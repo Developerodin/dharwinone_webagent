@@ -8,6 +8,11 @@ import {
 import { useMobileNav } from "@/components/shared/useMobileNav";
 import { scrollToSection } from "@/lib/scrollToSection";
 import {
+  HeaderBrandMark,
+  HEADER_SPLIT_ROW,
+  HEADER_SPLIT_ROW_TAGLINE,
+} from "@/components/shared/HeaderBrandMark";
+import {
   elegantHeaderCta,
   elegantHeaderNav,
   elegantHeaderNavMobile,
@@ -50,10 +55,10 @@ export function ElegantHeader02({ content }: SectionComponentProps) {
       className="sticky top-[var(--shell-header-h)] z-30 border-b border-[var(--eg-gold)]/20 bg-[#000000]/92 backdrop-blur-md"
       role="banner"
     >
-      <div className="mx-auto flex w-full min-w-0 max-w-7xl items-center gap-3 px-4 py-3 @min-[640px]/page:px-6 @min-[768px]/page:px-10 @min-[1024px]/page:grid @min-[1024px]/page:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] @min-[1024px]/page:gap-6 @min-[1024px]/page:py-4">
+      <div className={tagline ? HEADER_SPLIT_ROW_TAGLINE : HEADER_SPLIT_ROW}>
         <nav
           aria-label="Primary left"
-          className="hidden min-w-0 items-center justify-end gap-1 @min-[1024px]/page:flex"
+          className="hidden min-w-0 items-center justify-end gap-0.5 @min-[1024px]/page:flex"
         >
           {left.map((item) => (
             <button
@@ -67,38 +72,33 @@ export function ElegantHeader02({ content }: SectionComponentProps) {
           ))}
         </nav>
 
-        <button
-          type="button"
+        <HeaderBrandMark
+          brandName={brandName}
+          tagline={tagline}
           onClick={() => handleNavigate("hero")}
-          className="min-w-0 shrink-0 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--eg-gold)] @min-[1024px]/page:justify-self-center @min-[1024px]/page:text-center"
-          aria-label="Scroll to hero section"
-        >
-          <span className="block truncate font-[family-name:var(--eg-font-display)] text-xl leading-none tracking-[0.08em] text-[var(--eg-cream)] @min-[640px]/page:text-2xl @min-[1024px]/page:text-[1.75rem]">
-            {brandName}
-          </span>
-          {tagline ? (
-            <p className="mt-1 hidden max-w-xs truncate font-[family-name:var(--eg-font-body)] text-[12px] leading-snug text-[var(--eg-muted)] @min-[1024px]/page:block">
-              {tagline}
-            </p>
-          ) : null}
-        </button>
+          align="center"
+          nameClassName="font-[family-name:var(--eg-font-display)] text-xl tracking-[0.08em] text-[var(--eg-cream)] @min-[640px]/page:text-2xl @min-[1024px]/page:text-[1.65rem]"
+          taglineClassName="font-[family-name:var(--eg-font-body)] text-[10px] uppercase leading-none tracking-[0.22em] text-[var(--eg-muted)]"
+          focusRingClassName="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--eg-gold)]"
+        />
 
-        <div className="ml-auto flex min-w-0 shrink-0 items-center justify-end gap-2 @min-[1024px]/page:ml-0">
-          <nav
-            aria-label="Primary right"
-            className="hidden min-w-0 items-center gap-1 @min-[1024px]/page:flex"
-          >
-            {right.map((item) => (
-              <button
-                key={`r-${item.target}-${item.label}`}
-                type="button"
-                onClick={() => scrollToSection(item.target)}
-                className={elegantHeaderNav}
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
+        <nav
+          aria-label="Primary right"
+          className="hidden min-w-0 items-center justify-start gap-0.5 @min-[1024px]/page:flex"
+        >
+          {right.map((item) => (
+            <button
+              key={`r-${item.target}-${item.label}`}
+              type="button"
+              onClick={() => scrollToSection(item.target)}
+              className={elegantHeaderNav}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
+
+        <div className="ml-auto flex shrink-0 items-center justify-end gap-2 @min-[1024px]/page:ml-0">
           <button type="button" onClick={handleCta} className={headerCtaChrome}>
             {ctaLabel}
           </button>
