@@ -1,6 +1,6 @@
 import type { Page, SectionLayout, SectionType } from "../schemas/page.schema.js";
 import { DEFAULT_SECTION_LAYOUT } from "../schemas/page.schema.js";
-import { stableHash } from "./pickComponent.js";
+import { stableHash } from "../lib/stableHash.js";
 
 const EMPHASIS: SectionLayout["emphasis"][] = [
   "hero",

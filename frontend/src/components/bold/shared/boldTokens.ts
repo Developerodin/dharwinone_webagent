@@ -6,16 +6,16 @@ export const bd: ThemeTokens = {
   sectionAlt: "overflow-x-hidden bg-[var(--theme-bg-alt)] text-[var(--theme-ink)]",
   sectionDark: "overflow-x-hidden bg-[var(--theme-bg-dark)] text-[var(--theme-on-dark)]",
   sectionPad:
-    "px-4 py-14 @min-[640px]:px-6 @min-[640px]:py-18 @min-[768px]:px-10 @min-[768px]:py-24",
+    "px-4 py-[var(--sec-pad-y,3.5rem)] @min-[640px]:px-6 @min-[640px]:py-[var(--sec-pad-y-md,4.5rem)] @min-[768px]:px-10 @min-[768px]:py-[var(--sec-pad-y-lg,6rem)]",
   eyebrow:
     "font-[family-name:var(--bold-font-script)] text-xl font-normal normal-case tracking-normal text-[var(--theme-accent)] @min-[640px]:text-2xl",
   eyebrowOnDark:
     "font-[family-name:var(--bold-font-script)] text-xl font-normal normal-case tracking-normal text-[var(--theme-accent-on-dark)] @min-[640px]:text-2xl",
   heading: "wrap-break-word font-[family-name:var(--theme-font-display)] font-bold uppercase tracking-tight",
   headingHero:
-    "wrap-break-word text-[2.75rem] leading-[0.92] @min-[640px]:text-[4.5rem] @min-[768px]:text-[5.75rem] @min-[1024px]:text-[6.5rem]",
+    "wrap-break-word text-[calc(2.75rem*var(--sec-type-scale,1))] leading-[0.92] @min-[640px]:text-[calc(4.5rem*var(--sec-type-scale,1))] @min-[768px]:text-[calc(5.75rem*var(--sec-type-scale,1))] @min-[1024px]:text-[calc(6.5rem*var(--sec-type-scale,1))]",
   headingSection:
-    "wrap-break-word text-[2rem] leading-[0.98] @min-[640px]:text-[2.75rem] @min-[768px]:text-[3.5rem]",
+    "wrap-break-word text-[calc(2rem*var(--sec-type-scale,1))] leading-[0.98] @min-[640px]:text-[calc(2.75rem*var(--sec-type-scale,1))] @min-[768px]:text-[calc(3.5rem*var(--sec-type-scale,1))]",
   body: "font-[family-name:var(--theme-font-body)] leading-relaxed text-[var(--theme-muted)]",
   rule: "h-1 w-14 rounded-full bg-[var(--theme-accent)]",
   ruleOnDark: "h-1 w-14 rounded-full bg-[var(--theme-accent-on-dark)]",

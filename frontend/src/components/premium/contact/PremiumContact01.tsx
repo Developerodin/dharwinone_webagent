@@ -43,7 +43,7 @@ export function PremiumContact01({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Contact and reservations" className={`${pm.sectionPad} ${pm.section}`}>
-      <div className="mx-auto grid max-w-6xl gap-8 @min-[1024px]:grid-cols-[1.05fr_0.95fr]">
+      <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-8 @min-[1024px]:grid-cols-[1.05fr_0.95fr]">
         <div>
           <h2 className={`max-w-lg ${pm.heading} ${pm.headingSection}`}>{headline}</h2>
           <p className={`mt-4 max-w-xl text-sm @min-[640px]:text-base ${pm.body}`}>{body}</p>

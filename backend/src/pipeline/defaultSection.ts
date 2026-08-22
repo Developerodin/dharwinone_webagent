@@ -1,7 +1,7 @@
 import type { PageFamily } from "../config/pageFamily.js";
 import type { Brief } from "../schemas/brief.schema.js";
 import type { PageSection, SectionType } from "../schemas/page.schema.js";
-import { pickComponent } from "./pickComponent.js";
+import { defaultComponentId } from "../catalog/index.js";
 import { formatBriefHoursLines } from "./hoursFormat.js";
 import {
   listCatalogImagePaths,
@@ -231,7 +231,7 @@ export function createDefaultSection(
 ): PageSection {
   return {
     type,
-    componentId: pickComponent(type, family),
+    componentId: defaultComponentId(type, family) ?? `${family}-${type === "location_map" ? "location" : type}-01`,
     content: defaultSectionContent(type, brief),
     assets: defaultSectionAssets(type, family, brief),
   };

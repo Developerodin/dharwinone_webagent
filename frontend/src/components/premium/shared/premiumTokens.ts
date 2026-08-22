@@ -2,14 +2,14 @@
 export const pm = {
   section: "overflow-x-hidden bg-[var(--theme-bg)] text-[var(--theme-ink)]",
   sectionAlt: "overflow-x-hidden bg-[var(--theme-bg-alt)] text-[var(--theme-ink)]",
-  sectionPad: "px-4 py-12 @min-[640px]:px-6 @min-[640px]:py-16 @min-[768px]:px-10 @min-[768px]:py-24",
+  sectionPad: "px-4 py-[var(--sec-pad-y,3rem)] @min-[640px]:px-6 @min-[640px]:py-[var(--sec-pad-y-md,4rem)] @min-[768px]:px-10 @min-[768px]:py-[var(--sec-pad-y-lg,6rem)]",
   eyebrow:
     "text-[10px] font-medium uppercase tracking-[0.24em] text-[var(--theme-accent)] @min-[640px]:text-xs @min-[640px]:tracking-[0.3em]",
   heading: "wrap-break-word font-[family-name:var(--font-display)] text-[var(--theme-ink)]",
   headingHero:
-    "wrap-break-word text-[1.75rem] leading-[1.15] @min-[640px]:text-4xl @min-[768px]:text-5xl @min-[1024px]:text-6xl @min-[1280px]:text-7xl",
+    "wrap-break-word text-[calc(1.75rem*var(--sec-type-scale,1))] leading-[1.15] @min-[640px]:text-[calc(2.25rem*var(--sec-type-scale,1))] @min-[768px]:text-[calc(3rem*var(--sec-type-scale,1))] @min-[1024px]:text-[calc(3.75rem*var(--sec-type-scale,1))] @min-[1280px]:text-[calc(4.5rem*var(--sec-type-scale,1))]",
   headingSection:
-    "wrap-break-word text-[1.625rem] leading-tight @min-[640px]:text-3xl @min-[768px]:text-4xl @min-[1024px]:text-5xl",
+    "wrap-break-word text-[calc(1.625rem*var(--sec-type-scale,1))] leading-tight @min-[640px]:text-[calc(1.875rem*var(--sec-type-scale,1))] @min-[768px]:text-[calc(2.25rem*var(--sec-type-scale,1))] @min-[1024px]:text-[calc(3rem*var(--sec-type-scale,1))]",
   body: "wrap-break-word font-[family-name:var(--font-body)] text-[var(--theme-muted)] leading-relaxed",
   accentRule: "h-px w-12 bg-[var(--theme-accent)]/60 @min-[640px]:w-16",
   primaryButton:

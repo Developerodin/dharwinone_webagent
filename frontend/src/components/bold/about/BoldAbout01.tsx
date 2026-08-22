@@ -31,7 +31,7 @@ export function BoldAbout01({ content, assets }: SectionComponentProps) {
 
   return (
     <section aria-label="About" className={`${bd.sectionPad} bg-white text-[var(--theme-ink)]`}>
-      <div className="mx-auto grid max-w-6xl items-center gap-10 @min-[768px]:grid-cols-2 @min-[768px]:gap-16">
+      <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] items-center gap-10 @min-[768px]:grid-cols-2 @min-[768px]:gap-16">
         <div className="relative min-w-0 overflow-hidden bg-[var(--theme-bg)]">
           {imagePath ? (
             <SectionMedia

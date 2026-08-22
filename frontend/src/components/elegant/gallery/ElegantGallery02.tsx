@@ -16,7 +16,7 @@ export function ElegantGallery02({ content, assets }: SectionComponentProps) {
 
   return (
     <section aria-label="Gallery" className={`${eg.sectionPad} ${eg.sectionAlt}`}>
-      <div className="mx-auto max-w-6xl min-w-0">
+      <div className="mx-auto max-w-[var(--sec-measure,72rem)] min-w-0">
         <div className="animate-section-enter text-center">
           <div className="mx-auto mt-4 flex items-center justify-center gap-3 @min-[640px]:mt-5">
             <span aria-hidden="true" className={`${eg.goldRule} w-6 @min-[640px]:w-10`} />

@@ -55,7 +55,7 @@ function createHero03(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Hero" className={`${tokens.sectionPad} ${tokens.section}`}>
-        <div className="mx-auto grid max-w-6xl gap-8 @min-[768px]:grid-cols-[minmax(0,1.25fr)_minmax(0,0.55fr)] @min-[768px]:items-end @min-[768px]:gap-12">
+        <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-8 @min-[768px]:grid-cols-[minmax(0,1.25fr)_minmax(0,0.55fr)] @min-[768px]:items-end @min-[768px]:gap-12">
           <div className="min-w-0">
             <h2 className={`max-w-3xl text-[var(--theme-ink)] ${tokens.heading} ${tokens.headingHero}`}>
               {headline}
@@ -110,7 +110,7 @@ function createAbout03(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="About" className={`${tokens.sectionPad} ${tokens.section}`}>
-        <div className="relative mx-auto max-w-6xl">
+        <div className="relative mx-auto max-w-[var(--sec-measure,72rem)]">
           <div className="overflow-hidden">
             <MediaPanel
               src={imagePath}
@@ -157,7 +157,7 @@ function createMenu03(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Menu" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <header className="max-w-2xl">
             <h2 className={`text-[var(--theme-ink)] ${tokens.heading} ${tokens.headingSection}`}>
               {headline}
@@ -235,7 +235,7 @@ function createGallery03(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Gallery" className={`${tokens.sectionPad} ${tokens.section}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <header className="flex flex-col gap-3 @min-[640px]:flex-row @min-[640px]:items-end @min-[640px]:justify-between">
             <h2 className={`text-[var(--theme-ink)] ${tokens.heading} ${tokens.headingSection}`}>
               {headline}

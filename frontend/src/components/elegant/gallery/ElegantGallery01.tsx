@@ -19,7 +19,7 @@ export function ElegantGallery01({ content, assets }: SectionComponentProps) {
 
   return (
     <section aria-label="Gallery" className={`${eg.sectionPad} ${eg.section}`}>
-      <div className="mx-auto max-w-6xl min-w-0">
+      <div className="mx-auto max-w-[var(--sec-measure,72rem)] min-w-0">
         <div className="text-center">
           <h2 className={`mt-3 @min-[640px]:mt-4 ${eg.heading} ${eg.headingSection}`}>
             {headline}

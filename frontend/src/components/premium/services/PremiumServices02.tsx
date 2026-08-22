@@ -12,7 +12,7 @@ export function PremiumServices02({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Services" className={`${pm.sectionPad} ${pm.section}`}>
-      <div className="mx-auto grid max-w-6xl gap-10 @min-[768px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] @min-[768px]:gap-16">
+      <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-10 @min-[768px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] @min-[768px]:gap-16">
         <div className="min-w-0">
           <span aria-hidden="true" className={`mt-3 block ${pm.accentRule}`} />
           <h2 className={`mt-4 ${pm.heading} ${pm.headingSection}`}>{headline}</h2>

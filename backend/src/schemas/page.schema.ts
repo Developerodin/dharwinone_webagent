@@ -83,14 +83,25 @@ export const pageSectionSchema = z.object({
 /**
  * Final Page JSON assembled by the pipeline and consumed by PageRenderer.
  */
+/** Page-level design decisions the renderer turns into CSS custom properties. */
+export const pageDesignSchema = z
+  .object({
+    density: z.enum(["compact", "normal", "spacious"]).optional(),
+    typeScale: z.enum(["compact", "normal", "expressive"]).optional(),
+  })
+  .optional();
+
 export const pageSchema = z.object({
   sections: z.array(pageSectionSchema),
   themeOverrides: themeOverridesSchema,
+  /** Optional; absent on pages generated before Phase 1. */
+  design: pageDesignSchema,
 });
 
 export type SectionType = z.infer<typeof sectionTypeSchema>;
 export type PageSection = z.infer<typeof pageSectionSchema>;
 export type Page = z.infer<typeof pageSchema>;
+export type PageDesign = NonNullable<z.infer<typeof pageDesignSchema>>;
 export type ThemeOverrides = NonNullable<z.infer<typeof themeOverridesSchema>>;
 export type SectionStyleOverrides = NonNullable<
   z.infer<typeof sectionStyleOverridesSchema>

@@ -2,15 +2,15 @@
 export const eg = {
   section: "overflow-x-hidden bg-[var(--eg-bg)] text-[var(--eg-cream)]",
   sectionAlt: "overflow-x-hidden bg-[var(--eg-bg-alt)] text-[var(--eg-cream)]",
-  sectionPad: "px-4 py-12 @min-[640px]:px-6 @min-[640px]:py-16 @min-[768px]:px-10 @min-[768px]:py-24",
+  sectionPad: "px-4 py-[var(--sec-pad-y,3rem)] @min-[640px]:px-6 @min-[640px]:py-[var(--sec-pad-y-md,4rem)] @min-[768px]:px-10 @min-[768px]:py-[var(--sec-pad-y-lg,6rem)]",
   eyebrow:
     "text-[10px] font-medium uppercase tracking-[0.28em] text-[var(--eg-gold)] @min-[640px]:text-xs @min-[640px]:tracking-[0.35em]",
   heading:
     "wrap-break-word font-[family-name:var(--eg-font-display)] text-[var(--eg-cream)]",
   headingHero:
-    "wrap-break-word text-[1.75rem] leading-[1.15] @min-[640px]:text-4xl @min-[768px]:text-5xl @min-[1024px]:text-6xl @min-[1280px]:text-7xl",
+    "wrap-break-word text-[calc(1.75rem*var(--sec-type-scale,1))] leading-[1.15] @min-[640px]:text-[calc(2.25rem*var(--sec-type-scale,1))] @min-[768px]:text-[calc(3rem*var(--sec-type-scale,1))] @min-[1024px]:text-[calc(3.75rem*var(--sec-type-scale,1))] @min-[1280px]:text-[calc(4.5rem*var(--sec-type-scale,1))]",
   headingSection:
-    "wrap-break-word text-[1.625rem] leading-tight @min-[640px]:text-3xl @min-[768px]:text-4xl @min-[1024px]:text-5xl",
+    "wrap-break-word text-[calc(1.625rem*var(--sec-type-scale,1))] leading-tight @min-[640px]:text-[calc(1.875rem*var(--sec-type-scale,1))] @min-[768px]:text-[calc(2.25rem*var(--sec-type-scale,1))] @min-[1024px]:text-[calc(3rem*var(--sec-type-scale,1))]",
   body: "wrap-break-word font-[family-name:var(--eg-font-body)] text-[var(--eg-muted)]",
   goldRule: "h-px w-10 bg-[var(--eg-gold)] @min-[640px]:w-16",
   goldButton:

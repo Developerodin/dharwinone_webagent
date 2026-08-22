@@ -74,7 +74,15 @@ export type PageSection = {
   rejectedLayouts?: SectionLayout[];
 };
 
+/** Page-level design decisions applied as CSS custom properties by the renderer. */
+export type PageDesign = {
+  density?: "compact" | "normal" | "spacious";
+  typeScale?: "compact" | "normal" | "expressive";
+};
+
 export type Page = {
   sections: PageSection[];
   themeOverrides?: ThemeOverrides;
+  /** Absent on pages generated before the design-intent wiring. */
+  design?: PageDesign;
 };

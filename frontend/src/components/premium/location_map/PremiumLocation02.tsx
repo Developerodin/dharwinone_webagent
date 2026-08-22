@@ -22,7 +22,7 @@ export function PremiumLocation02({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Location" className={`${pm.sectionPad} ${pm.section}`}>
-      <div className="mx-auto grid max-w-6xl overflow-hidden rounded-[1.75rem] border border-[var(--theme-line)] @min-[768px]:grid-cols-2">
+      <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] overflow-hidden rounded-[1.75rem] border border-[var(--theme-line)] @min-[768px]:grid-cols-2">
         <div className="animate-section-enter bg-[var(--theme-bg-alt)] px-5 py-10 @min-[640px]:px-8 @min-[640px]:py-14 @min-[768px]:px-10">
           <h2 className={`mt-3 @min-[640px]:mt-4 ${pm.heading} ${pm.headingSection}`}>
             {headline}
@@ -66,7 +66,7 @@ export function PremiumLocation02({ content }: SectionComponentProps) {
           </dl>
         </div>
       </div>
-      <div className="mx-auto mt-6 max-w-6xl overflow-hidden rounded-[1.75rem] border border-[var(--theme-line)]">
+      <div className="mx-auto mt-6 max-w-[var(--sec-measure,72rem)] overflow-hidden rounded-[1.75rem] border border-[var(--theme-line)]">
         <LocationMapEmbed
           point={point}
           label="Restaurant location map"

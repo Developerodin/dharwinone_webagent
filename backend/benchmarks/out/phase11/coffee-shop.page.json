@@ -1,0 +1,822 @@
+{
+  "case": "coffee-shop",
+  "prompt": "The Daily Grind, a neighbourhood coffee shop. Espresso, pour-over, a couple of pastries. Regulars know us by name. Nothing pretentious.",
+  "expectedPages": [
+    "home"
+  ],
+  "family": "premium",
+  "direction": {
+    "family": "premium",
+    "seed": "the daily grind|neighbourhood coffee shop||premium",
+    "palette": {
+      "accent": "#3d4a52",
+      "accentContrast": "#ffffff",
+      "bg": "#eef1f3",
+      "ink": "#15181a",
+      "fontDisplay": "\"DM Sans\", system-ui, sans-serif",
+      "fontBody": "\"Work Sans\", system-ui, sans-serif"
+    },
+    "paletteSource": "creative_pick",
+    "sectionVariantHints": {
+      "header": "premium-header-03",
+      "hero": "premium-hero-01",
+      "about": "premium-about-03",
+      "menu": "premium-menu-02",
+      "gallery": "premium-gallery-03",
+      "reservation": "premium-reservation-01",
+      "contact": "premium-contact-02",
+      "footer": "premium-footer-03"
+    },
+    "rationale": "Direction set — premium · neighbourhood · creative pick #3d4a52 · hero-01",
+    "archetype": "neighbourhood",
+    "sectionPlan": [
+      {
+        "type": "header",
+        "emphasis": "compact",
+        "layoutIntent": "band",
+        "background": "base",
+        "spacing": "tight"
+      },
+      {
+        "type": "hero",
+        "emphasis": "hero",
+        "layoutIntent": "full_bleed",
+        "background": "image",
+        "spacing": "normal"
+      },
+      {
+        "type": "about",
+        "emphasis": "major",
+        "layoutIntent": "split_right",
+        "background": "base",
+        "spacing": "tight"
+      },
+      {
+        "type": "menu",
+        "emphasis": "major",
+        "layoutIntent": "editorial_columns",
+        "background": "base",
+        "spacing": "tight"
+      },
+      {
+        "type": "stats",
+        "emphasis": "compact",
+        "layoutIntent": "grid",
+        "background": "alt",
+        "spacing": "tight"
+      },
+      {
+        "type": "gallery",
+        "emphasis": "standard",
+        "layoutIntent": "full_bleed",
+        "background": "alt",
+        "spacing": "normal"
+      },
+      {
+        "type": "reservation",
+        "emphasis": "standard",
+        "layoutIntent": "split_right",
+        "background": "base",
+        "spacing": "normal"
+      },
+      {
+        "type": "location_map",
+        "emphasis": "standard",
+        "layoutIntent": "band",
+        "background": "dark",
+        "spacing": "normal"
+      },
+      {
+        "type": "contact",
+        "emphasis": "standard",
+        "layoutIntent": "split_left",
+        "background": "base",
+        "spacing": "normal"
+      },
+      {
+        "type": "footer",
+        "emphasis": "compact",
+        "layoutIntent": "band",
+        "background": "dark",
+        "spacing": "tight"
+      }
+    ],
+    "narrative": {
+      "positioning": "One espresso blend, roasted eight miles away, pulled the same way every day",
+      "proofPoints": [
+        "Pour Over",
+        "For regulars who come in before eight"
+      ],
+      "voiceRules": [
+        "Name concrete dishes and places from the brief",
+        "No adjective stacking",
+        "Never invent hours, guests, or chefs"
+      ],
+      "avoidPhrases": [
+        "authentic experience",
+        "culinary journey",
+        "feast for the senses",
+        "where tradition meets innovation",
+        "nestled in the heart of",
+        "elevate your dining"
+      ]
+    },
+    "mode": "persuade",
+    "subject": {
+      "what": "The Daily Grind — Neighbourhood coffee shop",
+      "audience": "regulars who come in before eight",
+      "pageJob": "Convince them to book: One espresso blend, roasted eight miles away, pulled the same way every day"
+    },
+    "signature": {
+      "kind": "hero_thesis",
+      "section": "hero",
+      "note": "Hero names one concrete dish, place, or craft from the brief."
+    },
+    "designSystem": {
+      "density": "compact",
+      "typeScale": "compact"
+    },
+    "typePairId": "dm-sans-work-sans",
+    "sitePlan": {
+      "kind": "single_page",
+      "reason": "no page structure requested — defaulting to one scrolling page",
+      "pages": [
+        {
+          "role": "home",
+          "title": "Home",
+          "path": "/",
+          "sections": [
+            "header",
+            "hero",
+            "about",
+            "menu",
+            "stats",
+            "gallery",
+            "reservation",
+            "location_map",
+            "contact",
+            "footer"
+          ]
+        }
+      ]
+    }
+  },
+  "droppedSections": [],
+  "page": {
+    "sections": [
+      {
+        "type": "header",
+        "componentId": "premium-header-03",
+        "content": {
+          "brandName": "The Daily Grind",
+          "tagline": "Neighbourhood coffee shop in WA 98101",
+          "ctaLabel": "Reserve a Table",
+          "eyebrow": "Neighbourhood coffee shop",
+          "navItems": [
+            {
+              "label": "About",
+              "target": "about"
+            },
+            {
+              "label": "Offerings",
+              "target": "menu"
+            },
+            {
+              "label": "Gallery",
+              "target": "gallery"
+            },
+            {
+              "label": "Reservations",
+              "target": "reservation"
+            },
+            {
+              "label": "Contact",
+              "target": "contact"
+            }
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "compact",
+          "intent": "band",
+          "background": "base",
+          "spacing": "tight"
+        }
+      },
+      {
+        "type": "hero",
+        "componentId": "premium-hero-01",
+        "content": {
+          "headline": "The Daily Grind",
+          "subheading": "One espresso blend, roasted eight miles away, pulled the same way every day",
+          "ctaLabel": "View Menu"
+        },
+        "assets": [
+          {
+            "key": "primary",
+            "imagePath": "/images/restaurant/hero/hero-03.webp"
+          }
+        ],
+        "layout": {
+          "emphasis": "hero",
+          "intent": "full_bleed",
+          "background": "image",
+          "spacing": "normal"
+        }
+      },
+      {
+        "type": "about",
+        "componentId": "premium-about-03",
+        "content": {
+          "headline": "About The Daily Grind",
+          "body": "Welcome to The Daily Grind, a Neighbourhood coffee shop rooted in tradition and quality ingredients."
+        },
+        "assets": [
+          {
+            "key": "primary",
+            "imagePath": "/images/restaurant/about/about-03.webp"
+          }
+        ],
+        "layout": {
+          "emphasis": "major",
+          "intent": "split_right",
+          "background": "base",
+          "spacing": "tight"
+        }
+      },
+      {
+        "type": "menu",
+        "componentId": "premium-menu-02",
+        "content": {
+          "sectionTitle": "Our Menu",
+          "introText": "Seasonal dishes crafted with care.",
+          "items": [
+            {
+              "name": "Espresso",
+              "price": 3,
+              "description": "House blend, pulled short"
+            },
+            {
+              "name": "Pour Over",
+              "price": 5,
+              "description": "Changed weekly"
+            },
+            {
+              "name": "Oat Flat White",
+              "price": 5,
+              "description": "Double shot"
+            }
+          ]
+        },
+        "assets": [
+          {
+            "key": "primary",
+            "imagePath": "/images/restaurant/menu/menu-03.webp"
+          }
+        ],
+        "layout": {
+          "emphasis": "major",
+          "intent": "editorial_columns",
+          "background": "base",
+          "spacing": "tight"
+        }
+      },
+      {
+        "type": "stats",
+        "componentId": "premium-stats-01",
+        "content": {
+          "headline": "Loved By Our Guests",
+          "items": [
+            {
+              "value": "3",
+              "label": "Menu Favorites"
+            },
+            {
+              "value": "12+",
+              "label": "Years of Craft"
+            },
+            {
+              "value": "1",
+              "label": "Cuisine Focus"
+            },
+            {
+              "value": "1",
+              "label": "Signature Dishes"
+            }
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "compact",
+          "intent": "grid",
+          "background": "alt",
+          "spacing": "tight"
+        }
+      },
+      {
+        "type": "gallery",
+        "componentId": "premium-gallery-03",
+        "content": {
+          "headline": "Gallery",
+          "caption": "A glimpse into our kitchen and dining room."
+        },
+        "assets": [
+          {
+            "key": "gallery-0",
+            "imagePath": "/images/restaurant/gallery/gallery-03.webp"
+          },
+          {
+            "key": "gallery-1",
+            "imagePath": "/images/restaurant/gallery/gallery-04.webp"
+          },
+          {
+            "key": "gallery-2",
+            "imagePath": "/images/restaurant/gallery/gallery-05.webp"
+          },
+          {
+            "key": "gallery-3",
+            "imagePath": "/images/restaurant/gallery/gallery-06.webp"
+          }
+        ],
+        "layout": {
+          "emphasis": "standard",
+          "intent": "full_bleed",
+          "background": "alt",
+          "spacing": "normal"
+        }
+      },
+      {
+        "type": "reservation",
+        "componentId": "premium-reservation-01",
+        "content": {
+          "headline": "Book Your Table",
+          "body": "Reserve your spot and enjoy a seamless dining experience.",
+          "ctaLabel": "Reserve Now",
+          "phone": "(206) 555-0164",
+          "address": "1412 Pine Street, Seattle, WA 98101",
+          "lat": 47.6145,
+          "lng": -122.3283,
+          "hours": [
+            "Mon–Fri 06:30–17:00"
+          ]
+        },
+        "assets": [
+          {
+            "key": "primary",
+            "imagePath": "/images/restaurant/hero/hero-04.webp"
+          }
+        ],
+        "layout": {
+          "emphasis": "standard",
+          "intent": "split_right",
+          "background": "base",
+          "spacing": "normal"
+        }
+      },
+      {
+        "type": "location_map",
+        "componentId": "premium-location-03",
+        "content": {
+          "headline": "Visit Us",
+          "directionsNote": "We look forward to hosting you.",
+          "phone": "(206) 555-0164",
+          "address": "1412 Pine Street, Seattle, WA 98101",
+          "lat": 47.6145,
+          "lng": -122.3283,
+          "hours": [
+            "Mon–Fri 06:30–17:00"
+          ]
+        },
+        "assets": [
+          {
+            "key": "primary",
+            "imagePath": "/images/restaurant/about/about-04.webp"
+          }
+        ],
+        "layout": {
+          "emphasis": "standard",
+          "intent": "band",
+          "background": "dark",
+          "spacing": "normal"
+        }
+      },
+      {
+        "type": "contact",
+        "componentId": "premium-contact-02",
+        "content": {
+          "headline": "Get In Touch",
+          "introText": "Questions, bookings, or private events — we are here.",
+          "ctaLabel": "Send Message",
+          "phone": "(206) 555-0164",
+          "address": "1412 Pine Street, Seattle, WA 98101",
+          "lat": 47.6145,
+          "lng": -122.3283,
+          "hours": [
+            "Mon–Fri 06:30–17:00"
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "standard",
+          "intent": "split_left",
+          "background": "base",
+          "spacing": "normal"
+        }
+      },
+      {
+        "type": "footer",
+        "componentId": "premium-footer-03",
+        "content": {
+          "tagline": "Thank you for visiting The Daily Grind",
+          "copyright": "© 2026 The Daily Grind. All rights reserved.",
+          "phone": "(206) 555-0164",
+          "address": "1412 Pine Street, Seattle, WA 98101",
+          "lat": 47.6145,
+          "lng": -122.3283,
+          "hours": [
+            "Mon–Fri 06:30–17:00"
+          ],
+          "brandName": "The Daily Grind",
+          "navItems": [
+            {
+              "label": "About",
+              "target": "about"
+            },
+            {
+              "label": "Offerings",
+              "target": "menu"
+            },
+            {
+              "label": "Gallery",
+              "target": "gallery"
+            },
+            {
+              "label": "Reservations",
+              "target": "reservation"
+            },
+            {
+              "label": "Contact",
+              "target": "contact"
+            }
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "compact",
+          "intent": "band",
+          "background": "dark",
+          "spacing": "tight"
+        }
+      }
+    ],
+    "design": {
+      "density": "compact",
+      "typeScale": "compact"
+    },
+    "themeOverrides": {
+      "accent": "#3d4a52",
+      "accentContrast": "#ffffff",
+      "bg": "#eef1f3",
+      "ink": "#15181a",
+      "fontDisplay": "\"DM Sans\", system-ui, sans-serif",
+      "fontBody": "\"Work Sans\", system-ui, sans-serif",
+      "bgDark": "#e0e3e4",
+      "card": "#e4e7e9",
+      "muted": "#67696a",
+      "onDark": "#15181a",
+      "bgAlt": "#e7eaec"
+    }
+  },
+  "pages": [
+    {
+      "role": "home",
+      "title": "Home",
+      "path": "/",
+      "page": {
+        "sections": [
+          {
+            "type": "header",
+            "componentId": "premium-header-03",
+            "content": {
+              "brandName": "The Daily Grind",
+              "tagline": "Neighbourhood coffee shop in WA 98101",
+              "ctaLabel": "Reserve a Table",
+              "eyebrow": "Neighbourhood coffee shop",
+              "navItems": [
+                {
+                  "label": "About",
+                  "target": "about"
+                },
+                {
+                  "label": "Offerings",
+                  "target": "menu"
+                },
+                {
+                  "label": "Gallery",
+                  "target": "gallery"
+                },
+                {
+                  "label": "Reservations",
+                  "target": "reservation"
+                },
+                {
+                  "label": "Contact",
+                  "target": "contact"
+                }
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "compact",
+              "intent": "band",
+              "background": "base",
+              "spacing": "tight"
+            }
+          },
+          {
+            "type": "hero",
+            "componentId": "premium-hero-01",
+            "content": {
+              "headline": "The Daily Grind",
+              "subheading": "One espresso blend, roasted eight miles away, pulled the same way every day",
+              "ctaLabel": "View Menu"
+            },
+            "assets": [
+              {
+                "key": "primary",
+                "imagePath": "/images/restaurant/hero/hero-03.webp"
+              }
+            ],
+            "layout": {
+              "emphasis": "hero",
+              "intent": "full_bleed",
+              "background": "image",
+              "spacing": "normal"
+            }
+          },
+          {
+            "type": "about",
+            "componentId": "premium-about-03",
+            "content": {
+              "headline": "About The Daily Grind",
+              "body": "Welcome to The Daily Grind, a Neighbourhood coffee shop rooted in tradition and quality ingredients."
+            },
+            "assets": [
+              {
+                "key": "primary",
+                "imagePath": "/images/restaurant/about/about-03.webp"
+              }
+            ],
+            "layout": {
+              "emphasis": "major",
+              "intent": "split_right",
+              "background": "base",
+              "spacing": "tight"
+            }
+          },
+          {
+            "type": "menu",
+            "componentId": "premium-menu-02",
+            "content": {
+              "sectionTitle": "Our Menu",
+              "introText": "Seasonal dishes crafted with care.",
+              "items": [
+                {
+                  "name": "Espresso",
+                  "price": 3,
+                  "description": "House blend, pulled short"
+                },
+                {
+                  "name": "Pour Over",
+                  "price": 5,
+                  "description": "Changed weekly"
+                },
+                {
+                  "name": "Oat Flat White",
+                  "price": 5,
+                  "description": "Double shot"
+                }
+              ]
+            },
+            "assets": [
+              {
+                "key": "primary",
+                "imagePath": "/images/restaurant/menu/menu-03.webp"
+              }
+            ],
+            "layout": {
+              "emphasis": "major",
+              "intent": "editorial_columns",
+              "background": "base",
+              "spacing": "tight"
+            }
+          },
+          {
+            "type": "stats",
+            "componentId": "premium-stats-01",
+            "content": {
+              "headline": "Loved By Our Guests",
+              "items": [
+                {
+                  "value": "3",
+                  "label": "Menu Favorites"
+                },
+                {
+                  "value": "12+",
+                  "label": "Years of Craft"
+                },
+                {
+                  "value": "1",
+                  "label": "Cuisine Focus"
+                },
+                {
+                  "value": "1",
+                  "label": "Signature Dishes"
+                }
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "compact",
+              "intent": "grid",
+              "background": "alt",
+              "spacing": "tight"
+            }
+          },
+          {
+            "type": "gallery",
+            "componentId": "premium-gallery-03",
+            "content": {
+              "headline": "Gallery",
+              "caption": "A glimpse into our kitchen and dining room."
+            },
+            "assets": [
+              {
+                "key": "gallery-0",
+                "imagePath": "/images/restaurant/gallery/gallery-03.webp"
+              },
+              {
+                "key": "gallery-1",
+                "imagePath": "/images/restaurant/gallery/gallery-04.webp"
+              },
+              {
+                "key": "gallery-2",
+                "imagePath": "/images/restaurant/gallery/gallery-05.webp"
+              },
+              {
+                "key": "gallery-3",
+                "imagePath": "/images/restaurant/gallery/gallery-06.webp"
+              }
+            ],
+            "layout": {
+              "emphasis": "standard",
+              "intent": "full_bleed",
+              "background": "alt",
+              "spacing": "normal"
+            }
+          },
+          {
+            "type": "reservation",
+            "componentId": "premium-reservation-01",
+            "content": {
+              "headline": "Book Your Table",
+              "body": "Reserve your spot and enjoy a seamless dining experience.",
+              "ctaLabel": "Reserve Now",
+              "phone": "(206) 555-0164",
+              "address": "1412 Pine Street, Seattle, WA 98101",
+              "lat": 47.6145,
+              "lng": -122.3283,
+              "hours": [
+                "Mon–Fri 06:30–17:00"
+              ]
+            },
+            "assets": [
+              {
+                "key": "primary",
+                "imagePath": "/images/restaurant/hero/hero-04.webp"
+              }
+            ],
+            "layout": {
+              "emphasis": "standard",
+              "intent": "split_right",
+              "background": "base",
+              "spacing": "normal"
+            }
+          },
+          {
+            "type": "location_map",
+            "componentId": "premium-location-03",
+            "content": {
+              "headline": "Visit Us",
+              "directionsNote": "We look forward to hosting you.",
+              "phone": "(206) 555-0164",
+              "address": "1412 Pine Street, Seattle, WA 98101",
+              "lat": 47.6145,
+              "lng": -122.3283,
+              "hours": [
+                "Mon–Fri 06:30–17:00"
+              ]
+            },
+            "assets": [
+              {
+                "key": "primary",
+                "imagePath": "/images/restaurant/about/about-04.webp"
+              }
+            ],
+            "layout": {
+              "emphasis": "standard",
+              "intent": "band",
+              "background": "dark",
+              "spacing": "normal"
+            }
+          },
+          {
+            "type": "contact",
+            "componentId": "premium-contact-02",
+            "content": {
+              "headline": "Get In Touch",
+              "introText": "Questions, bookings, or private events — we are here.",
+              "ctaLabel": "Send Message",
+              "phone": "(206) 555-0164",
+              "address": "1412 Pine Street, Seattle, WA 98101",
+              "lat": 47.6145,
+              "lng": -122.3283,
+              "hours": [
+                "Mon–Fri 06:30–17:00"
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "standard",
+              "intent": "split_left",
+              "background": "base",
+              "spacing": "normal"
+            }
+          },
+          {
+            "type": "footer",
+            "componentId": "premium-footer-03",
+            "content": {
+              "tagline": "Thank you for visiting The Daily Grind",
+              "copyright": "© 2026 The Daily Grind. All rights reserved.",
+              "phone": "(206) 555-0164",
+              "address": "1412 Pine Street, Seattle, WA 98101",
+              "lat": 47.6145,
+              "lng": -122.3283,
+              "hours": [
+                "Mon–Fri 06:30–17:00"
+              ],
+              "brandName": "The Daily Grind",
+              "navItems": [
+                {
+                  "label": "About",
+                  "target": "about"
+                },
+                {
+                  "label": "Offerings",
+                  "target": "menu"
+                },
+                {
+                  "label": "Gallery",
+                  "target": "gallery"
+                },
+                {
+                  "label": "Reservations",
+                  "target": "reservation"
+                },
+                {
+                  "label": "Contact",
+                  "target": "contact"
+                }
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "compact",
+              "intent": "band",
+              "background": "dark",
+              "spacing": "tight"
+            }
+          }
+        ],
+        "design": {
+          "density": "compact",
+          "typeScale": "compact"
+        },
+        "themeOverrides": {
+          "accent": "#3d4a52",
+          "accentContrast": "#ffffff",
+          "bg": "#eef1f3",
+          "ink": "#15181a",
+          "fontDisplay": "\"DM Sans\", system-ui, sans-serif",
+          "fontBody": "\"Work Sans\", system-ui, sans-serif",
+          "bgDark": "#e0e3e4",
+          "card": "#e4e7e9",
+          "muted": "#67696a",
+          "onDark": "#15181a",
+          "bgAlt": "#e7eaec"
+        }
+      }
+    }
+  ]
+}

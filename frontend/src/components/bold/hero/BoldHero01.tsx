@@ -45,7 +45,7 @@ export function BoldHero01({ content, assets }: SectionComponentProps) {
         className="bold-hero-grain pointer-events-none absolute inset-0 opacity-[0.18] mix-blend-overlay"
       />
 
-      <div className="relative mx-auto flex min-h-[82svh] max-w-6xl flex-col px-4 pb-10 pt-6 @min-[640px]:min-h-[92svh] @min-[640px]:px-6 @min-[640px]:pb-14 @min-[640px]:pt-8 @min-[768px]:px-10">
+      <div className="relative mx-auto flex min-h-[82svh] max-w-[var(--sec-measure,72rem)] flex-col px-4 pb-10 pt-6 @min-[640px]:min-h-[92svh] @min-[640px]:px-6 @min-[640px]:pb-14 @min-[640px]:pt-8 @min-[768px]:px-10">
         <div className="relative mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-center text-center">
           <h2 className="bold-hero-title relative z-[1] max-w-5xl font-[family-name:var(--theme-font-display)] text-[2.75rem] font-bold uppercase leading-[0.9] tracking-tight text-white @min-[640px]:text-[4.5rem] @min-[768px]:text-[5.75rem] @min-[1024px]:text-[6.5rem]">
             {headline}

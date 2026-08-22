@@ -17,7 +17,7 @@ export function PremiumTeam03({ content, assets }: SectionComponentProps) {
 
   return (
     <section aria-label="Team" className={`${pm.sectionPad} ${pm.section}`}>
-      <div className="mx-auto grid max-w-6xl gap-10 @min-[768px]:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] @min-[768px]:items-end">
+      <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-10 @min-[768px]:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] @min-[768px]:items-end">
         <div className="min-w-0 overflow-hidden">
           {leadImage ? (
             <SectionMedia src={leadImage} className="aspect-[4/5] w-full object-cover" />

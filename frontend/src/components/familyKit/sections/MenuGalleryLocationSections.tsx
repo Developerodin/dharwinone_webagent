@@ -114,7 +114,7 @@ function createMenu02(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Menu" className={`${tokens.sectionPad} ${tokens.section}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <SectionIntro title={headline} body={body} tokens={tokens} />
           <div className="mt-10 grid gap-10 @min-[640px]:mt-14 @min-[1024px]:grid-cols-2 @min-[1024px]:gap-16">
             {columns.map((column, columnIndex) => (
@@ -171,7 +171,7 @@ function createGallery01(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Gallery" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <SectionIntro
             title={headline}
             body={body}
@@ -227,7 +227,7 @@ function createGallery02(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Gallery" className={`${tokens.sectionPad} ${tokens.section}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <SectionIntro title={headline} body={body} tokens={tokens} align="center" />
           {count === 0 ? (
             <p className={`mt-10 text-center text-sm @min-[640px]:mt-12 ${tokens.body}`}>
@@ -285,7 +285,7 @@ function createLocation01(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Location" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
-        <div className="mx-auto grid max-w-6xl gap-8 @min-[768px]:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] @min-[768px]:items-center @min-[768px]:gap-14">
+        <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-8 @min-[768px]:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] @min-[768px]:items-center @min-[768px]:gap-14">
           <div className="min-w-0 overflow-hidden rounded-[var(--theme-radius-frame)]">
             <MediaPanel
               src={imagePath}
@@ -344,7 +344,7 @@ function createLocation02(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Location" className={`${tokens.sectionPad} ${tokens.sectionDark}`}>
-        <div className="mx-auto grid max-w-6xl gap-8 rounded-[var(--theme-radius-frame)] border border-white/10 bg-white/5 p-6 backdrop-blur-sm @min-[768px]:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] @min-[768px]:items-center @min-[768px]:gap-12 @min-[768px]:p-8">
+        <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-8 rounded-[var(--theme-radius-frame)] border border-white/10 bg-white/5 p-6 backdrop-blur-sm @min-[768px]:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] @min-[768px]:items-center @min-[768px]:gap-12 @min-[768px]:p-8">
           <div className="min-w-0 overflow-hidden rounded-[var(--theme-radius-frame)]">
             <MediaPanel
               src={imagePath}

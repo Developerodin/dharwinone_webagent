@@ -25,7 +25,7 @@ export function ElegantLocation01({ content }: SectionComponentProps) {
       aria-label="Location and reservations"
       className={`${eg.sectionPad} ${eg.sectionAlt}`}
     >
-      <div className="mx-auto grid max-w-6xl gap-8 @min-[640px]:gap-10 @min-[768px]:grid-cols-2 @min-[768px]:gap-16">
+      <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-8 @min-[640px]:gap-10 @min-[768px]:grid-cols-2 @min-[768px]:gap-16">
         <div className="min-w-0">
           <span aria-hidden="true" className={`mt-3 block @min-[640px]:mt-4 ${eg.goldRule}`} />
           <h2 className={`mt-4 @min-[640px]:mt-6 ${eg.heading} ${eg.headingSection}`}>

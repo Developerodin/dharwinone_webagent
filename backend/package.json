@@ -17,7 +17,11 @@
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset",
     "preflight": "tsx src/scripts/preflight.ts",
-    "check:google": "tsx scripts/check-google-oauth.ts"
+    "check:google": "tsx scripts/check-google-oauth.ts",
+    "benchmark": "tsx scripts/benchmark.ts",
+    "fonts:sync": "tsx scripts/sync-fonts.ts",
+    "fonts:check": "tsx scripts/sync-fonts.ts --check",
+    "explain": "tsx scripts/explain-selection.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1114.0",

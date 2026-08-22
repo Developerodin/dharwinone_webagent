@@ -13,7 +13,7 @@ export function PremiumAbout03({ content, assets }: SectionComponentProps) {
 
   return (
     <section aria-label="About" className={`${pm.sectionPad} ${pm.section}`}>
-      <div className="relative mx-auto max-w-6xl min-w-0">
+      <div className="relative mx-auto max-w-[var(--sec-measure,72rem)] min-w-0">
         <figure className="min-w-0 overflow-hidden">
           {imagePath ? (
             <SectionMedia

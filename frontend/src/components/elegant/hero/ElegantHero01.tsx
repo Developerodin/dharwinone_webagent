@@ -37,7 +37,7 @@ export function ElegantHero01({ content, assets }: SectionComponentProps) {
         />
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/70 via-[#0a0a0a]/40 to-[#0a0a0a]/15" />
-      <div className="relative mx-auto flex min-h-[60svh] max-w-6xl flex-col justify-end px-4 py-16 @min-[640px]:min-h-[72svh] @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:min-h-[88vh] @min-[768px]:px-10 @min-[768px]:py-24">
+      <div className="relative mx-auto flex min-h-[60svh] max-w-[var(--sec-measure,72rem)] flex-col justify-end px-4 py-16 @min-[640px]:min-h-[72svh] @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:min-h-[88vh] @min-[768px]:px-10 @min-[768px]:py-24">
         <h2 className={`max-w-3xl ${eg.heading} ${eg.headingHero}`}>
           {headline}
         </h2>

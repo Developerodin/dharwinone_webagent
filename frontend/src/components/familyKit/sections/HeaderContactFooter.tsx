@@ -52,7 +52,7 @@ function createContact01(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Contact" className={`${tokens.sectionPad} ${tokens.section}`}>
-        <div className="mx-auto grid max-w-6xl gap-10 @min-[768px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] @min-[768px]:gap-14">
+        <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-10 @min-[768px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] @min-[768px]:gap-14">
           <div className="min-w-0">
             <SectionIntro
               title={headline}
@@ -112,7 +112,7 @@ function createContact02(tokens: ThemeTokens): SectionComponent {
           aria-hidden="true"
           className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.1),transparent_48%)]"
         />
-        <div className="relative mx-auto max-w-6xl">
+        <div className="relative mx-auto max-w-[var(--sec-measure,72rem)]">
           <div className={`${tokens.formCard} mx-auto max-w-4xl p-6 @min-[640px]:p-8 @min-[768px]:p-10`}>
             <SectionIntro
               title={headline}
@@ -160,7 +160,7 @@ function createFooter01(tokens: ThemeTokens): SectionComponent {
 
     return (
       <footer aria-label="Footer" className={`${tokens.sectionPad} ${tokens.sectionAlt} border-t border-[var(--theme-line)]`}>
-        <div className="mx-auto grid max-w-6xl min-w-0 grid-cols-1 gap-10 @min-[768px]:grid-cols-2 @min-[1024px]:grid-cols-3">
+        <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] min-w-0 grid-cols-1 gap-10 @min-[768px]:grid-cols-2 @min-[1024px]:grid-cols-3">
           <div className="min-w-0">
             <p className={`text-xl text-[var(--theme-ink)] ${tokens.heading}`}>{brandName}</p>
             <p className={`mt-3 max-w-md text-sm @min-[640px]:text-base ${tokens.body}`}>
@@ -184,7 +184,7 @@ function createFooter01(tokens: ThemeTokens): SectionComponent {
             <ContactFactList facts={facts} />
           </div>
         </div>
-        <p className={`mx-auto mt-10 max-w-6xl text-sm ${tokens.body}`}>{copyright}</p>
+        <p className={`mx-auto mt-10 max-w-[var(--sec-measure,72rem)] text-sm ${tokens.body}`}>{copyright}</p>
       </footer>
     );
   }
@@ -208,7 +208,7 @@ function createFooter02(tokens: ThemeTokens): SectionComponent {
 
     return (
       <footer aria-label="Footer" className={`${tokens.sectionPad} ${tokens.sectionDark}`}>
-        <div className="mx-auto max-w-6xl min-w-0">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)] min-w-0">
           <div className="grid min-w-0 grid-cols-1 gap-10 @min-[768px]:grid-cols-2 @min-[1024px]:grid-cols-3 @min-[1024px]:items-start">
             <div className="min-w-0">
               <p className={`text-xl text-[var(--theme-on-dark)] ${tokens.heading}`}>{brandName}</p>

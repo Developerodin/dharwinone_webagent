@@ -27,7 +27,7 @@ export function BoldFooter01({ content }: SectionComponentProps) {
 
   return (
     <footer aria-label="Site footer" className="bg-[var(--bold-hero-red)] text-white">
-      <div className={`mx-auto max-w-6xl ${bd.sectionPad}`}>
+      <div className={`mx-auto max-w-[var(--sec-measure,72rem)] ${bd.sectionPad}`}>
         <div className="grid gap-12 @min-[768px]:grid-cols-2 @min-[768px]:gap-16">
           <div className="min-w-0">
             <h2 className="font-[family-name:var(--theme-font-display)] text-[2rem] font-bold uppercase leading-none @min-[640px]:text-[2.75rem]">

@@ -1,8 +1,8 @@
 import type { Brief } from "../schemas/brief.schema.js";
 import type { CreativePalette } from "../schemas/creativeDirection.schema.js";
-import { contrastForAccent } from "./colorResolve.js";
+import { contrastForAccent, ensureAccentIsUsable } from "./colorResolve.js";
 import { inventPaletteFromHoreca } from "./horecaDesignSystem.js";
-import { stableHash } from "./pickComponent.js";
+import { stableHash } from "../lib/stableHash.js";
 
 type PaletteCandidate = {
   label: string;
@@ -181,9 +181,10 @@ export function inventPalette(
   }
 
   const pick = options[stableHash(seed) % options.length] ?? options[0]!;
+  const accent = ensureAccentIsUsable(pick.accent);
   return {
-    accent: pick.accent,
-    accentContrast: contrastForAccent(pick.accent),
+    accent,
+    accentContrast: contrastForAccent(accent),
     bg: pick.bg,
     ink: pick.ink,
   };

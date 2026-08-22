@@ -11,7 +11,7 @@ export function ElegantStats02({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Stats" className={`${eg.sectionPad} ${eg.section}`}>
-      <div className="mx-auto grid max-w-6xl min-w-0 gap-10 @min-[768px]:grid-cols-2 @min-[768px]:items-center @min-[768px]:gap-16">
+      <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] min-w-0 gap-10 @min-[768px]:grid-cols-2 @min-[768px]:items-center @min-[768px]:gap-16">
         <div>
           <h2 className={`@min-[640px]:mt-6 ${eg.heading} ${eg.headingSection}`}>{headline}</h2>
         </div>

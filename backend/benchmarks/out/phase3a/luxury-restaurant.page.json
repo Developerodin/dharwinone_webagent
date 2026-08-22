@@ -1,0 +1,793 @@
+{
+  "case": "luxury-restaurant",
+  "prompt": "Maison Verre is a luxury contemporary French restaurant in Mayfair. Tasting menu only, candlelit dining room, sommelier-led pairings. The site should feel restrained and expensive.",
+  "expectedPages": [
+    "home"
+  ],
+  "family": "elegant",
+  "direction": {
+    "family": "elegant",
+    "seed": "maison verre|luxury contemporary french||elegant",
+    "palette": {
+      "accent": "#d4b896",
+      "accentContrast": "#111111",
+      "bg": "#1a1814",
+      "ink": "#f7f2ea",
+      "fontDisplay": "\"Cormorant Garamond\", Georgia, serif",
+      "fontBody": "\"Karla\", system-ui, sans-serif"
+    },
+    "paletteSource": "creative_pick",
+    "sectionVariantHints": {
+      "header": "elegant-header-03",
+      "hero": "elegant-hero-02",
+      "about": "elegant-about-03",
+      "menu": "elegant-menu-01",
+      "gallery": "elegant-gallery-02",
+      "reservation": "elegant-reservation-03",
+      "contact": "elegant-contact-02",
+      "footer": "elegant-footer-03"
+    },
+    "rationale": "Direction set — elegant · reservation_first · creative pick #d4b896 · hero-02",
+    "archetype": "reservation_first",
+    "sectionPlan": [
+      {
+        "type": "header",
+        "emphasis": "compact",
+        "layoutIntent": "band",
+        "background": "base",
+        "spacing": "tight"
+      },
+      {
+        "type": "hero",
+        "emphasis": "hero",
+        "layoutIntent": "centered",
+        "background": "image",
+        "spacing": "roomy"
+      },
+      {
+        "type": "reservation",
+        "emphasis": "major",
+        "layoutIntent": "split_right",
+        "background": "base",
+        "spacing": "roomy"
+      },
+      {
+        "type": "menu",
+        "emphasis": "major",
+        "layoutIntent": "grid",
+        "background": "alt",
+        "spacing": "roomy"
+      },
+      {
+        "type": "about",
+        "emphasis": "major",
+        "layoutIntent": "editorial_columns",
+        "background": "base",
+        "spacing": "roomy"
+      },
+      {
+        "type": "stats",
+        "emphasis": "compact",
+        "layoutIntent": "grid",
+        "background": "alt",
+        "spacing": "tight"
+      },
+      {
+        "type": "gallery",
+        "emphasis": "standard",
+        "layoutIntent": "full_bleed",
+        "background": "base",
+        "spacing": "normal"
+      },
+      {
+        "type": "location_map",
+        "emphasis": "standard",
+        "layoutIntent": "split_left",
+        "background": "dark",
+        "spacing": "normal"
+      },
+      {
+        "type": "contact",
+        "emphasis": "standard",
+        "layoutIntent": "centered",
+        "background": "base",
+        "spacing": "normal"
+      },
+      {
+        "type": "footer",
+        "emphasis": "compact",
+        "layoutIntent": "band",
+        "background": "dark",
+        "spacing": "tight"
+      }
+    ],
+    "narrative": {
+      "positioning": "A nine-course tasting menu built around one delivery of fish each morning",
+      "proofPoints": [
+        "Turbot, Vin Jaune",
+        "Pigeon de Bresse",
+        "For anniversary dinners and considered occasions"
+      ],
+      "voiceRules": [
+        "Name concrete dishes and places from the brief",
+        "No adjective stacking",
+        "Never invent hours, guests, or chefs"
+      ],
+      "avoidPhrases": [
+        "authentic experience",
+        "culinary journey",
+        "feast for the senses",
+        "where tradition meets innovation",
+        "nestled in the heart of",
+        "elevate your dining"
+      ]
+    },
+    "mode": "persuade",
+    "subject": {
+      "what": "Maison Verre — Luxury contemporary French",
+      "audience": "anniversary dinners and considered occasions",
+      "pageJob": "Convince them to book: A nine-course tasting menu built around one delivery of fish each morning"
+    },
+    "signature": {
+      "kind": "booking_as_thesis",
+      "section": "reservation",
+      "note": "The page exists to book a table."
+    },
+    "designSystem": {
+      "density": "spacious",
+      "typeScale": "expressive"
+    },
+    "typePairId": "cormorant-garamond-karla",
+    "sitePlan": {
+      "kind": "single_page",
+      "reason": "no page structure requested — defaulting to one scrolling page",
+      "pages": [
+        {
+          "role": "home",
+          "title": "Home",
+          "path": "/",
+          "sections": [
+            "header",
+            "hero",
+            "reservation",
+            "menu",
+            "about",
+            "stats",
+            "gallery",
+            "location_map",
+            "contact",
+            "footer"
+          ]
+        }
+      ]
+    }
+  },
+  "droppedSections": [],
+  "page": {
+    "sections": [
+      {
+        "type": "header",
+        "componentId": "elegant-header-02",
+        "content": {
+          "brandName": "Maison Verre",
+          "tagline": "Refined Luxury contemporary French in London W1K 3NG",
+          "ctaLabel": "Reserve a Table",
+          "eyebrow": "Luxury contemporary French",
+          "navItems": [
+            {
+              "label": "About",
+              "target": "about"
+            },
+            {
+              "label": "Menu",
+              "target": "menu"
+            },
+            {
+              "label": "Gallery",
+              "target": "gallery"
+            },
+            {
+              "label": "Reservations",
+              "target": "reservation"
+            },
+            {
+              "label": "Contact",
+              "target": "contact"
+            }
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "compact",
+          "intent": "band",
+          "background": "base",
+          "spacing": "tight"
+        }
+      },
+      {
+        "type": "hero",
+        "componentId": "elegant-hero-01",
+        "content": {
+          "headline": "Maison Verre",
+          "subheading": "A nine-course tasting menu built around one delivery of fish each morning",
+          "ctaLabel": "Reserve a Table"
+        },
+        "assets": [
+          {
+            "key": "primary",
+            "imagePath": "/images/restaurant/hero/hero-18.webp"
+          }
+        ],
+        "layout": {
+          "emphasis": "hero",
+          "intent": "centered",
+          "background": "image",
+          "spacing": "roomy"
+        }
+      },
+      {
+        "type": "reservation",
+        "componentId": "elegant-reservation-03",
+        "content": {
+          "headline": "Reserve Your Evening",
+          "body": "Book a table for an unforgettable dining journey.",
+          "ctaLabel": "Book A Table",
+          "phone": "020 7499 3311",
+          "address": "9 Mount Street, Mayfair, London W1K 3NG",
+          "lat": 51.5104,
+          "lng": -0.1503,
+          "hours": [
+            "Tue–Sat 18:30–23:00"
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "major",
+          "intent": "split_right",
+          "background": "base",
+          "spacing": "roomy"
+        }
+      },
+      {
+        "type": "menu",
+        "componentId": "elegant-menu-01",
+        "content": {
+          "sectionTitle": "Chef's Selection",
+          "introText": "Seasonal ingredients, refined technique, unforgettable flavor.",
+          "items": [
+            {
+              "name": "Turbot, Vin Jaune",
+              "price": 48,
+              "description": "Aged turbot, Jura reduction"
+            },
+            {
+              "name": "Pigeon de Bresse",
+              "price": 52,
+              "description": "Cherry, fermented pepper"
+            },
+            {
+              "name": "Tarte aux Pommes",
+              "price": 22,
+              "description": "Caramelised over 12 hours"
+            }
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "major",
+          "intent": "grid",
+          "background": "alt",
+          "spacing": "roomy"
+        }
+      },
+      {
+        "type": "about",
+        "componentId": "elegant-about-02",
+        "content": {
+          "headline": "Our Story",
+          "body": "Maison Verre celebrates the art of Luxury contemporary French with timeless hospitality and cuisine rooted in tradition."
+        },
+        "assets": [
+          {
+            "key": "primary",
+            "imagePath": "/images/restaurant/about/about-19.webp"
+          }
+        ],
+        "layout": {
+          "emphasis": "major",
+          "intent": "editorial_columns",
+          "background": "base",
+          "spacing": "roomy"
+        }
+      },
+      {
+        "type": "stats",
+        "componentId": "elegant-stats-01",
+        "content": {
+          "headline": "Numbers That Speak",
+          "items": [
+            {
+              "value": "3",
+              "label": "Menu Favorites"
+            },
+            {
+              "value": "10+",
+              "label": "Years of Craft"
+            },
+            {
+              "value": "1",
+              "label": "Cuisine Focus"
+            },
+            {
+              "value": "2",
+              "label": "Signature Dishes"
+            }
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "compact",
+          "intent": "grid",
+          "background": "alt",
+          "spacing": "tight"
+        }
+      },
+      {
+        "type": "gallery",
+        "componentId": "elegant-gallery-03",
+        "content": {
+          "headline": "The Experience",
+          "caption": "A glimpse into our dining room, kitchen, and plated artistry."
+        },
+        "assets": [
+          {
+            "key": "gallery-0",
+            "imagePath": "/images/restaurant/gallery/gallery-17.webp"
+          },
+          {
+            "key": "gallery-1",
+            "imagePath": "/images/restaurant/gallery/gallery-18.webp"
+          },
+          {
+            "key": "gallery-2",
+            "imagePath": "/images/restaurant/gallery/gallery-19.webp"
+          },
+          {
+            "key": "gallery-3",
+            "imagePath": "/images/restaurant/gallery/gallery-20.webp"
+          }
+        ],
+        "layout": {
+          "emphasis": "standard",
+          "intent": "full_bleed",
+          "background": "base",
+          "spacing": "normal"
+        }
+      },
+      {
+        "type": "location_map",
+        "componentId": "elegant-location-01",
+        "content": {
+          "headline": "Visit & Reserve",
+          "directionsNote": "We welcome guests by reservation. Join us for an evening of refined dining.",
+          "phone": "020 7499 3311",
+          "address": "9 Mount Street, Mayfair, London W1K 3NG",
+          "lat": 51.5104,
+          "lng": -0.1503,
+          "hours": [
+            "Tue–Sat 18:30–23:00"
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "standard",
+          "intent": "split_left",
+          "background": "dark",
+          "spacing": "normal"
+        }
+      },
+      {
+        "type": "contact",
+        "componentId": "elegant-contact-01",
+        "content": {
+          "headline": "Contact / Reservation",
+          "introText": "Share your details and we will confirm your table.",
+          "ctaLabel": "Submit Request",
+          "phone": "020 7499 3311",
+          "address": "9 Mount Street, Mayfair, London W1K 3NG",
+          "lat": 51.5104,
+          "lng": -0.1503,
+          "hours": [
+            "Tue–Sat 18:30–23:00"
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "standard",
+          "intent": "centered",
+          "background": "base",
+          "spacing": "normal"
+        }
+      },
+      {
+        "type": "footer",
+        "componentId": "elegant-footer-02",
+        "content": {
+          "tagline": "An evening of refined hospitality",
+          "copyright": "© 2026 Maison Verre. All rights reserved.",
+          "phone": "020 7499 3311",
+          "address": "9 Mount Street, Mayfair, London W1K 3NG",
+          "lat": 51.5104,
+          "lng": -0.1503,
+          "hours": [
+            "Tue–Sat 18:30–23:00"
+          ],
+          "brandName": "Maison Verre",
+          "navItems": [
+            {
+              "label": "About",
+              "target": "about"
+            },
+            {
+              "label": "Menu",
+              "target": "menu"
+            },
+            {
+              "label": "Gallery",
+              "target": "gallery"
+            },
+            {
+              "label": "Reservations",
+              "target": "reservation"
+            },
+            {
+              "label": "Contact",
+              "target": "contact"
+            }
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "compact",
+          "intent": "band",
+          "background": "dark",
+          "spacing": "tight"
+        }
+      }
+    ],
+    "design": {
+      "density": "spacious",
+      "typeScale": "expressive"
+    },
+    "themeOverrides": {
+      "accent": "#d4b896",
+      "accentContrast": "#111111",
+      "bg": "#1a1814",
+      "ink": "#f7f2ea",
+      "fontDisplay": "\"Cormorant Garamond\", Georgia, serif",
+      "fontBody": "\"Karla\", system-ui, sans-serif",
+      "bgDark": "#1a1814",
+      "card": "#353430",
+      "muted": "#d9d9d9",
+      "onDark": "#f5f5f5",
+      "bgAlt": "#2c2a27"
+    }
+  },
+  "pages": [
+    {
+      "role": "home",
+      "title": "Home",
+      "path": "/",
+      "page": {
+        "sections": [
+          {
+            "type": "header",
+            "componentId": "elegant-header-02",
+            "content": {
+              "brandName": "Maison Verre",
+              "tagline": "Refined Luxury contemporary French in London W1K 3NG",
+              "ctaLabel": "Reserve a Table",
+              "eyebrow": "Luxury contemporary French",
+              "navItems": [
+                {
+                  "label": "About",
+                  "target": "about"
+                },
+                {
+                  "label": "Menu",
+                  "target": "menu"
+                },
+                {
+                  "label": "Gallery",
+                  "target": "gallery"
+                },
+                {
+                  "label": "Reservations",
+                  "target": "reservation"
+                },
+                {
+                  "label": "Contact",
+                  "target": "contact"
+                }
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "compact",
+              "intent": "band",
+              "background": "base",
+              "spacing": "tight"
+            }
+          },
+          {
+            "type": "hero",
+            "componentId": "elegant-hero-01",
+            "content": {
+              "headline": "Maison Verre",
+              "subheading": "A nine-course tasting menu built around one delivery of fish each morning",
+              "ctaLabel": "Reserve a Table"
+            },
+            "assets": [
+              {
+                "key": "primary",
+                "imagePath": "/images/restaurant/hero/hero-18.webp"
+              }
+            ],
+            "layout": {
+              "emphasis": "hero",
+              "intent": "centered",
+              "background": "image",
+              "spacing": "roomy"
+            }
+          },
+          {
+            "type": "reservation",
+            "componentId": "elegant-reservation-03",
+            "content": {
+              "headline": "Reserve Your Evening",
+              "body": "Book a table for an unforgettable dining journey.",
+              "ctaLabel": "Book A Table",
+              "phone": "020 7499 3311",
+              "address": "9 Mount Street, Mayfair, London W1K 3NG",
+              "lat": 51.5104,
+              "lng": -0.1503,
+              "hours": [
+                "Tue–Sat 18:30–23:00"
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "major",
+              "intent": "split_right",
+              "background": "base",
+              "spacing": "roomy"
+            }
+          },
+          {
+            "type": "menu",
+            "componentId": "elegant-menu-01",
+            "content": {
+              "sectionTitle": "Chef's Selection",
+              "introText": "Seasonal ingredients, refined technique, unforgettable flavor.",
+              "items": [
+                {
+                  "name": "Turbot, Vin Jaune",
+                  "price": 48,
+                  "description": "Aged turbot, Jura reduction"
+                },
+                {
+                  "name": "Pigeon de Bresse",
+                  "price": 52,
+                  "description": "Cherry, fermented pepper"
+                },
+                {
+                  "name": "Tarte aux Pommes",
+                  "price": 22,
+                  "description": "Caramelised over 12 hours"
+                }
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "major",
+              "intent": "grid",
+              "background": "alt",
+              "spacing": "roomy"
+            }
+          },
+          {
+            "type": "about",
+            "componentId": "elegant-about-02",
+            "content": {
+              "headline": "Our Story",
+              "body": "Maison Verre celebrates the art of Luxury contemporary French with timeless hospitality and cuisine rooted in tradition."
+            },
+            "assets": [
+              {
+                "key": "primary",
+                "imagePath": "/images/restaurant/about/about-19.webp"
+              }
+            ],
+            "layout": {
+              "emphasis": "major",
+              "intent": "editorial_columns",
+              "background": "base",
+              "spacing": "roomy"
+            }
+          },
+          {
+            "type": "stats",
+            "componentId": "elegant-stats-01",
+            "content": {
+              "headline": "Numbers That Speak",
+              "items": [
+                {
+                  "value": "3",
+                  "label": "Menu Favorites"
+                },
+                {
+                  "value": "10+",
+                  "label": "Years of Craft"
+                },
+                {
+                  "value": "1",
+                  "label": "Cuisine Focus"
+                },
+                {
+                  "value": "2",
+                  "label": "Signature Dishes"
+                }
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "compact",
+              "intent": "grid",
+              "background": "alt",
+              "spacing": "tight"
+            }
+          },
+          {
+            "type": "gallery",
+            "componentId": "elegant-gallery-03",
+            "content": {
+              "headline": "The Experience",
+              "caption": "A glimpse into our dining room, kitchen, and plated artistry."
+            },
+            "assets": [
+              {
+                "key": "gallery-0",
+                "imagePath": "/images/restaurant/gallery/gallery-17.webp"
+              },
+              {
+                "key": "gallery-1",
+                "imagePath": "/images/restaurant/gallery/gallery-18.webp"
+              },
+              {
+                "key": "gallery-2",
+                "imagePath": "/images/restaurant/gallery/gallery-19.webp"
+              },
+              {
+                "key": "gallery-3",
+                "imagePath": "/images/restaurant/gallery/gallery-20.webp"
+              }
+            ],
+            "layout": {
+              "emphasis": "standard",
+              "intent": "full_bleed",
+              "background": "base",
+              "spacing": "normal"
+            }
+          },
+          {
+            "type": "location_map",
+            "componentId": "elegant-location-01",
+            "content": {
+              "headline": "Visit & Reserve",
+              "directionsNote": "We welcome guests by reservation. Join us for an evening of refined dining.",
+              "phone": "020 7499 3311",
+              "address": "9 Mount Street, Mayfair, London W1K 3NG",
+              "lat": 51.5104,
+              "lng": -0.1503,
+              "hours": [
+                "Tue–Sat 18:30–23:00"
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "standard",
+              "intent": "split_left",
+              "background": "dark",
+              "spacing": "normal"
+            }
+          },
+          {
+            "type": "contact",
+            "componentId": "elegant-contact-01",
+            "content": {
+              "headline": "Contact / Reservation",
+              "introText": "Share your details and we will confirm your table.",
+              "ctaLabel": "Submit Request",
+              "phone": "020 7499 3311",
+              "address": "9 Mount Street, Mayfair, London W1K 3NG",
+              "lat": 51.5104,
+              "lng": -0.1503,
+              "hours": [
+                "Tue–Sat 18:30–23:00"
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "standard",
+              "intent": "centered",
+              "background": "base",
+              "spacing": "normal"
+            }
+          },
+          {
+            "type": "footer",
+            "componentId": "elegant-footer-02",
+            "content": {
+              "tagline": "An evening of refined hospitality",
+              "copyright": "© 2026 Maison Verre. All rights reserved.",
+              "phone": "020 7499 3311",
+              "address": "9 Mount Street, Mayfair, London W1K 3NG",
+              "lat": 51.5104,
+              "lng": -0.1503,
+              "hours": [
+                "Tue–Sat 18:30–23:00"
+              ],
+              "brandName": "Maison Verre",
+              "navItems": [
+                {
+                  "label": "About",
+                  "target": "about"
+                },
+                {
+                  "label": "Menu",
+                  "target": "menu"
+                },
+                {
+                  "label": "Gallery",
+                  "target": "gallery"
+                },
+                {
+                  "label": "Reservations",
+                  "target": "reservation"
+                },
+                {
+                  "label": "Contact",
+                  "target": "contact"
+                }
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "compact",
+              "intent": "band",
+              "background": "dark",
+              "spacing": "tight"
+            }
+          }
+        ],
+        "design": {
+          "density": "spacious",
+          "typeScale": "expressive"
+        },
+        "themeOverrides": {
+          "accent": "#d4b896",
+          "accentContrast": "#111111",
+          "bg": "#1a1814",
+          "ink": "#f7f2ea",
+          "fontDisplay": "\"Cormorant Garamond\", Georgia, serif",
+          "fontBody": "\"Karla\", system-ui, sans-serif",
+          "bgDark": "#1a1814",
+          "card": "#353430",
+          "muted": "#d9d9d9",
+          "onDark": "#f5f5f5",
+          "bgAlt": "#2c2a27"
+        }
+      }
+    }
+  ]
+}

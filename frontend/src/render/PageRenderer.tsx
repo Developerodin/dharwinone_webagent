@@ -228,6 +228,8 @@ export function PageRenderer({
       style={overrideStyle}
       aria-label="Rendered restaurant page"
       data-page-family={family}
+      data-density={page.design?.density}
+      data-type-scale={page.design?.typeScale}
       onMouseMove={selectable ? handleMouseMove : undefined}
       onMouseLeave={selectable ? handleMouseLeave : undefined}
     >
@@ -357,11 +359,24 @@ function SectionSlot({
     });
   }
 
+  // Creative Director decisions ride on the wrapper. `sectionLayout.css` reads
+  // these and rewrites the --theme-* tokens the section components consume, so
+  // a plan change reaches the DOM without every component opting in.
+  //
+  // Pages saved before the plan existed carry no layout. They must stay
+  // pixel-identical, so they get no attributes at all and every --sec-* var
+  // falls back to the value the component tokens hardcoded before.
+  const layout = section.layout;
+
   return (
     <div
       ref={rootRef}
       id={sectionDomId(section.type)}
       data-section={section.type}
+      data-layout-bg={layout?.background}
+      data-layout-intent={layout?.intent}
+      data-emphasis={layout?.emphasis}
+      data-spacing={layout?.spacing}
       className={cn(
         "scroll-mt-24",
         paddingClass,

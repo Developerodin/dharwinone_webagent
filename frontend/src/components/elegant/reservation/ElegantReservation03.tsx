@@ -14,7 +14,7 @@ export function ElegantReservation03({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Reservation" className={`${eg.sectionPad} ${eg.section}`}>
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 border-t border-[var(--eg-gold)]/25 pt-10 @min-[768px]:flex-row @min-[768px]:items-end @min-[768px]:justify-between">
+      <div className="mx-auto flex max-w-[var(--sec-measure,72rem)] flex-col gap-8 border-t border-[var(--eg-gold)]/25 pt-10 @min-[768px]:flex-row @min-[768px]:items-end @min-[768px]:justify-between">
         <div className="min-w-0 max-w-2xl">
           <h2 className={`${eg.heading} ${eg.headingSection}`}>{headline}</h2>
           {body ? (

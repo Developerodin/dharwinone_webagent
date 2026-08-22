@@ -13,7 +13,7 @@ export function PremiumAbout02({ content, assets }: SectionComponentProps) {
 
   return (
     <section aria-label="About" className={`${pm.sectionPad} ${pm.sectionAlt}`}>
-      <div className="mx-auto max-w-6xl min-w-0">
+      <div className="mx-auto max-w-[var(--sec-measure,72rem)] min-w-0">
         <div className="animate-section-enter mx-auto max-w-3xl text-center">
           <span
             aria-hidden="true"

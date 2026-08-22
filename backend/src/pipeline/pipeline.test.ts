@@ -2,7 +2,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { FIXTURE_BRIEF } from "../data/fixtureBrief.js";
 import { assemblePage } from "../pipeline/assemblePage.js";
 import { factCheck } from "../pipeline/factCheck.js";
-import { pickComponent } from "../pipeline/pickComponent.js";
+import {
+  defaultComponentId,
+  getSpec,
+  listComponentIds,
+} from "../catalog/index.js";
+import { sectionTypeSchema } from "../schemas/page.schema.js";
 import { pickGalleryImages, pickImage } from "../pipeline/pickImage.js";
 import { loadCatalog, resetCatalogCache } from "../lib/catalog.js";
 import { planSections } from "../pipeline/planSections.js";
@@ -42,199 +47,55 @@ describe("planSections", () => {
   });
 });
 
-describe("pickComponent", () => {
-  it("maps each section type to a premium variant by default", () => {
-    expect(pickComponent("hero")).toMatch(/^premium-hero-0[123]$/);
-    expect(pickComponent("menu")).toMatch(/^premium-menu-0[123]$/);
-    expect(pickComponent("testimonials")).toMatch(
-      /^premium-testimonials-0[123]$/,
-    );
+describe("catalog component resolution", () => {
+  // These replace the legacy pickComponent tests. Each asserts that the
+  // capability the legacy picker provided still exists, now served by the
+  // catalog rather than by a hardcoded id table.
+
+  it("resolves every section type to a component for every family", () => {
+    const gaps: string[] = [];
+    for (const family of ["premium", "elegant", "minimal", "rustic", "vibrant", "bold"]) {
+      for (const section of sectionTypeSchema.options) {
+        const id = defaultComponentId(section, family);
+        if (!id) gaps.push(`${family}/${section}`);
+      }
+    }
+    expect(gaps).toEqual([]);
   });
 
-  it("maps section types to elegant variants when family is set", () => {
-    expect(pickComponent("hero", "elegant")).toMatch(/^elegant-hero-0[123]$/);
-    expect(pickComponent("gallery", "elegant")).toMatch(
-      /^elegant-gallery-0[123]$/,
-    );
-    expect(pickComponent("reservation", "elegant")).toMatch(
-      /^elegant-reservation-0[123]$/,
-    );
+  it("only ever resolves within the requested family", () => {
+    for (const family of ["premium", "elegant", "minimal"]) {
+      for (const section of sectionTypeSchema.options) {
+        expect(defaultComponentId(section, family)).toMatch(
+          new RegExp(`^${family}-`),
+        );
+      }
+    }
   });
 
-  it("preserves variant suffix when remapping across families", () => {
-    expect(
-      pickComponent("hero", "elegant", {
-        preferComponentId: "premium-hero-02",
-      }),
-    ).toBe("elegant-hero-02");
-    expect(
-      pickComponent("menu", "premium", {
-        preferComponentId: "elegant-menu-01",
-      }),
-    ).toBe("premium-menu-01");
+  it("exposes every variant of a section as a candidate", () => {
+    expect(listComponentIds("header", "premium")).toEqual([
+      "premium-header-01",
+      "premium-header-02",
+      "premium-header-03",
+    ]);
+    expect(listComponentIds("contact", "elegant")).toHaveLength(2);
   });
 
-  it("diversifies variants by business identity", () => {
-    const names = [
-      "Alpha Kitchen",
-      "Zeta Dining",
-      "Harbor House",
-      "Maple Room",
-      "Copper Spoon",
-      "Nightingale",
-      "Orchard Table",
-      "Lumen Hall",
-    ];
-    const picked = names.map((businessName) =>
-      pickComponent("header", "premium", {
-        brief: {
-          ...FIXTURE_BRIEF,
-          businessName,
-          category: "Restaurant",
-          address: "100 Main Ave, Portland, OR",
-        },
-      }),
-    );
-    expect(picked.every((id) => /^premium-header-0[123]$/.test(id))).toBe(true);
-    expect(new Set(picked).size).toBeGreaterThan(1);
+  it("carries the signature -03 variants across every family", () => {
+    for (const family of ["premium", "elegant", "minimal", "bold"]) {
+      for (const section of ["services", "reservation", "footer"] as const) {
+        expect(listComponentIds(section, family)).toContain(`${family}-${section}-03`);
+      }
+    }
   });
 
-  it("exposes three header variants in the pool", () => {
-    expect(pickComponent("header", "premium", {
-      preferComponentId: "premium-header-01",
-    })).toBe("premium-header-01");
-    expect(pickComponent("header", "elegant", {
-      preferComponentId: "premium-header-02",
-    })).toBe("elegant-header-02");
-    expect(pickComponent("header", "minimal", {
-      preferComponentId: "premium-header-03",
-    })).toBe("minimal-header-03");
-  });
-
-  it("exposes services/reservation/footer-03 across families", () => {
-    expect(
-      pickComponent("services", "minimal", {
-        preferComponentId: "premium-services-03",
-      }),
-    ).toBe("minimal-services-03");
-    expect(
-      pickComponent("reservation", "elegant", {
-        preferComponentId: "premium-reservation-03",
-      }),
-    ).toBe("elegant-reservation-03");
-    expect(
-      pickComponent("footer", "bold", {
-        preferComponentId: "premium-footer-03",
-      }),
-    ).toBe("bold-footer-03");
-    expect(
-      pickComponent("stats", "rustic", {
-        preferComponentId: "premium-stats-03",
-      }),
-    ).toBe("rustic-stats-03");
-  });
-
-  it("exposes about/menu/gallery/hero-03 across families", () => {
-    expect(
-      pickComponent("about", "minimal", {
-        preferComponentId: "premium-about-03",
-      }),
-    ).toBe("minimal-about-03");
-    expect(
-      pickComponent("menu", "elegant", {
-        preferComponentId: "premium-menu-03",
-      }),
-    ).toBe("elegant-menu-03");
-    expect(
-      pickComponent("gallery", "bold", {
-        preferComponentId: "premium-gallery-03",
-      }),
-    ).toBe("bold-gallery-03");
-    expect(
-      pickComponent("hero", "rustic", {
-        preferComponentId: "premium-hero-03",
-      }),
-    ).toBe("rustic-hero-03");
-  });
-
-  it("prefers story-forward about-02", () => {
-    const id = pickComponent("about", "premium", {
-      brief: FIXTURE_BRIEF,
-      chatText: "Our family heritage and chef tradition since 1982",
-    });
-    expect(id).toBe("premium-about-02");
-  });
-
-  it("prefers fine-dining header-01 and street/quick header-03", () => {
-    const fine = pickComponent("header", "elegant", {
-      brief: {
-        ...FIXTURE_BRIEF,
-        businessName: "Atelier Noir",
-        category: "Fine dining",
-        address: "12 Oak Ave, Chicago, IL",
-      },
-      chatText: "elegant tasting menu and refined service",
-    });
-    const casual = pickComponent("header", "vibrant", {
-      brief: {
-        ...FIXTURE_BRIEF,
-        businessName: "Taco Contra",
-        category: "Taco cafe",
-        address: "88 Market Ave, Austin, TX",
-      },
-      chatText: "casual modern counter service brunch",
-    });
-    expect(fine).toBe("elegant-header-01");
-    expect(casual).toBe("vibrant-header-03");
-  });
-
-  it("soft-boosts tea/lounge headers toward 01/02, not always 03", () => {
-    const seeds = [
-      "Jaipur Tea",
-      "Jaipur Tea House",
-      "Lotus Tea Lounge",
-      "Chai Court",
-      "Afternoon Tea Hall",
-      "Silk Tea Room",
-    ];
-    const headers = seeds.map((businessName) =>
-      pickComponent("header", "elegant", {
-        brief: {
-          ...FIXTURE_BRIEF,
-          businessName,
-          category: "Tea house",
-          address: "1 Palace Rd, Jaipur",
-        },
-        chatText: "tea lounge with chai and afternoon tea",
-      }),
-    );
-    expect(headers.every((id) => /^elegant-header-0[12]$/.test(id))).toBe(true);
-    expect(new Set(headers).size).toBeGreaterThan(1);
-  });
-
-  it("varies tea hero suffixes across name seeds (not stuck on hero-03)", () => {
-    const seeds = [
-      "Jaipur Tea",
-      "Jaipur Tea House",
-      "Lotus Tea",
-      "Chai Court",
-      "Silk Tea Room",
-      "Amber Leaf Tea",
-    ];
-    const heroes = seeds.map((businessName) =>
-      pickComponent("hero", "elegant", {
-        brief: {
-          ...FIXTURE_BRIEF,
-          businessName,
-          category: "Tea house",
-          address: "1 Palace Rd, Jaipur",
-        },
-        chatText: "photo gallery visual tea lounge",
-      }),
-    );
-    expect(heroes.every((id) => /^elegant-hero-0[123]$/.test(id))).toBe(true);
-    expect(heroes.every((id) => id === "elegant-hero-03")).toBe(false);
-    expect(new Set(heroes).size).toBeGreaterThan(1);
+  it("distinguishes components by composition, not by id suffix", () => {
+    // The legacy picker remapped by suffix across families, which silently
+    // assumed "-02" meant the same layout everywhere. It does not: premium's
+    // hero-02 is a split, elegant's is full-bleed.
+    expect(getSpec("premium-hero-02")!.layoutFamily).toBe("split");
+    expect(getSpec("elegant-hero-02")!.layoutFamily).toBe("immersive");
   });
 });
 

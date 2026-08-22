@@ -47,7 +47,7 @@ function createReservation03(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Reservation" className={`${tokens.sectionPad} ${tokens.section}`}>
-        <div className="mx-auto flex max-w-6xl min-w-0 flex-col gap-8 border-t border-[var(--theme-line)] pt-10 @min-[768px]:flex-row @min-[768px]:items-end @min-[768px]:justify-between">
+        <div className="mx-auto flex max-w-[var(--sec-measure,72rem)] min-w-0 flex-col gap-8 border-t border-[var(--theme-line)] pt-10 @min-[768px]:flex-row @min-[768px]:items-end @min-[768px]:justify-between">
           <div className="min-w-0 max-w-2xl">
             <h2 className={`text-[var(--theme-ink)] ${tokens.heading} ${tokens.headingSection}`}>
               {headline}
@@ -98,7 +98,7 @@ function createLocation03(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Location" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <h2 className={`text-[var(--theme-ink)] ${tokens.heading} ${tokens.headingSection}`}>
             {headline}
           </h2>
@@ -148,7 +148,7 @@ function createFooter03(tokens: ThemeTokens): SectionComponent {
         aria-label="Footer"
         className={`${tokens.section} border-t border-[var(--theme-line)] px-4 py-8 @min-[640px]:px-6 @min-[768px]:px-10`}
       >
-        <div className="mx-auto flex max-w-6xl flex-col gap-6">
+        <div className="mx-auto flex max-w-[var(--sec-measure,72rem)] flex-col gap-6">
           <div className="flex flex-col gap-4 @min-[768px]:flex-row @min-[768px]:items-end @min-[768px]:justify-between">
             <div className="min-w-0">
               <p className={`text-xl text-[var(--theme-ink)] ${tokens.heading}`}>{brandName}</p>

@@ -11,7 +11,7 @@ export function PremiumStats02({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Stats" className={`${pm.sectionPad} ${pm.section}`}>
-      <div className="mx-auto grid max-w-6xl gap-10 @min-[768px]:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] @min-[768px]:items-end @min-[768px]:gap-16">
+      <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-10 @min-[768px]:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] @min-[768px]:items-end @min-[768px]:gap-16">
         <div className="min-w-0">
           <span aria-hidden="true" className={`mt-3 block ${pm.accentRule}`} />
           <h2 className={`mt-4 ${pm.heading} ${pm.headingSection}`}>{headline}</h2>

@@ -54,7 +54,7 @@ function createAbout01(tokens: ThemeTokens): SectionComponent {
         layout={layout}
         className={`${tokens.sectionPad} ${tokens.section}`}
       >
-        <div className="mx-auto grid max-w-6xl gap-8 @min-[768px]:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] @min-[768px]:items-center @min-[768px]:gap-14">
+        <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-8 @min-[768px]:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] @min-[768px]:items-center @min-[768px]:gap-14">
           <div className="min-w-0 overflow-hidden rounded-[var(--theme-radius-frame)]">
             <MediaPanel
               src={imagePath}
@@ -95,7 +95,7 @@ function createAbout02(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="About" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <div className="mx-auto max-w-3xl">
             <SectionIntro
               title={headline}
@@ -137,7 +137,7 @@ function createServices01(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Services" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <SectionIntro
             title={headline}
             body={body}
@@ -185,7 +185,7 @@ function createServices02(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Services" className={`${tokens.sectionPad} ${tokens.section}`}>
-        <div className="mx-auto grid max-w-6xl gap-10 @min-[768px]:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] @min-[768px]:gap-14">
+        <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-10 @min-[768px]:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] @min-[768px]:gap-14">
           <SectionIntro title={headline} body={body} tokens={tokens} />
           <ul className="space-y-6" role="list">
             {items.map((item) => (
@@ -221,7 +221,7 @@ function createStats01(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Stats" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <SectionIntro
             title={headline}
             tokens={tokens}
@@ -267,7 +267,7 @@ function createStats02(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Stats" className={`${tokens.sectionPad} ${tokens.sectionDark}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <SectionIntro
             title={headline}
             tokens={tokens}

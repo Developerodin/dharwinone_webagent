@@ -20,7 +20,7 @@ export function PremiumHero02({ content, assets }: SectionComponentProps) {
       aria-label="Hero"
       className={`relative overflow-hidden ${pm.section}`}
     >
-      <div className="mx-auto grid min-h-[60svh] max-w-6xl @min-[768px]:min-h-[78vh] @min-[768px]:grid-cols-2">
+      <div className="mx-auto grid min-h-[60svh] max-w-[var(--sec-measure,72rem)] @min-[768px]:min-h-[78vh] @min-[768px]:grid-cols-2">
         <div className="animate-section-enter flex flex-col justify-center px-4 py-14 @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:px-10 @min-[768px]:py-24">
           <span
             aria-hidden="true"

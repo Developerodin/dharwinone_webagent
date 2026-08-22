@@ -14,7 +14,7 @@ export function PremiumReservation03({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Reservation" className={`${pm.sectionPad} ${pm.section}`}>
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 border-t border-[var(--theme-line)] pt-10 @min-[768px]:flex-row @min-[768px]:items-end @min-[768px]:justify-between @min-[768px]:gap-16">
+      <div className="mx-auto flex max-w-[var(--sec-measure,72rem)] flex-col gap-8 border-t border-[var(--theme-line)] pt-10 @min-[768px]:flex-row @min-[768px]:items-end @min-[768px]:justify-between @min-[768px]:gap-16">
         <div className="min-w-0 max-w-2xl">
           <h2 className={`${pm.heading} ${pm.headingSection}`}>{headline}</h2>
           {body ? (

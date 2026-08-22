@@ -5,6 +5,7 @@ import { getModelFor, getOpenAIClient } from "../lib/openai.js";
 import type { Brief } from "../schemas/brief.schema.js";
 import type { CreativeDirection } from "../schemas/creativeDirection.schema.js";
 import { getManifest } from "../schemas/manifest.schema.js";
+import { getSpec } from "../catalog/index.js";
 import type { SectionType } from "../schemas/page.schema.js";
 import { factCheck } from "./factCheck.js";
 import { slopCheck } from "./slopCheck.js";
@@ -50,10 +51,30 @@ export async function writeAllSectionCopy(args: {
     const planItem = args.direction.sectionPlan?.find(
       (item) => item.type === sectionType,
     );
+    // A migrated component states its own content contract — which fields it
+    // renders, whether each is required, and the character budget its layout
+    // was designed around. Everything else falls back to the section-wide
+    // manifest, which is the same list for every variant.
+    const spec = getSpec(componentId);
+    const fields = spec
+      ? Object.entries(spec.slots).map(([name, slot]) => ({
+          name,
+          required: slot.required,
+          maxChars: slot.maxChars,
+          hint: slot.hint,
+        }))
+      : manifest.copyFields.map((name) => ({
+          name,
+          required: true,
+          maxChars: undefined,
+          hint: undefined,
+        }));
+
     return {
       sectionType,
       componentId,
-      fields: manifest.copyFields,
+      fields,
+      layoutFamily: spec?.layoutFamily,
       emphasis: planItem?.emphasis ?? "standard",
       layoutIntent: planItem?.layoutIntent ?? "full_bleed",
     };
@@ -63,7 +84,9 @@ export async function writeAllSectionCopy(args: {
   for (const spec of sectionSpecs) {
     const fieldShape: Record<string, z.ZodString> = {};
     for (const field of spec.fields) {
-      fieldShape[field] = z.string();
+      // Budgets are stated in the prompt and checked after parsing rather than
+      // encoded as JSON-schema maxLength, which structured output rejects.
+      fieldShape[field.name] = z.string();
     }
     shape[spec.sectionType] = z.object(fieldShape);
   }
@@ -99,7 +122,8 @@ Rules:
 - Banned phrases: ${banned.join("; ")}.
 - Every headline must contain a concrete noun from the brief (dish, place, year, technique).
 - If usp/audience are present, they steer voice and who the copy is for — do not genericize them away or print "USP:" / "Audience:" labels.
-- Match copy length to emphasis: compact=very short, hero/major=richer.
+- Every field has a hard character budget in \`sections[].fields[].maxChars\`. Stay under it — the component's layout was designed around that length and longer copy breaks it.
+- Fields marked required must be non-empty; optional fields may be an empty string when there is nothing true to say.
 - eyebrow fields: return an empty string.
 - Return an object keyed by sectionType with the listed fields.
 ${flagNote}`,

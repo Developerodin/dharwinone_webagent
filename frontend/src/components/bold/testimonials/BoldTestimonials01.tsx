@@ -12,7 +12,7 @@ export function BoldTestimonials01({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Testimonials" className={`${bd.sectionPad} ${bd.sectionAlt}`}>
-      <div className="mx-auto max-w-6xl text-center">
+      <div className="mx-auto max-w-[var(--sec-measure,72rem)] text-center">
         <p className="font-[family-name:var(--bold-font-script)] text-2xl text-[var(--bold-hero-red)] @min-[640px]:text-3xl">
           Word of mouth
         </p>

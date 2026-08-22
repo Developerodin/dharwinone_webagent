@@ -22,7 +22,7 @@ export function ElegantLocation03({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Location" className={`${eg.sectionPad} ${eg.section}`}>
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
         <header className="max-w-3xl">
           <h2 className={`${eg.heading} ${eg.headingSection}`}>{headline}</h2>
           {address ? (

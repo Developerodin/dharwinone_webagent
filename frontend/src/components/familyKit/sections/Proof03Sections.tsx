@@ -34,7 +34,7 @@ function createServices03(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Services" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
-        <div className="mx-auto grid max-w-6xl gap-10 @min-[768px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.2fr)]">
+        <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-10 @min-[768px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.2fr)]">
           <header className="min-w-0">
             <h2 className={`text-[var(--theme-ink)] ${tokens.heading} ${tokens.headingSection}`}>
               {headline}
@@ -70,7 +70,7 @@ function createStats03(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Stats" className={`${tokens.sectionPad} ${tokens.section}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <h2 className={`text-[var(--theme-ink)] ${tokens.heading} ${tokens.headingSection}`}>
             {headline}
           </h2>
@@ -158,7 +158,7 @@ function createTeam03(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Team" className={`${tokens.sectionPad} ${tokens.section}`}>
-        <div className="mx-auto grid max-w-6xl gap-10 @min-[768px]:grid-cols-2 @min-[768px]:items-end">
+        <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-10 @min-[768px]:grid-cols-2 @min-[768px]:items-end">
           <MediaPanel
             src={leadImage}
             alt={lead?.name ?? headline}

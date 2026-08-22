@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   contrastForAccent,
+  contrastRatio,
   deriveSurfaceTokens,
   luminance,
+  relativeLuminance,
   resolveColor,
   resolveFont,
 } from "./colorResolve.js";
@@ -85,9 +87,19 @@ describe("resolveColor", () => {
     expect(surfaces!.onDark).toBe("#000000");
   });
 
-  it("picks contrast for accent", () => {
-    expect(contrastForAccent("#ef4444")).toBe("#ffffff");
+  it("picks contrast for accent by WCAG ratio, not brightness", () => {
+    // White on this red is 3.76:1 and fails AA; black is 5.02:1 and passes.
+    expect(contrastForAccent("#ef4444")).toBe("#111111");
     expect(contrastForAccent("#f5f0e8")).toBe("#111111");
+    // Deep surfaces still take light ink.
+    expect(contrastForAccent("#0e1014")).toBe("#ffffff");
+  });
+
+  it("computes WCAG relative luminance and ratios", () => {
+    expect(relativeLuminance("#ffffff")).toBeCloseTo(1, 3);
+    expect(relativeLuminance("#000000")).toBeCloseTo(0, 3);
+    expect(contrastRatio("#ffffff", "#000000")).toBeCloseTo(21, 1);
+    expect(contrastRatio("#8fa0b5", "#ffffff")).toBeLessThan(4.5);
   });
 
   it("resolves fonts", () => {

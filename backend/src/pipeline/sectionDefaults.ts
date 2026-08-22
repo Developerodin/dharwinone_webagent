@@ -13,7 +13,7 @@ export function defaultServices(brief: Brief, chatText = ""): ServiceCard[] {
   const corpus = `${brief.category} ${chatText}`.toLowerCase();
   const cards: ServiceCard[] = [];
 
-  if (/\b(private\s*dining|private\s*room|vip)\b/.test(corpus)) {
+  if (/\b(private\s*dining|private\s*(events?\s*)?room|private\s*events?|vip)\b/.test(corpus)) {
     cards.push({
       title: "Private Dining",
       description: `Intimate rooms and tailored menus for gatherings at ${brief.businessName}.`,

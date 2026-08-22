@@ -14,7 +14,7 @@ export function PremiumGallery03({ content, assets }: SectionComponentProps) {
 
   return (
     <section aria-label="Gallery" className={`${pm.sectionPad} ${pm.section}`}>
-      <div className="mx-auto max-w-6xl min-w-0">
+      <div className="mx-auto max-w-[var(--sec-measure,72rem)] min-w-0">
         <div className="flex flex-col gap-3 @min-[640px]:flex-row @min-[640px]:items-end @min-[640px]:justify-between">
           <h2 className={`${pm.heading} ${pm.headingSection}`}>{headline}</h2>
           {caption ? (

@@ -47,7 +47,7 @@ export function ElegantHero03({ content, assets }: SectionComponentProps) {
         ))
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/70 via-[#0a0a0a]/40 to-[#0a0a0a]/15" />
-      <div className="relative mx-auto flex min-h-[60svh] max-w-6xl flex-col items-center justify-center px-4 py-16 text-center @min-[640px]:min-h-[72svh] @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:min-h-[88vh] @min-[768px]:px-10 @min-[768px]:py-24">
+      <div className="relative mx-auto flex min-h-[60svh] max-w-[var(--sec-measure,72rem)] flex-col items-center justify-center px-4 py-16 text-center @min-[640px]:min-h-[72svh] @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:min-h-[88vh] @min-[768px]:px-10 @min-[768px]:py-24">
         <div className="mx-auto mt-4 flex items-center gap-3 @min-[640px]:mt-6 @min-[640px]:gap-4">
           <span aria-hidden="true" className={`${eg.goldRule} w-8 @min-[640px]:w-12`} />
           <span

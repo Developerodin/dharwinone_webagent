@@ -12,7 +12,7 @@ export function PremiumMenu02({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Menu" className={`${pm.sectionPad} ${pm.section}`}>
-      <div className="mx-auto grid max-w-6xl gap-10 @min-[768px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)] @min-[768px]:gap-14 @min-[1024px]:gap-20">
+      <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-10 @min-[768px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)] @min-[768px]:gap-14 @min-[1024px]:gap-20">
         <header className="animate-section-enter min-w-0 @min-[768px]:sticky @min-[768px]:top-24 @min-[768px]:self-start">
           <h2 className={`mt-3 @min-[640px]:mt-4 ${pm.heading} ${pm.headingSection}`}>
             {sectionTitle}

@@ -47,7 +47,7 @@ function createTestimonials01(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Testimonials" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <SectionIntro
             title={headline}
             body={body}
@@ -104,7 +104,7 @@ function createTestimonials02(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Testimonials" className={`${tokens.sectionPad} ${tokens.sectionDark}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <SectionIntro
             title={headline}
             tokens={tokens}
@@ -149,7 +149,7 @@ function createTeam01(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Team" className={`${tokens.sectionPad} ${tokens.sectionAlt}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <SectionIntro
             title={headline}
             body={body}
@@ -201,7 +201,7 @@ function createTeam02(tokens: ThemeTokens): SectionComponent {
 
     return (
       <section aria-label="Team" className={`${tokens.sectionPad} ${tokens.section}`}>
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-[var(--sec-measure,72rem)]">
           <SectionIntro title={headline} tokens={tokens} />
           {leadMember ? (
             <div className="mt-10 grid gap-8 @min-[768px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] @min-[768px]:items-center">

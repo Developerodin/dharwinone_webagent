@@ -11,7 +11,7 @@ export function PremiumStats01({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Stats" className={`${pm.sectionPad} ${pm.sectionAlt}`}>
-      <div className="mx-auto max-w-6xl min-w-0">
+      <div className="mx-auto max-w-[var(--sec-measure,72rem)] min-w-0">
         <h2 className={`mt-3 text-center ${pm.heading} ${pm.headingSection}`}>
           {headline}
         </h2>

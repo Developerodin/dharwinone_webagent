@@ -17,7 +17,7 @@ export function PremiumGallery02({ content, assets }: SectionComponentProps) {
 
   return (
     <section aria-label="Gallery" className={`${pm.sectionPad} ${pm.sectionAlt}`}>
-      <div className="mx-auto max-w-6xl min-w-0">
+      <div className="mx-auto max-w-[var(--sec-measure,72rem)] min-w-0">
         <div className="flex flex-col gap-4 @min-[640px]:flex-row @min-[640px]:items-end @min-[640px]:justify-between @min-[640px]:gap-8">
           <div className="min-w-0 animate-section-enter">
             <h2 className={`mt-3 @min-[640px]:mt-4 ${pm.heading} ${pm.headingSection}`}>

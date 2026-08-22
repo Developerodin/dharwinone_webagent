@@ -13,7 +13,7 @@ export function ElegantAbout03({ content, assets }: SectionComponentProps) {
 
   return (
     <section aria-label="About" className={`${eg.sectionPad} ${eg.section}`}>
-      <div className="relative mx-auto max-w-6xl min-w-0">
+      <div className="relative mx-auto max-w-[var(--sec-measure,72rem)] min-w-0">
         <figure className="min-w-0">
           {imagePath ? (
             <SectionMedia

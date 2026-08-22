@@ -64,6 +64,42 @@ export const designSignatureSchema = z.object({
   note: z.string().min(1),
 });
 
+/** Whether the request describes a landing page, one scrolling page, or a site. */
+export const siteKindSchema = z.enum(["landing", "single_page", "multi_page"]);
+
+/**
+ * One page in the planned site.
+ * `role` is a free string so a new vertical can add roles as data.
+ */
+export const pagePlanItemSchema = z.object({
+  role: z.string().min(1),
+  title: z.string().min(1),
+  path: z.string().min(1),
+  sections: z.array(sectionTypeSchema),
+});
+
+/** The site's page structure. Single-page sites carry exactly one entry. */
+export const sitePlanSchema = z.object({
+  kind: siteKindSchema,
+  pages: z.array(pagePlanItemSchema).min(1),
+  reason: z.string().min(1),
+});
+
+/** Page-level spatial density — drives spacing and container measure. */
+export const designDensitySchema = z.enum(["compact", "normal", "spacious"]);
+
+/** Page-level heading scale — drives the display type ramp. */
+export const designTypeScaleSchema = z.enum(["compact", "normal", "expressive"]);
+
+/**
+ * Page-level design system decisions that apply to every section, as opposed to
+ * SectionPlanItem which is per section.
+ */
+export const designSystemSchema = z.object({
+  density: designDensitySchema,
+  typeScale: designTypeScaleSchema,
+});
+
 export const creativePaletteSchema = z.object({
   accent: z.string().min(1),
   accentContrast: z.string().min(1),
@@ -102,6 +138,10 @@ export const creativeDirectionSchema = z.object({
   subject: designSubjectSchema.optional(),
   /** One signature device driving emphasis and variant hints. */
   signature: designSignatureSchema.optional(),
+  /** Page-level density + type scale applied by the renderer. */
+  designSystem: designSystemSchema.optional(),
+  /** Planned page structure. Absent on directions generated before Phase 1.1. */
+  sitePlan: sitePlanSchema.optional(),
 });
 
 export type CreativePalette = z.infer<typeof creativePaletteSchema>;
@@ -112,3 +152,9 @@ export type Narrative = z.infer<typeof narrativeSchema>;
 export type DesignMode = z.infer<typeof designModeSchema>;
 export type DesignSubject = z.infer<typeof designSubjectSchema>;
 export type DesignSignature = z.infer<typeof designSignatureSchema>;
+export type DesignDensity = z.infer<typeof designDensitySchema>;
+export type DesignTypeScale = z.infer<typeof designTypeScaleSchema>;
+export type DesignSystemSpec = z.infer<typeof designSystemSchema>;
+export type SiteKind = z.infer<typeof siteKindSchema>;
+export type PagePlanItem = z.infer<typeof pagePlanItemSchema>;
+export type SitePlan = z.infer<typeof sitePlanSchema>;

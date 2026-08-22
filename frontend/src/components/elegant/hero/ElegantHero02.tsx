@@ -38,7 +38,7 @@ export function ElegantHero02({ content, assets }: SectionComponentProps) {
       )}
       <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/75 via-[#0a0a0a]/45 to-[#0a0a0a]/15" />
 
-      <div className="relative mx-auto flex min-h-[60svh] max-w-6xl items-center px-4 py-16 @min-[640px]:min-h-[72svh] @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:min-h-[88vh] @min-[768px]:px-10 @min-[768px]:py-24">
+      <div className="relative mx-auto flex min-h-[60svh] max-w-[var(--sec-measure,72rem)] items-center px-4 py-16 @min-[640px]:min-h-[72svh] @min-[640px]:px-6 @min-[640px]:py-20 @min-[768px]:min-h-[88vh] @min-[768px]:px-10 @min-[768px]:py-24">
         <div className="animate-section-enter flex max-w-2xl gap-5 @min-[640px]:gap-7">
           <span
             aria-hidden="true"

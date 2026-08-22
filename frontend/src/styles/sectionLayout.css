@@ -1,0 +1,181 @@
+/**
+ * Section layout contract — turns Creative Director decisions into pixels.
+ *
+ * `PageRenderer` stamps `data-layout-bg`, `data-spacing`, `data-emphasis` and
+ * `data-layout-intent` on the wrapper around every section, plus `data-density`
+ * and `data-type-scale` on the page root. The rules here read those attributes
+ * and rewrite the `--theme-*` / `--sec-*` custom properties for that subtree.
+ *
+ * Because section components already style themselves from `--theme-*`, a
+ * surface decision reaches every component without touching component code.
+ * Every custom property is declared with a fallback, so a page generated before
+ * this file existed renders exactly as it did before.
+ */
+
+/* ---------------------------------------------------------------- density */
+/* Page-level spatial density scales rhythm and measure together. */
+[data-density="compact"] {
+  --sec-density: 0.78;
+  --sec-measure: 68rem;
+}
+[data-density="normal"] {
+  --sec-density: 1;
+  --sec-measure: 72rem;
+}
+[data-density="spacious"] {
+  --sec-density: 1.3;
+  --sec-measure: 78rem;
+}
+
+/* ------------------------------------------------------------ type scale */
+[data-type-scale="compact"] {
+  --sec-type-scale: 0.88;
+}
+[data-type-scale="normal"] {
+  --sec-type-scale: 1;
+}
+[data-type-scale="expressive"] {
+  --sec-type-scale: 1.16;
+}
+
+/* --------------------------------------------------------------- spacing */
+/* Three-step vertical rhythm, multiplied by page density. */
+[data-spacing="tight"] {
+  --sec-pad-y: calc(2.25rem * var(--sec-density, 1));
+  --sec-pad-y-md: calc(2.75rem * var(--sec-density, 1));
+  --sec-pad-y-lg: calc(3.5rem * var(--sec-density, 1));
+}
+[data-spacing="normal"] {
+  --sec-pad-y: calc(3.25rem * var(--sec-density, 1));
+  --sec-pad-y-md: calc(4.25rem * var(--sec-density, 1));
+  --sec-pad-y-lg: calc(6rem * var(--sec-density, 1));
+}
+[data-spacing="roomy"] {
+  --sec-pad-y: calc(4.5rem * var(--sec-density, 1));
+  --sec-pad-y-md: calc(6rem * var(--sec-density, 1));
+  --sec-pad-y-lg: calc(8.5rem * var(--sec-density, 1));
+}
+
+/* -------------------------------------------------------------- surfaces */
+/*
+ * Each surface remaps the theme tokens the components already consume, so the
+ * whole section — background, headings, body copy, rules, cards — flips as one
+ * coherent band instead of a background colour with unreadable text on it.
+ */
+[data-layout-bg="base"] {
+  --theme-bg: var(--theme-surface-base, var(--theme-bg));
+}
+
+[data-layout-bg="alt"] {
+  --theme-bg: var(--theme-bg-alt);
+}
+
+[data-layout-bg="dark"] {
+  --theme-bg: var(--theme-bg-dark);
+  --theme-bg-alt: var(--theme-bg-dark);
+  --theme-ink: var(--theme-on-dark);
+  --theme-muted: var(--theme-muted-on-dark, rgb(255 255 255 / 0.74));
+  /* Plain rgba, not color-mix: a dark band's overlays are always light, and an
+     auto-generated color-mix fallback would render these fully opaque. */
+  --theme-card: rgb(255 255 255 / 0.07);
+  --theme-line: rgb(255 255 255 / 0.18);
+  --theme-line-strong: rgb(255 255 255 / 0.42);
+  --theme-accent: var(--theme-accent-on-dark, var(--theme-accent));
+}
+
+[data-layout-bg="accent"] {
+  --theme-bg: var(--theme-accent);
+  --theme-bg-alt: var(--theme-accent);
+  --theme-ink: var(--theme-accent-contrast);
+  --theme-on-dark: var(--theme-accent-contrast);
+  /* Transparent bases first: on a browser without color-mix these degrade to
+     "no overlay" rather than to an opaque slab in the wrong colour. */
+  --theme-muted: var(--theme-accent-contrast);
+  --theme-card: transparent;
+  --theme-line: transparent;
+  --theme-muted-on-dark: var(--theme-accent-contrast);
+  --theme-line-strong: var(--theme-accent-contrast);
+  /* Buttons on an accent band must not be accent-on-accent. */
+  --theme-accent: var(--theme-accent-contrast);
+  --theme-accent-contrast: var(--theme-bg);
+}
+
+@supports (color: color-mix(in srgb, red, red)) {
+  [data-layout-bg="accent"] {
+    --theme-muted: color-mix(in srgb, var(--theme-accent-contrast) 78%, transparent);
+    --theme-muted-on-dark: color-mix(in srgb, var(--theme-accent-contrast) 78%, transparent);
+    --theme-card: color-mix(in srgb, var(--theme-accent-contrast) 10%, transparent);
+    --theme-line: color-mix(in srgb, var(--theme-accent-contrast) 26%, transparent);
+  }
+}
+
+/* `image` leaves surfaces alone — the component owns its own media backdrop. */
+
+/* -------------------------------------------------------------- emphasis */
+/* Emphasis controls how much room a section commands and its heading weight. */
+[data-emphasis="hero"] {
+  --sec-type-scale: calc(var(--sec-type-scale-page, 1) * 1);
+}
+[data-emphasis="major"] > section {
+  --sec-heading-boost: 1.06;
+}
+[data-emphasis="compact"] > section {
+  --sec-heading-boost: 0.9;
+}
+
+/* --------------------------------------------------------------- intents */
+/*
+ * `split_right` mirrors a two-column band so the media sits on the other side.
+ * Scoped to the section's own direct grid child, so nested grids are untouched.
+ * Only section types whose allowed intents include split_right ever receive it,
+ * and those are all two-column layouts (see sectionRhythm.ts).
+ */
+[data-layout-intent="split_right"] > section > div[class*="grid"] {
+  direction: rtl;
+}
+[data-layout-intent="split_right"] > section > div[class*="grid"] > * {
+  direction: ltr;
+}
+
+/* `centered` pulls the measure in and centres the band's own copy column. */
+[data-layout-intent="centered"] > section {
+  --sec-measure: 58rem;
+  text-align: center;
+}
+[data-layout-intent="centered"] > section :is(dl, form, table, .lyt-keep-left) {
+  text-align: left;
+}
+[data-layout-intent="centered"] > section :is(h1, h2, h3, p) {
+  margin-inline: auto;
+}
+
+/* `editorial_columns` narrows the measure so long copy stays readable. */
+[data-layout-intent="editorial_columns"] > section {
+  --sec-measure: 64rem;
+}
+
+/* `band` is a horizontal strip — never tall, never roomy. */
+[data-layout-intent="band"] > section {
+  --sec-pad-y: calc(1.75rem * var(--sec-density, 1));
+  --sec-pad-y-md: calc(2.25rem * var(--sec-density, 1));
+  --sec-pad-y-lg: calc(3rem * var(--sec-density, 1));
+}
+
+/* `full_bleed` and `marquee` drop the measure so media reaches the edges. */
+[data-layout-intent="full_bleed"] > section,
+[data-layout-intent="marquee"] > section {
+  --sec-measure: 90rem;
+}
+
+/* Header and footer keep their own chrome regardless of plan spacing. */
+[data-section="header"] {
+  --sec-pad-y: 0rem;
+  --sec-pad-y-md: 0rem;
+  --sec-pad-y-lg: 0rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-section] {
+    animation: none !important;
+  }
+}

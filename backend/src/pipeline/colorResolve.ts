@@ -115,6 +115,34 @@ export function luminance(hex: string): number {
 }
 
 /**
+ * WCAG 2.1 relative luminance (linearised sRGB). Unlike `luminance`, which is a
+ * YIQ brightness approximation kept for legacy surface heuristics, this is the
+ * value contrast ratios must be computed from.
+ */
+export function relativeLuminance(hex: string): number {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return 0.5;
+  const channel = (value: number): number => {
+    const c = value / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  };
+  return (
+    0.2126 * channel(rgb.r) + 0.7152 * channel(rgb.g) + 0.0722 * channel(rgb.b)
+  );
+}
+
+/**
+ * WCAG contrast ratio between two colors, 1–21.
+ */
+export function contrastRatio(a: string, b: string): number {
+  const la = relativeLuminance(a);
+  const lb = relativeLuminance(b);
+  const light = Math.max(la, lb);
+  const dark = Math.min(la, lb);
+  return (light + 0.05) / (dark + 0.05);
+}
+
+/**
  * Darkens a hex color by mixing toward black.
  */
 function darken(hex: string, amount: number): string {
@@ -179,10 +207,40 @@ export function resolveColor(input: string): string | null {
 }
 
 /**
+ * Nudges an accent's lightness just far enough that one of the two ink
+ * candidates clears AA. Some otherwise good hues (mid oranges, sages, golds)
+ * sit in a band where neither black nor white is readable on them; a few
+ * percent of lightness fixes that and is imperceptible next to the original.
+ * Returns the input unchanged when it already works.
+ */
+export function ensureAccentIsUsable(accentHex: string, floor = 4.5): string {
+  const best = (hex: string): number =>
+    Math.max(contrastRatio(hex, "#111111"), contrastRatio(hex, "#ffffff"));
+
+  if (best(accentHex) >= floor) return accentHex;
+
+  // Move toward whichever pole is already winning, so the hue reads the same.
+  const towardDark = contrastRatio(accentHex, "#ffffff") >= contrastRatio(accentHex, "#111111");
+
+  let candidate = accentHex;
+  for (let step = 1; step <= 14; step += 1) {
+    candidate = towardDark
+      ? darken(accentHex, step * 0.03)
+      : lighten(accentHex, step * 0.03);
+    if (best(candidate) >= floor) return candidate;
+  }
+  return candidate;
+}
+
+/**
  * Picks a readable contrast color for buttons on an accent.
  */
 export function contrastForAccent(accentHex: string): string {
-  return luminance(accentHex) > 0.55 ? "#111111" : "#ffffff";
+  const dark = "#111111";
+  const light = "#ffffff";
+  const darkRatio = contrastRatio(accentHex, dark);
+  const lightRatio = contrastRatio(accentHex, light);
+  return darkRatio >= lightRatio ? dark : light;
 }
 
 /**

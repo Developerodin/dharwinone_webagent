@@ -6,11 +6,13 @@ import type { Brief } from "../schemas/brief.schema.js";
 import type {
   CreativeDirection,
   CreativePalette,
+  DesignSystemSpec,
 } from "../schemas/creativeDirection.schema.js";
 import type { Page, SectionType } from "../schemas/page.schema.js";
 import {
   contrastForAccent,
   deriveSurfaceTokens,
+  ensureAccentIsUsable,
   luminance,
   resolveColor,
 } from "./colorResolve.js";
@@ -27,6 +29,7 @@ import {
 import {
   fontStackFor,
   getTypePairById,
+  pickTypePairForSeed,
 } from "./horecaDesignSystem.js";
 import { inferPageFamily } from "./inferPageFamily.js";
 import {
@@ -34,7 +37,13 @@ import {
   inventPalette,
   isGenericAiPalette,
 } from "./paletteDefaults.js";
-import { COMPONENT_VARIANTS, stableHash } from "./pickComponent.js";
+import { stableHash } from "../lib/stableHash.js";
+import { findCandidates } from "../catalog/index.js";
+import {
+  buildSectionRhythm,
+  densityFor,
+  typeScaleFor,
+} from "./sectionRhythm.js";
 
 /** Sections that get explicit variant hints from Creative Director. */
 const HINT_SECTIONS: SectionType[] = [
@@ -71,8 +80,10 @@ export function paletteFromBrandColors(
   brandColors: string[] | null | undefined,
 ): CreativePalette | null {
   if (!brandColors?.length) return null;
-  const accent = resolveColor(brandColors[0] ?? "");
-  if (!accent) return null;
+  const resolved = resolveColor(brandColors[0] ?? "");
+  if (!resolved) return null;
+  // Keep the brand hue; nudge lightness only if no ink can sit on it legibly.
+  const accent = ensureAccentIsUsable(resolved);
 
   const palette: CreativePalette = {
     accent,
@@ -102,7 +113,9 @@ export function buildSectionVariantHints(
   const recentSuffixes: string[] = [];
 
   for (const section of HINT_SECTIONS) {
-    const variants = COMPONENT_VARIANTS[family][section];
+    const variants = findCandidates({ section, family })
+      .map((spec) => spec.id)
+      .sort();
     if (!variants.length) continue;
 
     let idx = stableHash(`${seed}:${section}`) % variants.length;
@@ -186,6 +199,8 @@ export function runCreativeDirectorSync(args: {
   brief: Brief;
   chatText: string;
   family?: PageFamily;
+  /** Surface programs least used by comparable sites, least-used first. */
+  preferredPrograms?: readonly string[];
 }): CreativeDirection {
   const family =
     args.family ??
@@ -195,7 +210,7 @@ export function runCreativeDirectorSync(args: {
   const seed = buildCreativeSeed(args.brief, family);
 
   const fromBrand = paletteFromBrandColors(args.brief.brandColors);
-  let palette: CreativePalette | null;
+  let palette: CreativePalette;
   let paletteSource: CreativeDirection["paletteSource"];
 
   if (fromBrand) {
@@ -217,14 +232,35 @@ export function runCreativeDirectorSync(args: {
   const heroSuffix = heroHint.match(/-(\d+)$/)?.[1] ?? "01";
   const accentLabel = palette.accent;
 
-  const sectionPlan = buildFixtureSectionPlan(
-    args.brief,
-    args.chatText,
-    archetype,
-  );
+  const density = densityFor(args.brief.priceBand, args.brief.vibe);
+  const designSystem: DesignSystemSpec = {
+    density,
+    typeScale: typeScaleFor(density, args.brief.priceBand),
+  };
+
+  const sectionPlan = buildSectionRhythm({
+    sectionTypes: buildFixtureSectionPlan(args.brief, args.chatText, archetype).map(
+      (item) => item.type,
+    ),
+    seed,
+    density,
+    signatureSection: signature.section,
+    preferredPrograms: args.preferredPrograms,
+  });
   const narrative = buildFixtureNarrative(args.brief);
   const subject = buildFixtureSubject(args.brief);
   const mode = inferMode(archetype, args.brief, args.chatText);
+
+  // Typography is a design decision, not an optional LLM extra — resolve one
+  // deterministically so every build has real type even when the LLM is absent.
+  const typePair = pickTypePairForSeed(seed, args.brief.category, args.chatText);
+  if (typePair) {
+    palette = {
+      ...palette,
+      fontDisplay: fontStackFor(typePair.headingFont) ?? palette.fontDisplay,
+      fontBody: fontStackFor(typePair.bodyFont) ?? palette.fontBody,
+    };
+  }
 
   const rationale =
     paletteSource === "client_brand"
@@ -244,6 +280,8 @@ export function runCreativeDirectorSync(args: {
     mode,
     subject,
     signature,
+    designSystem,
+    typePairId: typePair?.id,
   };
 }
 
@@ -272,8 +310,9 @@ function paletteFromLlmPick(
   brief: Brief,
   chatText: string,
 ): CreativePalette | null {
-  const accent = resolveColor(pick.accent) ?? (/^#[0-9a-f]{6}$/i.test(pick.accent) ? pick.accent : null);
-  if (!accent) return null;
+  const parsed = resolveColor(pick.accent) ?? (/^#[0-9a-f]{6}$/i.test(pick.accent) ? pick.accent : null);
+  if (!parsed) return null;
+  const accent = ensureAccentIsUsable(parsed);
   const bg = pick.bg ? resolveColor(pick.bg) ?? pick.bg : undefined;
   const ink = pick.ink ? resolveColor(pick.ink) ?? pick.ink : undefined;
   const bgAlt = pick.bgAlt ? resolveColor(pick.bgAlt) ?? pick.bgAlt : undefined;
@@ -298,6 +337,7 @@ export async function runCreativeDirector(args: {
   chatText: string;
   family?: PageFamily;
   useFixture?: boolean;
+  preferredPrograms?: readonly string[];
 }): Promise<CreativeDirection> {
   const base = runCreativeDirectorSync(args);
   if (args.useFixture) return base;
@@ -322,8 +362,17 @@ export async function runCreativeDirector(args: {
   }
 
   const signature = llm.signature ?? base.signature;
+  // Keep the model's ordering and any non-flat surface work it did, but run it
+  // through the same rhythm rules so a flat or repetitive plan gets repaired.
   const sectionPlan = applySignatureToSectionPlan(
-    llm.sectionPlan,
+    buildSectionRhythm({
+      sectionTypes: llm.sectionPlan.map((item) => item.type),
+      seed: base.seed,
+      density: base.designSystem?.density ?? "normal",
+      signatureSection: signature?.section ?? null,
+      existing: llm.sectionPlan,
+      preferredPrograms: args.preferredPrograms,
+    }),
     signature ?? buildFixtureSignature(args.brief, llm.archetype),
   );
   const sectionVariantHints = signature

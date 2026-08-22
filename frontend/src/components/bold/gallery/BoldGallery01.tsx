@@ -16,7 +16,7 @@ export function BoldGallery01({ content, assets }: SectionComponentProps) {
 
   return (
     <section aria-label="Gallery" className={`${bd.sectionPad} ${bd.section}`}>
-      <div className="mx-auto max-w-6xl min-w-0">
+      <div className="mx-auto max-w-[var(--sec-measure,72rem)] min-w-0">
         <div className="text-center">
           <p className="font-[family-name:var(--bold-font-script)] text-2xl text-[var(--bold-hero-red)] @min-[640px]:text-3xl">
             Present

@@ -13,7 +13,7 @@ export function ElegantAbout01({ content, assets }: SectionComponentProps) {
 
   return (
     <section aria-label="About" className={`${eg.sectionPad} ${eg.section}`}>
-      <div className="mx-auto grid max-w-6xl gap-8 @min-[640px]:gap-12 @min-[768px]:grid-cols-2 @min-[768px]:items-center @min-[768px]:gap-16">
+      <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-8 @min-[640px]:gap-12 @min-[768px]:grid-cols-2 @min-[768px]:items-center @min-[768px]:gap-16">
         <div className="relative order-2 min-w-0 pl-2 pt-2 @min-[640px]:pl-3 @min-[640px]:pt-3 @min-[768px]:order-1">
           {imagePath ? (
             <>

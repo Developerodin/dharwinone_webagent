@@ -35,7 +35,7 @@ export function BoldReservation01({ content, assets }: SectionComponentProps) {
       ) : null}
       <div className="absolute inset-0 bg-gradient-to-r from-[var(--bold-hero-red)] via-[var(--bold-hero-red)]/90 to-[#7a1018]/70" />
       <div
-        className={`relative mx-auto grid max-w-6xl items-center gap-8 ${bd.sectionPad} @min-[768px]:grid-cols-[1.1fr_0.9fr]`}
+        className={`relative mx-auto grid max-w-[var(--sec-measure,72rem)] items-center gap-8 ${bd.sectionPad} @min-[768px]:grid-cols-[1.1fr_0.9fr]`}
       >
         <div className="min-w-0">
           <p className="font-[family-name:var(--bold-font-script)] text-2xl text-white/90 @min-[640px]:text-3xl">

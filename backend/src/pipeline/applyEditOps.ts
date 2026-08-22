@@ -1,4 +1,10 @@
 import type { PageFamily } from "../config/pageFamily.js";
+import { stableHash } from "../lib/stableHash.js";
+import {
+  defaultComponentId,
+  getSpec,
+  listComponentIds,
+} from "../catalog/index.js";
 import type { Brief, MenuItem } from "../schemas/brief.schema.js";
 import type { CreativeDirection } from "../schemas/creativeDirection.schema.js";
 import type { EditOp } from "../schemas/editOps.schema.js";
@@ -19,12 +25,7 @@ import {
   buildCreativeSeed,
   paletteFromBrandColors,
 } from "./creativeDirector.js";
-import {
-  COMPONENT_VARIANTS,
-  getVariantSuffix,
-  pickComponent,
-  stableHash,
-} from "./pickComponent.js";
+
 import {
   listCatalogImagePaths,
   orientationForSection,
@@ -201,11 +202,11 @@ export function applyRemixLayout(
     ? structuredClone(page.themeOverrides)
     : undefined;
   let changed = 0;
-  const recentSuffixes: string[] = [];
+  const recentLayouts: string[] = [];
   const imageSeed = seed?.trim() || salt;
 
   for (const section of page.sections) {
-    const variants = COMPONENT_VARIANTS[family][section.type];
+    const variants = listComponentIds(section.type, family);
     if (!variants.length) continue;
 
     const previous = section.componentId;
@@ -214,22 +215,23 @@ export function applyRemixLayout(
       variants.length;
     let nextId = variants[idx]!;
 
-    // Prefer a different suffix than current when possible
+    // Prefer a different component than the current one when possible.
     if (variants.length > 1 && nextId === previous) {
       nextId = variants[(idx + 1) % variants.length]!;
     }
-    // Light anti-stick vs recent
-    if (variants.length > 1 && recentSuffixes.length > 0) {
-      const last = recentSuffixes[recentSuffixes.length - 1];
-      if (getVariantSuffix(nextId) === last) {
+    // Light anti-stick: avoid repeating the previous section's composition.
+    if (variants.length > 1 && recentLayouts.length > 0) {
+      const last = recentLayouts[recentLayouts.length - 1];
+      if (getSpec(nextId)?.layoutFamily === last) {
         nextId = variants[(idx + 1) % variants.length]!;
       }
     }
 
     if (nextId !== previous) changed += 1;
     section.componentId = nextId;
-    recentSuffixes.push(getVariantSuffix(nextId));
-    if (recentSuffixes.length > 4) recentSuffixes.shift();
+    const layout = getSpec(nextId)?.layoutFamily;
+    if (layout) recentLayouts.push(layout);
+    if (recentLayouts.length > 4) recentLayouts.shift();
 
     if (
       section.type === "menu" ||
@@ -256,7 +258,7 @@ export function applyRemixLayout(
       continue;
     }
 
-    if (section.type === "hero" && nextId.endsWith("-03")) {
+    if (rendersMultipleImages(nextId)) {
       const paths = listCatalogImagePaths({
         sectionType: "hero",
         family,
@@ -341,9 +343,8 @@ function applyTheme(
   const imageSeed = seed?.trim() || buildCreativeSeed(brief, family);
 
   for (const section of page.sections) {
-    section.componentId = pickComponent(section.type, family, {
-      preferComponentId: section.componentId,
-    });
+    section.componentId =
+      remapComponentToFamily(section.componentId, family) ?? section.componentId;
 
     if (
       section.type === "menu" ||
@@ -384,7 +385,7 @@ function applyTheme(
       continue;
     }
 
-    if (section.type === "hero" && section.componentId.endsWith("-03")) {
+    if (rendersMultipleImages(section.componentId)) {
       const paths = listCatalogImagePaths({
         sectionType: "hero",
         family,
@@ -434,7 +435,7 @@ function ensureShellSections(
   if (!types.has("header")) {
     page.sections.unshift({
       type: "header",
-      componentId: pickComponent("header", family),
+      componentId: defaultComponentId("header", family) ?? `${family}-header-01`,
       content: {
         brandName: brief.businessName,
         tagline: `Restaurant · ${brief.category}`,
@@ -448,7 +449,7 @@ function ensureShellSections(
     const footerIndex = page.sections.findIndex((s) => s.type === "footer");
     const contactSection = {
       type: "contact" as const,
-      componentId: pickComponent("contact", family),
+      componentId: defaultComponentId("contact", family) ?? `${family}-contact-01`,
       content: {
         headline: "Get In Touch",
         introText: "Questions, bookings, or private events — we are here.",
@@ -468,7 +469,7 @@ function ensureShellSections(
   if (!types.has("footer")) {
     page.sections.push({
       type: "footer",
-      componentId: pickComponent("footer", family),
+      componentId: defaultComponentId("footer", family) ?? `${family}-footer-01`,
       content: {
         tagline: `Thank you for visiting ${brief.businessName}`,
         copyright: `© ${new Date().getFullYear()} ${brief.businessName}. All rights reserved.`,
@@ -499,6 +500,34 @@ function pruneNavToPresentSections(page: Page): void {
         present.has((item as { target: SectionType }).target),
     );
   }
+}
+
+/**
+ * True when a component renders an image set rather than a single photograph.
+ *
+ * Replaces `componentId.endsWith("-03")`, which encoded one component's
+ * behaviour into the edit path and silently broke for any other multi-image
+ * component.
+ */
+function remapComponentToFamily(
+  componentId: string,
+  family: PageFamily,
+): string | null {
+  const spec = getSpec(componentId);
+  if (!spec) return defaultComponentId("hero", family);
+  // Keep the same composition when switching theme, not the same id suffix.
+  const sameLayout = listComponentIds(spec.section, family)
+    .map((id) => getSpec(id))
+    .find((candidate) => candidate?.layoutFamily === spec.layoutFamily);
+  return sameLayout?.id ?? defaultComponentId(spec.section, family);
+}
+
+/**
+ * True when a component renders an image set rather than a single photograph.
+ */
+function rendersMultipleImages(componentId: string): boolean {
+  const spec = getSpec(componentId);
+  return spec ? spec.media.max > 1 : false;
 }
 
 /**
@@ -685,7 +714,7 @@ async function applyOneOp(
       if (!section) {
         return { family, note: `No ${op.section} section to restyle.` };
       }
-      const variants = COMPONENT_VARIANTS[family][section.type];
+      const variants = listComponentIds(section.type, family);
       if (variants.length < 2) {
         return {
           family,
@@ -697,7 +726,7 @@ async function applyOneOp(
       const previous = section.componentId;
       section.componentId = nextId;
 
-      if (section.type === "hero" && nextId.endsWith("-03")) {
+      if (rendersMultipleImages(nextId)) {
         const paths = listCatalogImagePaths({
           sectionType: "hero",
           family,
@@ -708,7 +737,7 @@ async function applyOneOp(
           key: `slide-${index}`,
           imagePath,
         }));
-      } else if (section.type === "hero" && previous.endsWith("-03")) {
+      } else if (rendersMultipleImages(previous)) {
         const imagePath = pickImage({
           sectionType: "hero",
           orientation: orientationForSection("hero"),

@@ -6,16 +6,16 @@ export const vb: ThemeTokens = {
   sectionAlt: "overflow-x-hidden bg-[var(--theme-bg-alt)] text-[var(--theme-ink)]",
   sectionDark: "overflow-x-hidden bg-[var(--theme-bg-dark)] text-[var(--theme-on-dark)]",
   sectionPad:
-    "px-4 py-14 @min-[640px]:px-6 @min-[640px]:py-18 @min-[768px]:px-10 @min-[768px]:py-24",
+    "px-4 py-[var(--sec-pad-y,3.5rem)] @min-[640px]:px-6 @min-[640px]:py-[var(--sec-pad-y-md,4.5rem)] @min-[768px]:px-10 @min-[768px]:py-[var(--sec-pad-y-lg,6rem)]",
   eyebrow:
     "text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--theme-accent)] @min-[640px]:text-xs",
   eyebrowOnDark:
     "text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--theme-accent-on-dark)] @min-[640px]:text-xs",
   heading: "wrap-break-word font-[family-name:var(--theme-font-display)]",
   headingHero:
-    "wrap-break-word text-[2rem] leading-[0.98] @min-[640px]:text-[3.5rem] @min-[768px]:text-[4.5rem] @min-[1024px]:text-[5.5rem]",
+    "wrap-break-word text-[calc(2rem*var(--sec-type-scale,1))] leading-[0.98] @min-[640px]:text-[calc(3.5rem*var(--sec-type-scale,1))] @min-[768px]:text-[calc(4.5rem*var(--sec-type-scale,1))] @min-[1024px]:text-[calc(5.5rem*var(--sec-type-scale,1))]",
   headingSection:
-    "wrap-break-word text-[1.85rem] leading-[1.02] @min-[640px]:text-[2.6rem] @min-[768px]:text-[3.4rem]",
+    "wrap-break-word text-[calc(1.85rem*var(--sec-type-scale,1))] leading-[1.02] @min-[640px]:text-[calc(2.6rem*var(--sec-type-scale,1))] @min-[768px]:text-[calc(3.4rem*var(--sec-type-scale,1))]",
   body: "font-[family-name:var(--theme-font-body)] leading-relaxed text-[var(--theme-muted)]",
   rule: "h-1 w-16 rounded-full bg-[var(--theme-accent)]",
   ruleOnDark: "h-1 w-16 rounded-full bg-[var(--theme-accent-on-dark)]",

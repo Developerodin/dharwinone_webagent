@@ -11,7 +11,7 @@ export function BoldStats01({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Stats" className="bg-[var(--bold-hero-red)] text-white">
-      <div className={`mx-auto max-w-6xl ${bd.sectionPad}`}>
+      <div className={`mx-auto max-w-[var(--sec-measure,72rem)] ${bd.sectionPad}`}>
         <p className="text-center font-[family-name:var(--bold-font-script)] text-2xl text-white/90 @min-[640px]:text-3xl">
           {headline}
         </p>

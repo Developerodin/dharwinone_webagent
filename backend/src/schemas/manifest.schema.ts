@@ -1,6 +1,6 @@
 import { z } from "zod";
-import type { PageFamily } from "../config/pageFamily.js";
 import type { SectionType } from "./page.schema.js";
+import { allSpecs } from "../catalog/index.js";
 
 /** LLM-copy fields for hero sections */
 export const heroContentSchema = z.object({
@@ -111,9 +111,6 @@ type SectionManifestSpec = {
   copyFields: readonly string[];
   contentSchema: z.ZodType<Record<string, unknown>>;
   requiresImage: boolean;
-  /** Location ids use "location" not "location_map" in the component id. */
-  idSegment?: string;
-  variants: readonly string[];
 };
 
 const SECTION_SPECS: SectionManifestSpec[] = [
@@ -122,145 +119,134 @@ const SECTION_SPECS: SectionManifestSpec[] = [
     copyFields: ["brandName", "tagline", "ctaLabel", "eyebrow"],
     contentSchema: headerContentSchema,
     requiresImage: false,
-    variants: ["01", "02", "03"],
   },
   {
     sectionType: "hero",
     copyFields: ["headline", "subheading", "ctaLabel"],
     contentSchema: heroContentSchema,
     requiresImage: true,
-    variants: ["01", "02", "03"],
   },
   {
     sectionType: "about",
     copyFields: ["headline", "body"],
     contentSchema: aboutContentSchema,
     requiresImage: false,
-    variants: ["01", "02", "03"],
   },
   {
     sectionType: "services",
     copyFields: ["headline", "introText"],
     contentSchema: servicesContentSchema,
     requiresImage: false,
-    variants: ["01", "02", "03"],
   },
   {
     sectionType: "menu",
     copyFields: ["sectionTitle", "introText"],
     contentSchema: menuContentSchema,
     requiresImage: false,
-    variants: ["01", "02", "03"],
   },
   {
     sectionType: "stats",
     copyFields: ["headline"],
     contentSchema: statsContentSchema,
     requiresImage: false,
-    variants: ["01", "02", "03"],
   },
   {
     sectionType: "gallery",
     copyFields: ["headline", "caption"],
     contentSchema: galleryContentSchema,
     requiresImage: true,
-    variants: ["01", "02", "03"],
   },
   {
     sectionType: "testimonials",
     copyFields: ["headline", "introText"],
     contentSchema: testimonialsContentSchema,
     requiresImage: false,
-    variants: ["01", "02", "03"],
   },
   {
     sectionType: "team",
     copyFields: ["headline", "introText"],
     contentSchema: teamContentSchema,
     requiresImage: false,
-    variants: ["01", "02", "03"],
   },
   {
     sectionType: "reservation",
     copyFields: ["headline", "body", "ctaLabel"],
     contentSchema: reservationContentSchema,
     requiresImage: false,
-    variants: ["01", "02", "03"],
   },
   {
     sectionType: "location_map",
     copyFields: ["headline", "directionsNote"],
     contentSchema: locationContentSchema,
     requiresImage: false,
-    idSegment: "location",
-    variants: ["01", "02", "03"],
   },
   {
     sectionType: "contact",
     copyFields: ["headline", "introText", "ctaLabel"],
     contentSchema: contactContentSchema,
     requiresImage: false,
-    variants: ["01", "02"],
   },
   {
     sectionType: "footer",
     copyFields: ["tagline", "copyright"],
     contentSchema: footerContentSchema,
     requiresImage: false,
-    variants: ["01", "02", "03"],
   },
 ];
 
 /**
- * Builds a section manifest entry reusing shared content schemas.
+ * Content schema per section type. Shared by every implementation of a section,
+ * and used to validate LLM copy shape.
  */
-function manifest(
-  componentId: string,
-  sectionType: string,
-  copyFields: readonly string[],
-  contentSchema: z.ZodType<Record<string, unknown>>,
-  requiresImage: boolean,
-): ComponentManifest {
-  return { componentId, sectionType, copyFields, contentSchema, requiresImage };
-}
+const SCHEMA_BY_SECTION = new Map<SectionType, SectionManifestSpec>(
+  SECTION_SPECS.map((spec) => [spec.sectionType, spec]),
+);
+
+let manifestCache: Record<string, ComponentManifest> | null = null;
 
 /**
- * Builds all component manifests for a page family.
+ * Component manifests, derived from the catalog.
+ *
+ * Previously this expanded a hardcoded `variants: ["01","02","03"]` table per
+ * family, so a fourth variant needed an edit here before it could exist. Now
+ * the catalog is the single list of components and manifests follow from it.
  */
-function buildFamilyManifests(
-  family: PageFamily,
-): Record<string, ComponentManifest> {
+function buildManifests(): Record<string, ComponentManifest> {
+  if (manifestCache) return manifestCache;
   const entries: Record<string, ComponentManifest> = {};
 
-  for (const spec of SECTION_SPECS) {
-    const variants = spec.variants;
-    const segment = spec.idSegment ?? spec.sectionType;
-    for (const variant of variants) {
-      const componentId = `${family}-${segment}-${variant}`;
-      entries[componentId] = manifest(
-        componentId,
-        spec.sectionType,
-        spec.copyFields,
-        spec.contentSchema,
-        spec.requiresImage,
-      );
-    }
+  for (const spec of allSpecs()) {
+    const sectionSpec = SCHEMA_BY_SECTION.get(spec.section);
+    if (!sectionSpec) continue;
+    entries[spec.id] = {
+      componentId: spec.id,
+      sectionType: spec.section,
+      // The component's own content contract, not the section-wide list.
+      copyFields: Object.keys(spec.slots),
+      contentSchema: sectionSpec.contentSchema,
+      requiresImage: spec.media.min > 0,
+    };
   }
 
+  manifestCache = entries;
   return entries;
 }
 
 /**
- * Registry of component manifests — multiple variants per section type.
+ * Registry of component manifests, one per catalog component.
  */
-export const COMPONENT_MANIFESTS: Record<string, ComponentManifest> = {
-  ...buildFamilyManifests("premium"),
-  ...buildFamilyManifests("elegant"),
-  ...buildFamilyManifests("minimal"),
-  ...buildFamilyManifests("rustic"),
-  ...buildFamilyManifests("vibrant"),
-  ...buildFamilyManifests("bold"),
-};
+export const COMPONENT_MANIFESTS: Record<string, ComponentManifest> =
+  new Proxy({} as Record<string, ComponentManifest>, {
+    get: (_target, key: string) => buildManifests()[key],
+    has: (_target, key: string) => key in buildManifests(),
+    ownKeys: () => Reflect.ownKeys(buildManifests()),
+    getOwnPropertyDescriptor: (_target, key: string) => {
+      const value = buildManifests()[key];
+      return value
+        ? { value, enumerable: true, configurable: true }
+        : undefined;
+    },
+  });
 
 /**
  * Resolves a manifest by component id.

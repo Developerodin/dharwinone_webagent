@@ -22,7 +22,7 @@ export function PremiumLocation03({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Location" className={`${pm.sectionPad} ${pm.section}`}>
-      <div className="relative mx-auto max-w-6xl">
+      <div className="relative mx-auto max-w-[var(--sec-measure,72rem)]">
         <header className="max-w-3xl">
           <h2 className={`${pm.heading} ${pm.headingSection}`}>{headline}</h2>
           {address ? (

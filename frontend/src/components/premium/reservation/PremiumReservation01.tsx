@@ -15,7 +15,7 @@ export function PremiumReservation01({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Reservation" className={`${pm.sectionPad} ${pm.sectionAlt}`}>
-      <div className="mx-auto max-w-6xl min-w-0">
+      <div className="mx-auto max-w-[var(--sec-measure,72rem)] min-w-0">
         <h2 className={`${pm.heading} ${pm.headingSection}`}>{headline}</h2>
         {body ? (
           <p className={`mt-4 max-w-2xl text-sm @min-[640px]:mt-5 @min-[640px]:text-base ${pm.body}`}>

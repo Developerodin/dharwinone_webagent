@@ -43,7 +43,7 @@ export function ElegantContact01({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Contact and reservations" className={`${eg.sectionPad} ${eg.section}`}>
-      <div className="mx-auto grid max-w-6xl gap-8 @min-[1024px]:grid-cols-[0.95fr_1.05fr]">
+      <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-8 @min-[1024px]:grid-cols-[0.95fr_1.05fr]">
         <div>
           <h2 className={`max-w-lg ${eg.heading} ${eg.headingSection}`}>{headline}</h2>
           <p className={`mt-4 max-w-xl text-sm @min-[640px]:text-base ${eg.body}`}>{body}</p>

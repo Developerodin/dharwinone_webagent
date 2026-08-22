@@ -20,6 +20,8 @@ import {
 } from "../schemas/creativeDirection.schema.js";
 import type { SectionType } from "../schemas/page.schema.js";
 import { DIRECTOR_SKILL } from "./designSkillPrompt.js";
+import { ARCHETYPE_OUTCOMES, ARCHETYPE_RULES } from "./archetypeRules.js";
+import { classifyBySignals, type ClassifyResult } from "./signalScoring.js";
 import { listDistinctiveTypePairs } from "./horecaDesignSystem.js";
 import { planSections } from "./planSections.js";
 
@@ -138,29 +140,45 @@ export function applySignatureToSectionPlan(
 }
 
 /**
- * Infers a deterministic archetype from brief + chat cues (fixture / fallback).
+ * Builds the text corpus used for archetype and site classification.
+ */
+export function classificationCorpus(brief: Brief, chatText: string): string {
+  return [
+    brief.category,
+    brief.audience ?? "",
+    brief.usp ?? "",
+    brief.story ?? "",
+    (brief.vibe ?? []).join(" "),
+    chatText,
+  ].join(" ");
+}
+
+/**
+ * Infers the page archetype from the balance of signals in the brief.
+ *
+ * Replaces an ordered if-chain in which the first matching keyword won
+ * outright: a fine-dining omakase counter classified as quick service because
+ * its USP contained the word "counter".
  */
 export function inferArchetype(brief: Brief, chatText: string): Archetype {
-  const corpus = `${brief.category} ${brief.audience ?? ""} ${brief.usp ?? ""} ${chatText}`.toLowerCase();
-  if (/\b(takeaway|takeout|counter|quick|lunch\s*counter|qsr)\b/.test(corpus)) {
-    return "quick_service";
-  }
-  if (/\b(rooftop|cocktail|bar|immersive|gallery|design)\b/.test(corpus)) {
-    return "visual_immersive";
-  }
-  if (/\b(fine\s*dining|tasting|reserve|reservation\s*only)\b/.test(corpus) || brief.priceBand === "fine_dining") {
-    return "reservation_first";
-  }
-  if (/\b(heritage|family|since\s*\d{4}|story|founded)\b/.test(corpus) || brief.story) {
-    return "story_led";
-  }
-  if (/\b(neighbourhood|neighborhood|local|everyday)\b/.test(corpus) || brief.neighbourhood) {
-    return "neighbourhood";
-  }
-  if ((brief.signatureDishes?.length ?? 0) > 0 || brief.menuItems.length >= 3) {
-    return "menu_forward";
-  }
-  return "neighbourhood";
+  return classifyArchetype(brief, chatText).outcome;
+}
+
+/**
+ * Archetype classification with the full score breakdown, for tracing.
+ */
+export function classifyArchetype(
+  brief: Brief,
+  chatText: string,
+): ClassifyResult<Archetype> {
+  return classifyBySignals<Archetype>({
+    rules: ARCHETYPE_RULES,
+    outcomes: ARCHETYPE_OUTCOMES,
+    brief,
+    corpus: classificationCorpus(brief, chatText),
+    fallback: "neighbourhood",
+    minimumScore: 2,
+  });
 }
 
 /**

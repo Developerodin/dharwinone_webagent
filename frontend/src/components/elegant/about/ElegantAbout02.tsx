@@ -13,7 +13,7 @@ export function ElegantAbout02({ content, assets }: SectionComponentProps) {
 
   return (
     <section aria-label="About" className={`${eg.sectionPad} ${eg.sectionAlt}`}>
-      <div className="mx-auto grid max-w-6xl items-center gap-10 @min-[768px]:grid-cols-2 @min-[768px]:gap-16">
+      <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] items-center gap-10 @min-[768px]:grid-cols-2 @min-[768px]:gap-16">
         <div className="animate-section-enter relative min-w-0 order-2 @min-[768px]:order-1">
           <span
             aria-hidden="true"

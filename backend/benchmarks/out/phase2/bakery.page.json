@@ -1,0 +1,803 @@
+{
+  "case": "bakery",
+  "prompt": "Flour & Salt is a sourdough bakery and pastry counter. We bake overnight, sell out by 2pm, and do wholesale for a few local cafes. Honest, hand-made feeling.",
+  "expectedPages": [
+    "home"
+  ],
+  "family": "premium",
+  "direction": {
+    "family": "premium",
+    "seed": "flour & salt|artisan sourdough bakery||premium",
+    "palette": {
+      "accent": "#c4a484",
+      "accentContrast": "#111111",
+      "bg": "#1c1612",
+      "ink": "#f3ebe3",
+      "fontDisplay": "\"Spectral\", Georgia, serif",
+      "fontBody": "\"Source Sans 3\", system-ui, sans-serif"
+    },
+    "paletteSource": "creative_pick",
+    "sectionVariantHints": {
+      "header": "premium-header-02",
+      "hero": "premium-hero-03",
+      "about": "premium-about-01",
+      "menu": "premium-menu-03",
+      "gallery": "premium-gallery-01",
+      "reservation": "premium-reservation-02",
+      "contact": "premium-contact-01",
+      "footer": "premium-footer-02"
+    },
+    "rationale": "Direction set — premium · story_led · creative pick #c4a484 · hero-03",
+    "archetype": "story_led",
+    "sectionPlan": [
+      {
+        "type": "header",
+        "emphasis": "compact",
+        "layoutIntent": "band",
+        "background": "base",
+        "spacing": "tight"
+      },
+      {
+        "type": "hero",
+        "emphasis": "hero",
+        "layoutIntent": "centered",
+        "background": "image",
+        "spacing": "normal"
+      },
+      {
+        "type": "about",
+        "emphasis": "major",
+        "layoutIntent": "editorial_columns",
+        "background": "base",
+        "spacing": "tight"
+      },
+      {
+        "type": "menu",
+        "emphasis": "major",
+        "layoutIntent": "grid",
+        "background": "alt",
+        "spacing": "tight"
+      },
+      {
+        "type": "stats",
+        "emphasis": "compact",
+        "layoutIntent": "centered",
+        "background": "base",
+        "spacing": "tight"
+      },
+      {
+        "type": "gallery",
+        "emphasis": "standard",
+        "layoutIntent": "marquee",
+        "background": "base",
+        "spacing": "normal"
+      },
+      {
+        "type": "reservation",
+        "emphasis": "standard",
+        "layoutIntent": "band",
+        "background": "alt",
+        "spacing": "normal"
+      },
+      {
+        "type": "location_map",
+        "emphasis": "standard",
+        "layoutIntent": "split_left",
+        "background": "base",
+        "spacing": "normal"
+      },
+      {
+        "type": "contact",
+        "emphasis": "standard",
+        "layoutIntent": "centered",
+        "background": "base",
+        "spacing": "normal"
+      },
+      {
+        "type": "footer",
+        "emphasis": "compact",
+        "layoutIntent": "band",
+        "background": "dark",
+        "spacing": "tight"
+      }
+    ],
+    "narrative": {
+      "positioning": "Everything is mixed the night before and sold the morning it is baked",
+      "proofPoints": [
+        "Country Sourdough",
+        "Kouign-Amann",
+        "For neighbours who queue before work and wholesale cafe accounts"
+      ],
+      "voiceRules": [
+        "Name concrete dishes and places from the brief",
+        "No adjective stacking",
+        "Never invent hours, guests, or chefs"
+      ],
+      "avoidPhrases": [
+        "authentic experience",
+        "culinary journey",
+        "feast for the senses",
+        "where tradition meets innovation",
+        "nestled in the heart of",
+        "elevate your dining"
+      ]
+    },
+    "mode": "persuade",
+    "subject": {
+      "what": "Flour & Salt — Artisan sourdough bakery",
+      "audience": "neighbours who queue before work and wholesale cafe accounts",
+      "pageJob": "Convince them to book: Everything is mixed the night before and sold the morning it is baked"
+    },
+    "signature": {
+      "kind": "story_as_thesis",
+      "section": "about",
+      "note": "The origin story is the memorable device; keep other sections quiet."
+    },
+    "designSystem": {
+      "density": "compact",
+      "typeScale": "compact"
+    },
+    "typePairId": "spectral-source-sans-3",
+    "sitePlan": {
+      "kind": "single_page",
+      "reason": "no page structure requested — defaulting to one scrolling page",
+      "pages": [
+        {
+          "role": "home",
+          "title": "Home",
+          "path": "/",
+          "sections": [
+            "header",
+            "hero",
+            "about",
+            "menu",
+            "stats",
+            "gallery",
+            "reservation",
+            "location_map",
+            "contact",
+            "footer"
+          ]
+        }
+      ]
+    }
+  },
+  "droppedSections": [],
+  "page": {
+    "sections": [
+      {
+        "type": "header",
+        "componentId": "premium-header-02",
+        "content": {
+          "brandName": "Flour & Salt",
+          "tagline": "Artisan sourdough bakery in OR 97214",
+          "ctaLabel": "Reserve a Table",
+          "eyebrow": "Artisan sourdough bakery",
+          "navItems": [
+            {
+              "label": "About",
+              "target": "about"
+            },
+            {
+              "label": "Offerings",
+              "target": "menu"
+            },
+            {
+              "label": "Gallery",
+              "target": "gallery"
+            },
+            {
+              "label": "Reservations",
+              "target": "reservation"
+            },
+            {
+              "label": "Contact",
+              "target": "contact"
+            }
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "compact",
+          "intent": "band",
+          "background": "base",
+          "spacing": "tight"
+        }
+      },
+      {
+        "type": "hero",
+        "componentId": "premium-hero-01",
+        "content": {
+          "headline": "Flour & Salt",
+          "subheading": "Everything is mixed the night before and sold the morning it is baked",
+          "ctaLabel": "View Menu"
+        },
+        "assets": [
+          {
+            "key": "primary",
+            "imagePath": "/images/restaurant/hero/hero-04.webp"
+          }
+        ],
+        "layout": {
+          "emphasis": "hero",
+          "intent": "centered",
+          "background": "image",
+          "spacing": "normal"
+        }
+      },
+      {
+        "type": "about",
+        "componentId": "premium-about-02",
+        "content": {
+          "headline": "About Flour & Salt",
+          "body": "Welcome to Flour & Salt, a Artisan sourdough bakery rooted in tradition and quality ingredients."
+        },
+        "assets": [
+          {
+            "key": "primary",
+            "imagePath": "/images/restaurant/about/about-04.webp"
+          }
+        ],
+        "layout": {
+          "emphasis": "major",
+          "intent": "editorial_columns",
+          "background": "base",
+          "spacing": "tight"
+        }
+      },
+      {
+        "type": "menu",
+        "componentId": "premium-menu-03",
+        "content": {
+          "sectionTitle": "Our Menu",
+          "introText": "Seasonal dishes crafted with care.",
+          "items": [
+            {
+              "name": "Country Sourdough",
+              "price": 8,
+              "description": "48-hour levain, stone-milled wheat"
+            },
+            {
+              "name": "Kouign-Amann",
+              "price": 5,
+              "description": "Laminated over two days"
+            },
+            {
+              "name": "Seeded Rye",
+              "price": 9,
+              "description": "Caraway, sunflower, flax"
+            },
+            {
+              "name": "Morning Bun",
+              "price": 4,
+              "description": "Orange zest, cardamom sugar"
+            }
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "major",
+          "intent": "grid",
+          "background": "alt",
+          "spacing": "tight"
+        }
+      },
+      {
+        "type": "stats",
+        "componentId": "premium-stats-01",
+        "content": {
+          "headline": "Loved By Our Guests",
+          "items": [
+            {
+              "value": "4",
+              "label": "Menu Favorites"
+            },
+            {
+              "value": "9+",
+              "label": "Years of Craft"
+            },
+            {
+              "value": "1",
+              "label": "Cuisine Focus"
+            },
+            {
+              "value": "2",
+              "label": "Signature Dishes"
+            }
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "compact",
+          "intent": "centered",
+          "background": "base",
+          "spacing": "tight"
+        }
+      },
+      {
+        "type": "gallery",
+        "componentId": "premium-gallery-01",
+        "content": {
+          "headline": "Gallery",
+          "caption": "A glimpse into our kitchen and dining room."
+        },
+        "assets": [
+          {
+            "key": "gallery-0",
+            "imagePath": "/images/restaurant/gallery/gallery-04.webp"
+          },
+          {
+            "key": "gallery-1",
+            "imagePath": "/images/restaurant/gallery/gallery-05.webp"
+          },
+          {
+            "key": "gallery-2",
+            "imagePath": "/images/restaurant/gallery/gallery-06.webp"
+          },
+          {
+            "key": "gallery-3",
+            "imagePath": "/images/restaurant/gallery/gallery-01.webp"
+          }
+        ],
+        "layout": {
+          "emphasis": "standard",
+          "intent": "marquee",
+          "background": "base",
+          "spacing": "normal"
+        }
+      },
+      {
+        "type": "reservation",
+        "componentId": "premium-reservation-01",
+        "content": {
+          "headline": "Book Your Table",
+          "body": "Reserve your spot and enjoy a seamless dining experience.",
+          "ctaLabel": "Reserve Now",
+          "phone": "(503) 555-0177",
+          "address": "820 SE Belmont Street, Portland, OR 97214",
+          "lat": 45.5163,
+          "lng": -122.6544,
+          "hours": [
+            "Wed–Sun 07:00–14:00"
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "standard",
+          "intent": "band",
+          "background": "alt",
+          "spacing": "normal"
+        }
+      },
+      {
+        "type": "location_map",
+        "componentId": "premium-location-01",
+        "content": {
+          "headline": "Visit Us",
+          "directionsNote": "We look forward to hosting you.",
+          "phone": "(503) 555-0177",
+          "address": "820 SE Belmont Street, Portland, OR 97214",
+          "lat": 45.5163,
+          "lng": -122.6544,
+          "hours": [
+            "Wed–Sun 07:00–14:00"
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "standard",
+          "intent": "split_left",
+          "background": "base",
+          "spacing": "normal"
+        }
+      },
+      {
+        "type": "contact",
+        "componentId": "premium-contact-01",
+        "content": {
+          "headline": "Get In Touch",
+          "introText": "Questions, bookings, or private events — we are here.",
+          "ctaLabel": "Send Message",
+          "phone": "(503) 555-0177",
+          "address": "820 SE Belmont Street, Portland, OR 97214",
+          "lat": 45.5163,
+          "lng": -122.6544,
+          "hours": [
+            "Wed–Sun 07:00–14:00"
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "standard",
+          "intent": "centered",
+          "background": "base",
+          "spacing": "normal"
+        }
+      },
+      {
+        "type": "footer",
+        "componentId": "premium-footer-02",
+        "content": {
+          "tagline": "Thank you for visiting Flour & Salt",
+          "copyright": "© 2026 Flour & Salt. All rights reserved.",
+          "phone": "(503) 555-0177",
+          "address": "820 SE Belmont Street, Portland, OR 97214",
+          "lat": 45.5163,
+          "lng": -122.6544,
+          "hours": [
+            "Wed–Sun 07:00–14:00"
+          ],
+          "brandName": "Flour & Salt",
+          "navItems": [
+            {
+              "label": "About",
+              "target": "about"
+            },
+            {
+              "label": "Offerings",
+              "target": "menu"
+            },
+            {
+              "label": "Gallery",
+              "target": "gallery"
+            },
+            {
+              "label": "Reservations",
+              "target": "reservation"
+            },
+            {
+              "label": "Contact",
+              "target": "contact"
+            }
+          ]
+        },
+        "assets": [],
+        "layout": {
+          "emphasis": "compact",
+          "intent": "band",
+          "background": "dark",
+          "spacing": "tight"
+        }
+      }
+    ],
+    "design": {
+      "density": "compact",
+      "typeScale": "compact"
+    },
+    "themeOverrides": {
+      "accent": "#c4a484",
+      "accentContrast": "#111111",
+      "bg": "#1c1612",
+      "ink": "#f3ebe3",
+      "fontDisplay": "\"Spectral\", Georgia, serif",
+      "fontBody": "\"Source Sans 3\", system-ui, sans-serif",
+      "bgDark": "#1c1612",
+      "card": "#37322e",
+      "muted": "#d9d9d9",
+      "onDark": "#f5f5f5",
+      "bgAlt": "#2e2925"
+    }
+  },
+  "pages": [
+    {
+      "role": "home",
+      "title": "Home",
+      "path": "/",
+      "page": {
+        "sections": [
+          {
+            "type": "header",
+            "componentId": "premium-header-02",
+            "content": {
+              "brandName": "Flour & Salt",
+              "tagline": "Artisan sourdough bakery in OR 97214",
+              "ctaLabel": "Reserve a Table",
+              "eyebrow": "Artisan sourdough bakery",
+              "navItems": [
+                {
+                  "label": "About",
+                  "target": "about"
+                },
+                {
+                  "label": "Offerings",
+                  "target": "menu"
+                },
+                {
+                  "label": "Gallery",
+                  "target": "gallery"
+                },
+                {
+                  "label": "Reservations",
+                  "target": "reservation"
+                },
+                {
+                  "label": "Contact",
+                  "target": "contact"
+                }
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "compact",
+              "intent": "band",
+              "background": "base",
+              "spacing": "tight"
+            }
+          },
+          {
+            "type": "hero",
+            "componentId": "premium-hero-01",
+            "content": {
+              "headline": "Flour & Salt",
+              "subheading": "Everything is mixed the night before and sold the morning it is baked",
+              "ctaLabel": "View Menu"
+            },
+            "assets": [
+              {
+                "key": "primary",
+                "imagePath": "/images/restaurant/hero/hero-04.webp"
+              }
+            ],
+            "layout": {
+              "emphasis": "hero",
+              "intent": "centered",
+              "background": "image",
+              "spacing": "normal"
+            }
+          },
+          {
+            "type": "about",
+            "componentId": "premium-about-02",
+            "content": {
+              "headline": "About Flour & Salt",
+              "body": "Welcome to Flour & Salt, a Artisan sourdough bakery rooted in tradition and quality ingredients."
+            },
+            "assets": [
+              {
+                "key": "primary",
+                "imagePath": "/images/restaurant/about/about-04.webp"
+              }
+            ],
+            "layout": {
+              "emphasis": "major",
+              "intent": "editorial_columns",
+              "background": "base",
+              "spacing": "tight"
+            }
+          },
+          {
+            "type": "menu",
+            "componentId": "premium-menu-03",
+            "content": {
+              "sectionTitle": "Our Menu",
+              "introText": "Seasonal dishes crafted with care.",
+              "items": [
+                {
+                  "name": "Country Sourdough",
+                  "price": 8,
+                  "description": "48-hour levain, stone-milled wheat"
+                },
+                {
+                  "name": "Kouign-Amann",
+                  "price": 5,
+                  "description": "Laminated over two days"
+                },
+                {
+                  "name": "Seeded Rye",
+                  "price": 9,
+                  "description": "Caraway, sunflower, flax"
+                },
+                {
+                  "name": "Morning Bun",
+                  "price": 4,
+                  "description": "Orange zest, cardamom sugar"
+                }
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "major",
+              "intent": "grid",
+              "background": "alt",
+              "spacing": "tight"
+            }
+          },
+          {
+            "type": "stats",
+            "componentId": "premium-stats-01",
+            "content": {
+              "headline": "Loved By Our Guests",
+              "items": [
+                {
+                  "value": "4",
+                  "label": "Menu Favorites"
+                },
+                {
+                  "value": "9+",
+                  "label": "Years of Craft"
+                },
+                {
+                  "value": "1",
+                  "label": "Cuisine Focus"
+                },
+                {
+                  "value": "2",
+                  "label": "Signature Dishes"
+                }
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "compact",
+              "intent": "centered",
+              "background": "base",
+              "spacing": "tight"
+            }
+          },
+          {
+            "type": "gallery",
+            "componentId": "premium-gallery-01",
+            "content": {
+              "headline": "Gallery",
+              "caption": "A glimpse into our kitchen and dining room."
+            },
+            "assets": [
+              {
+                "key": "gallery-0",
+                "imagePath": "/images/restaurant/gallery/gallery-04.webp"
+              },
+              {
+                "key": "gallery-1",
+                "imagePath": "/images/restaurant/gallery/gallery-05.webp"
+              },
+              {
+                "key": "gallery-2",
+                "imagePath": "/images/restaurant/gallery/gallery-06.webp"
+              },
+              {
+                "key": "gallery-3",
+                "imagePath": "/images/restaurant/gallery/gallery-01.webp"
+              }
+            ],
+            "layout": {
+              "emphasis": "standard",
+              "intent": "marquee",
+              "background": "base",
+              "spacing": "normal"
+            }
+          },
+          {
+            "type": "reservation",
+            "componentId": "premium-reservation-01",
+            "content": {
+              "headline": "Book Your Table",
+              "body": "Reserve your spot and enjoy a seamless dining experience.",
+              "ctaLabel": "Reserve Now",
+              "phone": "(503) 555-0177",
+              "address": "820 SE Belmont Street, Portland, OR 97214",
+              "lat": 45.5163,
+              "lng": -122.6544,
+              "hours": [
+                "Wed–Sun 07:00–14:00"
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "standard",
+              "intent": "band",
+              "background": "alt",
+              "spacing": "normal"
+            }
+          },
+          {
+            "type": "location_map",
+            "componentId": "premium-location-01",
+            "content": {
+              "headline": "Visit Us",
+              "directionsNote": "We look forward to hosting you.",
+              "phone": "(503) 555-0177",
+              "address": "820 SE Belmont Street, Portland, OR 97214",
+              "lat": 45.5163,
+              "lng": -122.6544,
+              "hours": [
+                "Wed–Sun 07:00–14:00"
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "standard",
+              "intent": "split_left",
+              "background": "base",
+              "spacing": "normal"
+            }
+          },
+          {
+            "type": "contact",
+            "componentId": "premium-contact-01",
+            "content": {
+              "headline": "Get In Touch",
+              "introText": "Questions, bookings, or private events — we are here.",
+              "ctaLabel": "Send Message",
+              "phone": "(503) 555-0177",
+              "address": "820 SE Belmont Street, Portland, OR 97214",
+              "lat": 45.5163,
+              "lng": -122.6544,
+              "hours": [
+                "Wed–Sun 07:00–14:00"
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "standard",
+              "intent": "centered",
+              "background": "base",
+              "spacing": "normal"
+            }
+          },
+          {
+            "type": "footer",
+            "componentId": "premium-footer-02",
+            "content": {
+              "tagline": "Thank you for visiting Flour & Salt",
+              "copyright": "© 2026 Flour & Salt. All rights reserved.",
+              "phone": "(503) 555-0177",
+              "address": "820 SE Belmont Street, Portland, OR 97214",
+              "lat": 45.5163,
+              "lng": -122.6544,
+              "hours": [
+                "Wed–Sun 07:00–14:00"
+              ],
+              "brandName": "Flour & Salt",
+              "navItems": [
+                {
+                  "label": "About",
+                  "target": "about"
+                },
+                {
+                  "label": "Offerings",
+                  "target": "menu"
+                },
+                {
+                  "label": "Gallery",
+                  "target": "gallery"
+                },
+                {
+                  "label": "Reservations",
+                  "target": "reservation"
+                },
+                {
+                  "label": "Contact",
+                  "target": "contact"
+                }
+              ]
+            },
+            "assets": [],
+            "layout": {
+              "emphasis": "compact",
+              "intent": "band",
+              "background": "dark",
+              "spacing": "tight"
+            }
+          }
+        ],
+        "design": {
+          "density": "compact",
+          "typeScale": "compact"
+        },
+        "themeOverrides": {
+          "accent": "#c4a484",
+          "accentContrast": "#111111",
+          "bg": "#1c1612",
+          "ink": "#f3ebe3",
+          "fontDisplay": "\"Spectral\", Georgia, serif",
+          "fontBody": "\"Source Sans 3\", system-ui, sans-serif",
+          "bgDark": "#1c1612",
+          "card": "#37322e",
+          "muted": "#d9d9d9",
+          "onDark": "#f5f5f5",
+          "bgAlt": "#2e2925"
+        }
+      }
+    }
+  ]
+}

@@ -26,7 +26,7 @@ export function BoldLocation01({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Location" className={`${bd.sectionPad} ${bd.sectionAlt}`}>
-      <div className="mx-auto grid max-w-6xl gap-8 @min-[768px]:grid-cols-2 @min-[768px]:gap-12">
+      <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-8 @min-[768px]:grid-cols-2 @min-[768px]:gap-12">
         <div className="min-w-0">
           <p className="font-[family-name:var(--bold-font-script)] text-2xl text-[var(--bold-hero-red)] @min-[640px]:text-3xl">
             Location

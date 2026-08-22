@@ -13,7 +13,7 @@ export function BoldTeam01({ content, assets }: SectionComponentProps) {
 
   return (
     <section aria-label="Team" className={`${bd.sectionPad} ${bd.section}`}>
-      <div className="mx-auto max-w-6xl text-center">
+      <div className="mx-auto max-w-[var(--sec-measure,72rem)] text-center">
         <p className="font-[family-name:var(--bold-font-script)] text-2xl text-[var(--bold-hero-red)] @min-[640px]:text-3xl">
           Behind the grill
         </p>

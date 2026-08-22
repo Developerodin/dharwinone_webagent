@@ -30,7 +30,7 @@ export function BoldContact01({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Contact" className={`${bd.sectionPad} ${bd.sectionAlt}`}>
-      <div className="mx-auto grid max-w-6xl gap-10 @min-[768px]:grid-cols-[1.05fr_0.95fr] @min-[768px]:gap-14">
+      <div className="mx-auto grid max-w-[var(--sec-measure,72rem)] gap-10 @min-[768px]:grid-cols-[1.05fr_0.95fr] @min-[768px]:gap-14">
         <div className="min-w-0">
           <p className="font-[family-name:var(--bold-font-script)] text-2xl text-[var(--bold-hero-red)] @min-[640px]:text-3xl">
             Visit

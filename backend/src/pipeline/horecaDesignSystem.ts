@@ -9,7 +9,7 @@ import {
   deriveSurfaceTokens,
   luminance,
 } from "./colorResolve.js";
-import { stableHash } from "./pickComponent.js";
+import { stableHash } from "../lib/stableHash.js";
 
 export type HorecaPalette = {
   id: string;
@@ -79,6 +79,8 @@ export type HorecaDesignSystem = {
   typePairs: HorecaTypePair[];
   cuisines: HorecaCuisine[];
   generationRules: string[];
+  /** Owner vocabulary -> catalog mood vocabulary, so matching is data-driven. */
+  moodSynonyms?: Record<string, string[]>;
 };
 
 let cached: HorecaDesignSystem | null = null;
@@ -150,6 +152,124 @@ export function getTypePairById(id: string): HorecaTypePair | null {
     ...pair,
     headingFont: distinctiveFontName(pair.headingFont) ?? pair.headingFont,
     bodyFont: distinctiveFontName(pair.bodyFont) ?? pair.bodyFont,
+  };
+}
+
+/**
+ * Every font family the generator can put on a page: the catalog type pairs
+ * plus the faces the overused-font remap points at. `scripts/sync-fonts.ts`
+ * uses this to generate the stylesheet link, so a pair can never be selectable
+ * without being loadable.
+ */
+export function requiredFontFamilies(): string[] {
+  const system = getHorecaDesignSystem();
+  const families = new Set<string>();
+
+  for (const pair of system.typePairs) {
+    const heading = distinctiveFontName(pair.headingFont);
+    const body = distinctiveFontName(pair.bodyFont);
+    if (heading) families.add(heading);
+    if (body) families.add(body);
+  }
+  for (const replacement of Object.values(OVERUSED_FONT_REMAP)) {
+    families.add(replacement);
+  }
+  // Faces the family CSS defaults reference directly.
+  for (const face of ["Playfair Display", "DM Sans", "Alumni Sans", "Albert Sans"]) {
+    families.add(face);
+  }
+
+  return [...families].sort((a, b) => a.localeCompare(b));
+}
+
+/** Words in a mood string that carry no matching signal. */
+const MOOD_STOPWORDS = new Set([
+  "and", "the", "with", "for", "amp", "very", "style", "styles", "look",
+]);
+
+/**
+ * Normalises a word for mood matching: lowercase, de-accented, de-pluralised.
+ */
+function moodToken(word: string): string {
+  const base = word
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  return base.endsWith("s") && base.length > 4 ? base.slice(0, -1) : base;
+}
+
+/**
+ * Splits text into comparable mood tokens.
+ */
+function moodTokens(text: string): Set<string> {
+  const out = new Set<string>();
+  for (const raw of text.split(/[^A-Za-z\u00C0-\u024F]+/)) {
+    if (raw.length < 4) continue;
+    const token = moodToken(raw);
+    if (token.length < 4 || MOOD_STOPWORDS.has(token)) continue;
+    out.add(token);
+  }
+  return out;
+}
+
+/**
+ * Expands brief vocabulary into the vocabulary the catalog moods are written
+ * in, using the synonym map that ships with the design system data. An owner
+ * writes "coffee shop"; the catalog says "cafés".
+ */
+function expandWithSynonyms(tokens: Set<string>): Set<string> {
+  const synonyms = getHorecaDesignSystem().moodSynonyms ?? {};
+  const out = new Set(tokens);
+  for (const token of tokens) {
+    for (const mapped of synonyms[token] ?? []) out.add(moodToken(mapped));
+  }
+  return out;
+}
+
+/**
+ * Picks a type pair for a business.
+ *
+ * Mood keywords in the catalog ("bakery", "seafood", "Japanese", "cocktail")
+ * are matched against the brief, and only genuine ties are broken by seed. The
+ * seed must never outweigh a real match, or a minimal cafe ends up in an
+ * ornamental display face.
+ */
+export function pickTypePairForSeed(
+  seed: string,
+  category?: string | null,
+  chatText?: string | null,
+): HorecaTypePair | null {
+  const pairs = listDistinctiveTypePairs();
+  if (pairs.length === 0) return null;
+
+  const corpus = expandWithSynonyms(
+    moodTokens(`${category ?? ""} ${chatText ?? ""}`),
+  );
+
+  const scored = pairs.map((pair) => {
+    const moodWords = moodTokens(pair.mood);
+    let matches = 0;
+    for (const token of moodWords) {
+      if (corpus.has(token)) matches += 1;
+    }
+    return { pair, matches };
+  });
+
+  const best = Math.max(...scored.map((entry) => entry.matches));
+  // With no signal at all, spread across the whole catalog by seed. With a
+  // signal, only pairs that share the top match count are eligible.
+  const eligible = scored
+    .filter((entry) => entry.matches === best)
+    .map((entry) => entry.pair);
+
+  const chosen =
+    eligible[stableHash(`${seed}:type`) % eligible.length] ?? eligible[0] ?? null;
+  if (!chosen) return null;
+
+  return {
+    ...chosen,
+    headingFont: distinctiveFontName(chosen.headingFont) ?? chosen.headingFont,
+    bodyFont: distinctiveFontName(chosen.bodyFont) ?? chosen.bodyFont,
   };
 }
 

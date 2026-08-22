@@ -24,7 +24,7 @@ export function ElegantTeam02({ content, assets }: SectionComponentProps) {
 
   return (
     <section aria-label="Team" className={`${eg.sectionPad} ${eg.section}`}>
-      <div className="mx-auto max-w-6xl min-w-0">
+      <div className="mx-auto max-w-[var(--sec-measure,72rem)] min-w-0">
         <span aria-hidden="true" className={`mt-3 block ${eg.goldRule}`} />
         <h2 className={`mt-4 ${eg.heading} ${eg.headingSection}`}>{headline}</h2>
         {introText ? (

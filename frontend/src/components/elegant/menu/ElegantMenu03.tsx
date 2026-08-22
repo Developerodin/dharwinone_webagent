@@ -18,7 +18,7 @@ export function ElegantMenu03({ content }: SectionComponentProps) {
 
   return (
     <section aria-label="Menu" className={`${eg.sectionPad} ${eg.sectionAlt}`}>
-      <div className="mx-auto max-w-6xl min-w-0">
+      <div className="mx-auto max-w-[var(--sec-measure,72rem)] min-w-0">
         <header className="max-w-2xl">
           <h2 className={`${eg.heading} ${eg.headingSection}`}>{sectionTitle}</h2>
           {introText ? (
